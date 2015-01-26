@@ -14,10 +14,3 @@ int sensoroutput2(){
 	two_sensor_read(&sensornames, &value1, &value2);
 	return value2;
 }
-
-
-int main(){
-	connect_to_robot();
-	initialize_robot();
-}
-
