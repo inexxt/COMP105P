@@ -3,10 +3,10 @@
 #include "picomms.h"
 #include "static_functions.h"
 #include <math.h>
-#define BS 60 		// basic speed
+#define BS 40 		// basic speed
 #define ST 100 	//sleep time
 #define R_WIDTH 17 	//robot R_WIDTH
-#define OD 25 		//optimal distance
+#define OD 20 		//optimal distance
 
 int sign(int x)
 {
@@ -18,9 +18,9 @@ int sign(int x)
 
 float fuel = 2.2*BS;
 
-float err=0, l_diff = 0, r_diff = 0, lspeed = BS, rspeed = BS, pl_diff = 0, pr_diff = 0, perr, Ke = 0.8, acc = 0, Kd = 0.3, p, y;
+float err=0, l_diff = 0, r_diff = 0, lspeed = BS, rspeed = BS, pl_diff = 0, pr_diff = 0, perr = 0, Ke = 0.4, Ke_d = 0.2, acc = 0, Kd = 0.1, p, y;
 
-float Ks = 2;
+float Ks = 0.8, Ks_d = 0.5;
 
 float l_opt_dist = 0, r_opt_dist = 0;
 
@@ -28,9 +28,9 @@ int i = 0, sig = 1;
 
 float pi = 3.141;
 
-float start_rangle = 45, start_langle = 40; 
+float start_rangle = 50, start_langle = 30; 
 
-float rangle = 45, langle = 30; 
+float rangle = 0, langle = 0; 
 
 void fuelcheck()
 {
@@ -58,12 +58,12 @@ void update_angles()
 {
 	i += sig;
 	
-	if(i%15 == 0)
+	if(i%14 == 0)
 	{
 		sig = -sig;
 	}
-	langle = start_langle - 3*i;
-	rangle = start_rangle + i/2;
+	langle = start_langle - 2*i;
+	rangle = start_rangle + i;
 	
 	printf("\t\tL %.2f\tR %.2f\ti %d\n", langle, rangle, i);
 	
@@ -96,25 +96,26 @@ int main()
 		l_diff = l_opt_dist - leftFsensor(); //if positive turn left 
 		r_diff = r_opt_dist - rightFsensor(); //if positive turn right (fast escape!)
 		
-//		crit = SDIST - leftSsensor();
-		
 		y = (leftFsensor()*cos(langle) + R_WIDTH)/cos(langle);
-		p = y*cos(langle)/cos(rangle);
-		
+		p = y*cos(langle)/cos(rangle);		
 		err = rightFsensor() - p; //if positive turn left
 			
 		printf("RCOS %.2f\tLCOS %.2f R %.2f L%.2f\n", cos(rangle), cos(langle), rangle, langle);
 		printf("Y %.2f\tP %.2f ERR %.2f\n", y, p, err);
 		
-// 		err = R_WIDTH - (rightFsensor()*cos(rangle) - leftFsensor()*cos(langle)); //if positive, turn left
 		
-		acc -= Ke*(err - 0*fabs(err - perr));
+		acc -= Ke*(err - Ke_d*fabs(err - perr));
+		acc += Kd*(l_diff*fabs(l_diff) - 0.2*fabs(l_diff - pl_diff));
 		
-// 		int x = 20;
-// 		acc += Kd*sign(l_diff)*exp((fabs(l_diff)-x) - 0.5*fabs(l_diff - pl_diff));
 		
-		acc += Kd*(l_diff*fabs(l_diff) - 0.5*fabs(l_diff - pl_diff));
-		acc += exp(r_diff-20);
+//		printf("\t\t\t\t\t %d\n", rightFsensor());
+// 		if(rightFsensor() < 30)
+// 		{
+// 			printf("\t\t\t\t%.2f %.2f %.2f\n", Ks*exp(r_diff-30 - Ks_d*fabs(l_diff - pl_diff)), r_diff-30, Ks_d*fabs(l_diff - pl_diff));
+// 			//scanf("%f", &p);
+// 		}
+		
+		acc += Ks*exp(r_diff-30 - Ks_d*fabs(l_diff - pl_diff));
 		
 		lspeed += acc;
 		rspeed -= acc;
@@ -124,7 +125,7 @@ int main()
 		update_angles();
 		
 		//printf("LS %.2f\tRS %.2f\tER %.2f\tDF %.2f\tEXP %.2f\n", lspeed, rspeed, err, l_diff, Kd*(l_diff - 0.2*fabs(l_diff - pl_diff))); 
-		//rspeed += err*0.001;
+
 		set_motors((int)lspeed, (int)rspeed);
 		usleep(ST);
 		pl_diff = l_diff;
