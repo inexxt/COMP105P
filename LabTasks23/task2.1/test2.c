@@ -3,11 +3,10 @@
 #include "picomms.h"
 #include "static_functions.h"
 #include <math.h>
-#define BS 20
-#define ST 1000
-#define R_WIDTH 17
-#define FDIST 30
-#define SDIST 10
+#define BS 60 		// basic speed
+#define ST 100 	//sleep time
+#define R_WIDTH 17 	//robot R_WIDTH
+#define OD 25 		//optimal distance
 
 int sign(int x)
 {
@@ -17,13 +16,21 @@ int sign(int x)
 }
 
 
-float fuel = 2.5*BS;
+float fuel = 2.2*BS;
 
-float err=0, diff = 0, i=0, lspeed = BS, rspeed = BS, pdiff = 0, perr, Ke = 0.1, acc = 0, Kd = 0.3, p, y, i;
+float err=0, l_diff = 0, r_diff = 0, lspeed = BS, rspeed = BS, pl_diff = 0, pr_diff = 0, perr, Ke = 0.8, acc = 0, Kd = 0.3, p, y;
+
+float Ks = 2;
+
+float l_opt_dist = 0, r_opt_dist = 0;
+
+int i = 0, sig = 1;
 
 float pi = 3.141;
 
-float rangle = 60, langle = 30; 
+float start_rangle = 45, start_langle = 40; 
+
+float rangle = 45, langle = 30; 
 
 void fuelcheck()
 {
@@ -41,15 +48,29 @@ void fuelcheck()
 	fuel += 2*BS;
 }
 
-void update_angles()
+void degrees_to_radians()
 {
-	i++;
-	set_ir_angle(RIGHT, -135+rangle);
-	set_ir_angle(LEFT, -45+langle);
-	sleep(1);
-
 	rangle = rangle*2*pi/360.0;
 	langle = langle*2*pi/360.0;
+}
+
+void update_angles()
+{
+	i += sig;
+	
+	if(i%15 == 0)
+	{
+		sig = -sig;
+	}
+	langle = start_langle - 3*i;
+	rangle = start_rangle + i/2;
+	
+	printf("\t\tL %.2f\tR %.2f\ti %d\n", langle, rangle, i);
+	
+	set_ir_angle(RIGHT, (int)(-135+rangle));
+	set_ir_angle(LEFT, (int)(-45+langle));
+	
+	degrees_to_radians();
 }
 
 int main()
@@ -57,19 +78,25 @@ int main()
 	connect_to_robot();
 	initialize_robot();
 	
-	set_ir_angle(RIGHT, -135+rangle);
-	set_ir_angle(LEFT, -45+langle);
+	set_ir_angle(RIGHT, -135+start_rangle);
+	set_ir_angle(LEFT, -45+start_langle);
+	
 	sleep(1);
-
-	rangle = rangle*2*pi/360.0;
-	langle = langle*2*pi/360.0;	
+	
+	degrees_to_radians();
+	
 	while(1)
 	{
+		l_opt_dist = OD/cos(langle);
+		r_opt_dist = (OD+R_WIDTH)/cos(rangle);
+		
 		lspeed = BS;
 		rspeed = BS;
 		
-		diff = FDIST - leftFsensor(); //if positive turn left 
-// 		crit = SDIST - leftSsensor();
+		l_diff = l_opt_dist - leftFsensor(); //if positive turn left 
+		r_diff = r_opt_dist - rightFsensor(); //if positive turn right (fast escape!)
+		
+//		crit = SDIST - leftSsensor();
 		
 		y = (leftFsensor()*cos(langle) + R_WIDTH)/cos(langle);
 		p = y*cos(langle)/cos(rangle);
@@ -84,9 +111,11 @@ int main()
 		acc -= Ke*(err - 0*fabs(err - perr));
 		
 // 		int x = 20;
-// 		acc += Kd*sign(diff)*exp((fabs(diff)-x) - 0.5*fabs(diff - pdiff));
+// 		acc += Kd*sign(l_diff)*exp((fabs(l_diff)-x) - 0.5*fabs(l_diff - pl_diff));
 		
-		acc += Kd*(diff*fabs(diff) - 0.5*fabs(diff - pdiff));
+		acc += Kd*(l_diff*fabs(l_diff) - 0.5*fabs(l_diff - pl_diff));
+		acc += exp(r_diff-20);
+		
 		lspeed += acc;
 		rspeed -= acc;
 		
@@ -94,11 +123,12 @@ int main()
 		fuelcheck();
 		update_angles();
 		
-		//printf("LS %.2f\tRS %.2f\tER %.2f\tDF %.2f\tEXP %.2f\n", lspeed, rspeed, err, diff, Kd*(diff - 0.2*fabs(diff - pdiff))); 
+		//printf("LS %.2f\tRS %.2f\tER %.2f\tDF %.2f\tEXP %.2f\n", lspeed, rspeed, err, l_diff, Kd*(l_diff - 0.2*fabs(l_diff - pl_diff))); 
 		//rspeed += err*0.001;
 		set_motors((int)lspeed, (int)rspeed);
 		usleep(ST);
-		pdiff = diff;
+		pl_diff = l_diff;
+		pr_diff = r_diff;
 		perr = err;
 		acc = 0;
 	}
