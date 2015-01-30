@@ -13,7 +13,7 @@ float fuel = 2.2*BS;
 float lspeed = BS, rspeed = BS;
 float acc = 0, err=0, l_diff = 0, r_diff = 0, pl_diff = 0, pr_diff = 0, perr = 0,  p, y;
 float Ks = 0.8, Ks_d = 0.5;
-float Ke = 0.4, Ke_d = 0.2;
+float Ke = 0.6, Ke_d = 0.4;
 float Kd = 0.1, Kd_d = 0.2;
 
 float l_opt_dist = 0, r_opt_dist = 0;
@@ -21,7 +21,7 @@ float l_opt_dist = 0, r_opt_dist = 0;
 int i = 0, sig = 0;
 
 
-float start_rangle = 50, start_langle = 30; 
+float start_rangle = 50, start_langle = 20; 
 float rangle = 0, langle = 0; 
 
 void fuelcheck()
