@@ -13,8 +13,6 @@ double normal_dist = 30;
 
 double diff = 1, pdiff = 1, lspeed = BS, rspeed = BS;
 
-
-
 int main()
 {
 	connect_to_robot();

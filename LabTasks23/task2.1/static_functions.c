@@ -107,3 +107,13 @@ int sign(int x)
 	if (x < 0) return -1;
 	return 0;
 }
+
+double thirdSideOfTriangle(double a, double b, double alpha)
+{
+	return fabs(1/2*a*b*sin(alpha));
+}
+
+double secondAngle(double a, double alpha, double b)
+{
+	return asin(b*sin(alpha)/a);
+}
