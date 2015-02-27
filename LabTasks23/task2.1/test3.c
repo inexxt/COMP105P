@@ -4,11 +4,7 @@
 #include "static_functions.h"
 #include "lists.h"
 #include <math.h>
-#define BS 40 		// basic speed
-#define ST 100 	//sleep time
-#define R_WIDTH 17 	//robot R_WIDTH
-#define OD 20 		//optimal distance
-#define pi 3.141
+#include "defines.h"
 
 int counter = 0;
 
@@ -56,28 +52,35 @@ void update_list()
 
 int checkifnot90() //wrong, I didn't take into account the fact that I can turn
 {
-	double eps = 0.05;
-	
-	
-	double dl = lastL(head);
-	double lalpha = langle - pi/2;
-	double lc = thirdSideOfTriangle(l_diff, d, lalpha);
-	double lbeta = secondAngle(lc, lalpha, l_diff);
-	double lgamma = pi - lalpha - lbeta;
-	double ldc = thirdSideOfTriangle(lc, pl_diff, lgamma);
-	double ldelta = secondAngle(ldc, lgamma, lc);
-	
-	double dr = lastR(head);
-	double ralpha = rangle + pi/2;
-	double rc = thirdSideOfTriangle(d, r_diff, ralpha);
-	double rbeta = secondAngle(rc, ralpha, r_diff);
-	double rgamma = pi - ralpha - rbeta - pi/2;
-	double rdc = thirdSideOfTriangle(rc, pr_diff, rgamma);
-	double rdelta = pi - secondAngle(rdc, rgamma, rc);
-	
-	double ang = ldelta + rdelta + (pi - langle) + rangle;
-	if (fabs(ang - pi/2) < eps) return 0;
+// 	double eps = 0.05;
+// 	
+// 	
+// 	double dl = lastL(head);
+// 	double lalpha = langle - pi/2;
+// 	double lc = thirdSideOfTriangle(l_diff, d, lalpha);
+// 	double lbeta = secondAngle(lc, lalpha, l_diff);
+// 	double lgamma = pi - lalpha - lbeta;
+// 	double ldc = thirdSideOfTriangle(lc, pl_diff, lgamma);
+// 	double ldelta = secondAngle(ldc, lgamma, lc);
+// 	
+// 	double dr = lastR(head);
+// 	double ralpha = rangle + pi/2;
+// 	double rc = cthirdSideOfTriangle(d, r_diff, ralpha);
+// 	double rbeta = secondAngle(rc, ralpha, r_diff);
+// 	double rgamma = pi - ralpha - rbeta - pi/2;
+// 	double rdc = thirdSideOfTriangle(rc, pr_diff, rgamma);
+// 	double rdelta = pi - secondAngle(rdc, rgamma, rc);
+// 	
+// 	double ang = ldelta + rdelta + (pi - langle) + rangle;
+// 	if (fabs(ang - pi/2) < eps) return 0;
+// 	return 1;
 	return 1;
+// 	double sl = leftSsensor();
+// 	double fl = leftFsensor();
+// 	double fr = rightFsensor();
+// 	
+// 	double sinL = sl / fl;
+// 	double sinR = (fr+R_WIDTH)/fr;
 }
 
 void fuelcheck()
@@ -125,6 +128,7 @@ int main()
 {
 	connect_to_robot();
 	initialize_robot();
+	set_origin();
 	
 	initialize_list(leftFsensor(),rightFsensor());
 	
@@ -181,7 +185,7 @@ int main()
 		counter++;
 		printf("\n%d\n", counter);
 		
-		if(counter == 50) var = 0;
+		if(counter == 100) var = 0;
 		
 		usleep(ST);
 		pl_diff = l_diff;
@@ -189,5 +193,8 @@ int main()
 		perr = err;
 		acc = 0;
 	}
+	
 	print_list(head);
+	printf("Angle %.2f wV %.2f wH %.2f\n", computeAngleList(head)/360*2*M_PI, computeWayList(head, VERTICAL), computeWayList(head, HORIZONTAL));
+	
 }

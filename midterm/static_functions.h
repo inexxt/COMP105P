@@ -8,4 +8,5 @@ void straight(double length);
 double thirdSideOfTriangle(double a, double b, double alpha);
 double secondAngle(double a, double alpha, double b);
 double computeAngle(double dl, double dr);
-double computeWay(double dl, double dr, double alpha, int which);
+double computeWay(double dl, double dr, double alpha);
+double distance(double x1, double x2, double y1, double y2);

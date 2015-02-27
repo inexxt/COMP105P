@@ -1,0 +1,1 @@
+gcc picomms.c test3.c static_functions.c lists.c -o testcc -lm

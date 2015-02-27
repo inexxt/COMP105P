@@ -40,7 +40,7 @@ void turn(int degrees)
 		dspeed = (currentvalue < target/2) ? (dspeed + acc) : (dspeed - acc);
 		
 		log_trail();
-		printf("L %d R %d C %d\n", leftencoder(), rightencoder(), currentvalue);
+// 		printf("L %d R %d C %d\n", leftencoder(), rightencoder(), currentvalue);
 	}
 	set_motors(0, 0);
 	sleep(1); //TODO maybe remove it later
@@ -104,6 +104,12 @@ int sign(int x)
 	return 0;
 }
 
+int signprim(double x)
+{
+	if (x >= 0) return 1;
+	return -1;
+}
+
 double thirdSideOfTriangle(double a, double b, double alpha)
 {
 	return fabs(1/2*a*b*sin(alpha));
@@ -117,24 +123,31 @@ double secondAngle(double a, double alpha, double b)
 double computeAngle(double dl, double dr)
 {
 	double R = R_WIDTH;
-	return -(dl-dr)/(2*M_PI*R);
+	return (dl-dr)/R;
 }
 
-double computeWay(double dl, double dr, double alpha, int which)
+double computeWay(double dl, double dr, double alpha)
 {
-	alpha = fabs(alpha);
 	double way = 0;
-	if(alpha != 0)
+	
+	if(alpha != 0 && alpha != -0)
 	{
-		double R = R_WIDTH;
-		double r = dr/(alpha*2*M_PI);
-		way = 2*(R/2+r)*(R/2+r)*(1-cos(alpha));
+		double r_r = dr/alpha;
+		double r_l = dl/alpha;
+		double rm = (r_l+r_r)/2;
+		way = sqrt(2*rm*rm- 2*rm*rm*cos(alpha));
+// 		printf("r %f\tway %f\talpha %f\tdl %f\tdr %f\n", rm, way, alpha, dl, dr);
 	}
 	else
 	{
 		way = dr;
 	}
-	if(which == VERTICAL) return way*cos(alpha);
-	if(which == HORIZONTAL) return way*sin(alpha);
+	return way;
 }
+
+double distance(double x1, double x2, double y1, double y2)
+{
+	return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+}
+
 
