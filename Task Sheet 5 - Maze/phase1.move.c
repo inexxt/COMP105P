@@ -4,11 +4,6 @@ double xPos, yPos, bearing;
 
 void goToXY(struct XY destination)
 {
-  double targetBearing;
-  if()
- //TODO
-
-
   double xDifference;
   double yDifference;
   double requiredAngleChange;
