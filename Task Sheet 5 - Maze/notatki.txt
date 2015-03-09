@@ -24,6 +24,11 @@ Jedrzej - ma isc do X,Y, niech dziad jedzie do X,Y, funkcja goto(x,y)
 
 funkcje:
 void goTo(double x, double y); // do jezdzenia
+
+
+jezdzenia za pomoca goTo
+dojedzie do corner -> upewnia swoja pozycje za pomoca readingow z sensorow
+
 void updateSector(double x, double y, double angle, int frontLeft, int frontRight, int sideLeft, int sideRight); // do mapowania
 
 

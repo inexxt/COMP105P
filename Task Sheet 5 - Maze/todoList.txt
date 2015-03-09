@@ -1,0 +1,11 @@
+TODO LIST:
+
+-1. porzadek w plikach
+0. makefile
+1. phase1.map.c -  struct XY getCurrentSector() 
+2. phase1.move.c - goToXY(...)
+3. phase1.move.c - goToSector(...)
+
+
+
+10. phase2.c - followPath(...)

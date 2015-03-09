@@ -1,6 +1,3 @@
-//Writen by Stuczynski, Jedrzej Jakub and Hu, Zheng He
-//This program makes robot follow a wall until it detects a corner. 
-//Then the robot stops and goes back to the starting position without any sensors.
 
 #include <unistd.h>
 #include <stdlib.h>
