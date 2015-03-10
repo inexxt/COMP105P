@@ -14,6 +14,10 @@ void updateAngle(double distanceLeft, double distanceRight)
 {
   double angleChange = ((distanceLeft - distanceRight) / ROBOT_WIDTH);
   bearing += angleChange;
+  if(bearing > (2 * M_PI))
+    bearing -= (2 * M_PI);
+  if(bearing < 0)
+    bearing += (2 * M_PI);
 }
 
 void updateX(double distanceLeft, double distanceRight)

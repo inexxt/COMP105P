@@ -5,8 +5,6 @@
 //#include "phase2.h"
 
 
-
-
 int main() 
 {
   connect_to_robot();

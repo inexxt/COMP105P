@@ -1,7 +1,15 @@
 #include "phase1.h"
 #include "phase1.move.h"
+#include "phase1.map.h"
 
 double xPos, yPos, bearing;
+
+void correctPosition()
+{
+  // TODO
+
+
+}
 
 void goToXY(struct XY destination)
 {
@@ -14,7 +22,7 @@ void goToXY(struct XY destination)
   double yCoordinate = destination.y * SECTOR_WIDTH; //TODO
   printf("\nCoordinates: %f\t%f", xCoordinate,yCoordinate); // debug
   printf("\n%f %f %f", xPos, yPos, bearing); // debug
-  while (remainingDistance > 20) // value to change
+  while (remainingDistance > 10) // value to change
   {
     printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
     updateRobotPosition(); 
@@ -40,6 +48,7 @@ void goToXY(struct XY destination)
       // TODO: add sensor correction
     }
   }
+  correctPosition();
 }
 
 void goToSector(struct XY destination)
@@ -47,13 +56,26 @@ void goToSector(struct XY destination)
   printf("going to: %d\t%d",destination.x,destination.y);
 	//goToXY(destination);
 
+ 
+
   struct XY first = {0,1};
-  struct XY second = {1,1};
+  struct XY second = {0,3};
 
   goToXY(first);
-  goToXY(second);
+  set_motors(0,0);
 
- 
+  updateSector(); 
+
+
+
+  sleep(2);
+
+ // goToXY(second);
+/*
+ printf("Current X: %d\t Current Y: %d\n", currectSector.x, currectSector.y);
+ goToXY(second);
+currectSector = getCurrentSector();
+ printf("Current X: %d\t Current Y: %d\n", currectSector.x, currectSector.y);*/
 /*
 	<complicatedStuff>
 	goToXY(...);
