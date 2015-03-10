@@ -1,4 +1,3 @@
-#include "phase1.h"
 
 struct Sector
 {

@@ -1,3 +1,13 @@
+#include "phase1.map.h"
+#include "phase1.h"
+
+
+int frontLeftIR = 0;
+int frontRightIR = 0;
+int sideLeftIR = 0;
+int sideRightIR = 0;
+int usValue = 0;
+
 /*
 void initialiseMaze()
 {
@@ -16,6 +26,9 @@ struct Sector maze[4][4];
 
 struct XY getCurrentSector()
 {
+
+	struct XY temp = {0,0};
+	return temp;
 // TODO
 	
 }
