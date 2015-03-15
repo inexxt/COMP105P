@@ -12,70 +12,66 @@ void correctPosition()
 
 void goToXY(XY destination)
 {
-  double xDifference;
-  double yDifference;
-  double requiredAngleChange;
-  double remainingDistance = 10000.00;
+	double xDifference;
+	double yDifference;
+	double requiredAngleChange;
+	double remainingDistance = 10000.00;
 
-  double xCoordinate = destination.x * SECTOR_WIDTH; //TODO
-  double yCoordinate = destination.y * SECTOR_WIDTH; //TODO
-  printf("\nCoordinates: %f\t%f", xCoordinate,yCoordinate); // debug
-  printf("\n%f %f %f", xPos, yPos, bearing); // debug
-  while (remainingDistance > 10) // value to change
-  {
-    printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
-    updateRobotPosition(); 
-  	xDifference = xCoordinate - xPos;
-    yDifference = yCoordinate - yPos;
-    requiredAngleChange = atan2(xDifference,yDifference) - bearing;
-    remainingDistance = sqrt(xDifference*xDifference + yDifference*yDifference);
+	double xCoordinate = destination.x * SECTOR_WIDTH; //TODO
+	double yCoordinate = destination.y * SECTOR_WIDTH; //TODO
+	printf("\nCoordinates: %f\t%f", xCoordinate, yCoordinate); // debug
+	printf("\n%f %f %f", xPos, yPos, bearing); // debug
+	while (remainingDistance > 10) // value to change
+	{
+		printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos, yPos, bearing); // debug
+		updateRobotPosition(); 
+		xDifference = xCoordinate - xPos;
+		yDifference = yCoordinate - yPos;
+		requiredAngleChange = atan2(xDifference, yDifference) - bearing;
+		remainingDistance = sqrt(xDifference*xDifference + yDifference*yDifference);
 
-    if(fabs(requiredAngleChange) > 1.2) 
-    {
-    	while(fabs(requiredAngleChange) > 0.10)
-    	{
-          updateRobotPosition(); 
-          requiredAngleChange = atan2(xDifference,yDifference) - bearing;
-          set_motors(requiredAngleChange*14.0,-requiredAngleChange*14.0);
-    	}
-    }
-    else
-    {
-      updateRobotPosition(); 
-      set_motors((MEDIUM_SPEED + MEDIUM_SPEED * requiredAngleChange*1.2),(MEDIUM_SPEED - MEDIUM_SPEED * requiredAngleChange*1.2));
+		if(fabs(requiredAngleChange) > 1.2) 
+		{
+			while(fabs(requiredAngleChange) > 0.10)
+			{
+				updateRobotPosition(); 
+				requiredAngleChange = atan2(xDifference, yDifference) - bearing;
+				set_motors(requiredAngleChange*14.0, -requiredAngleChange*14.0);
+			}
+		}
+		else
+		{
+			updateRobotPosition(); 
+			set_motors((MEDIUM_SPEED + MEDIUM_SPEED * requiredAngleChange*1.2),(MEDIUM_SPEED - MEDIUM_SPEED * requiredAngleChange*1.2));
 
-      // TODO: add sensor correction
-    }
-  }
-  correctPosition();
+			// TODO: add sensor correction
+		}
+	}
+	correctPosition();
 }
 
 void goToSector(XY destination)
 {
-  printf("going to: %d\t%d",destination.x,destination.y);
+	printf("going to: %d\t%d",destination.x,destination.y);
 	//goToXY(destination);
 
- 
+	XY first = {0,1};
+	XY second = {0,3};
 
-  XY first = {0,1};
-  XY second = {0,3};
+	goToXY(first);
+	set_motors(0,0);
 
-  goToXY(first);
-  set_motors(0,0);
+	updateSector(); 
 
-  updateSector(); 
+	sleep(2);
 
-
-
-  sleep(2);
-
- // goToXY(second);
-/*
- printf("Current X: %d\t Current Y: %d\n", currectSector.x, currectSector.y);
- goToXY(second);
-currectSector = getCurrentSector();
- printf("Current X: %d\t Current Y: %d\n", currectSector.x, currectSector.y);*/
-/*
+	// goToXY(second);
+	/*
+	printf("Current X: %d\t Current Y: %d\n", currectSector.x, currectSector.y);
+	goToXY(second);
+	currectSector = getCurrentSector();
+	printf("Current X: %d\t Current Y: %d\n", currectSector.x, currectSector.y);*/
+	/*
 	<complicatedStuff>
 	goToXY(...);
 	goToXY(...);*/

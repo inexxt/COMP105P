@@ -24,15 +24,18 @@ int main()
 
 	set_motors(0,0);
 
-// 	struct XY act = {.x = 1, .y = 1} ;
-// 
-// 	while(act.y != -1)
-// 	{
-// 		goToSector(act);
-// 		updateSector(act);
-// 		act = nextSector();
-// 	}
-// 	//go to sector(0,-1);
-// 	prepareToPhase2();
+	
+	//////////////////////////// phase1
+	XY act = {.x = 0, .y = 0};
+	while(act.y != -1)
+	{
+		goToSector(act);
+		updateSector(act);
+		act = nextSector();
+	}
+// 	somehow go to sector(0,-1);
+// 	endPhase1();
+	/////////////////////////// 
+	
 	return 0;
 }

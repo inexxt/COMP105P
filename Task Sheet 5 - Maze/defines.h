@@ -11,6 +11,6 @@
 #define SECTOR_WIDTH 600.00
 #define MEDIUM_SPEED 32
 
-extern double xPos;
-extern double yPos;
-extern double bearing;
+double xPos;
+double yPos;
+double bearing;

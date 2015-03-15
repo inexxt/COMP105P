@@ -19,7 +19,17 @@ typedef struct
 	int visited;
 } Sector;
 
+typedef struct Queue_t
+{
+	XY sxy;
+	struct Queue_t * next;
+} Queue;
+
 XY getCurrentSector();
+
+
 Sector maze[4][4];
+Queue* currentPath;
+Queue* nonVisited;
 
 #endif
