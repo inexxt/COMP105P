@@ -2,12 +2,14 @@
 
 double xPos, yPos;
 
-struct XY getCurrentSector()
+extern Sector maze[4][4];
+
+XY getCurrentSector()
 {
 	int xSquare = round(xPos/SECTOR_WIDTH);
 	int ySquare = round(yPos/SECTOR_WIDTH);
 
-	struct XY currentPosition = {.x = xSquare, .y = ySquare};
+	XY currentPosition = {.x = xSquare, .y = ySquare};
 
 	return currentPosition;
 }

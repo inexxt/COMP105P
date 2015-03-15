@@ -1,18 +1,6 @@
-
-struct Sector
-{
-	int northWall;
-	int southWall;
-	int westWall;
-	int eastWall;
-	int visited;
-};
-
-
-
-extern struct Sector maze[4][4];
-
-
+#include "phase1.h"
 
 //void initialiseMaze();
 void updateSector();
+XY nextSector();
+// struct queue currentPath;

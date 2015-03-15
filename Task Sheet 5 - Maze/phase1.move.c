@@ -1,4 +1,3 @@
-#include "phase1.h"
 #include "phase1.move.h"
 #include "phase1.map.h"
 
@@ -11,7 +10,7 @@ void correctPosition()
 
 }
 
-void goToXY(struct XY destination)
+void goToXY(XY destination)
 {
   double xDifference;
   double yDifference;
@@ -51,15 +50,15 @@ void goToXY(struct XY destination)
   correctPosition();
 }
 
-void goToSector(struct XY destination)
+void goToSector(XY destination)
 {
   printf("going to: %d\t%d",destination.x,destination.y);
 	//goToXY(destination);
 
  
 
-  struct XY first = {0,1};
-  struct XY second = {0,3};
+  XY first = {0,1};
+  XY second = {0,3};
 
   goToXY(first);
   set_motors(0,0);

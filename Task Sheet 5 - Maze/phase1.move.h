@@ -1,1 +1,3 @@
-void goToSector(struct XY destination);
+#include "phase1.h"
+
+void goToSector(XY destination);
