@@ -47,5 +47,6 @@ void goToXY(XY destination)
 			// TODO: add sensor correction
 		}
 	}
+	set_motors(0,0);
 	correctPosition();
 }
