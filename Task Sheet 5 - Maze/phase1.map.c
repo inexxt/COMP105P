@@ -4,13 +4,6 @@
 
 extern double bearing;
 
-//why do we need so many global vars? J.
-int frontLeftIR = 0;
-int frontRightIR = 0;
-int sideLeftIR = 0;
-int sideRightIR = 0;
-int usValue = 0; //what's that? J.
-
 extern Queue* nonVisited;
 extern Queue* currentPath;
 
@@ -88,9 +81,17 @@ int availSector(int x, int y, int type)
 
 void updateSector()
 {
+	//why do we need so many global vars? J.
+	int frontLeftIR = 0;
+	int frontRightIR = 0;
+	int sideLeftIR = 0;
+	int sideRightIR = 0;
+	int usValue = 0; //what's that? J.
+	
 	XY currSect = getCurrentSector();
 	int x = currSect.x;
 	int y = currSect.y;
+	
 	
 	if(maze[x][y].visited == 0)
 	{
@@ -125,12 +126,10 @@ void updateSector()
 		
 		//////////////////////////////////////////////////
 		
-		
-		
 		maze[x][y] = (Sector){.northWall = northWall, .southWall = southWall, .eastWall = eastWall, .westWall = westWall, .visited = 1};
 		
 		//add previous location - the place we just left, with type = RETURN, instead of some north/south etc
-		//DANGER add it on the beginning, before anything else
+		//DANGER add it at the END!!!, after everything else
 		
 		if(northWall == 0 && availSector(x, y+1, EXPLORING) == 1) pushBack(nonVisited, (XY){.x = x, .y = y+1});
 		if(southWall == 0 && availSector(x, y-1, EXPLORING) == 1) pushBack(nonVisited, (XY){.x = x, .y = y-1});

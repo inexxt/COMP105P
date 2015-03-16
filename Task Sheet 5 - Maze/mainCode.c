@@ -26,12 +26,12 @@ int main()
 
 	
 	//////////////////////////// phase1
-	XY act = {.x = 0, .y = 0};
-	while(act.y != -1 && act.x != -1)
+	XY current = {.x = 0, .y = 0};
+	while(current.y != -1 && current.x != -1)
 	{
-		goToSector(act);
-		updateSector(act);
-		act = nextSector();
+		goToSector(current);
+		updateSector(current);
+		current = nextSector();
 	}
 
 // 	endPhase1();

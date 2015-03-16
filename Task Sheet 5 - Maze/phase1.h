@@ -27,7 +27,6 @@ typedef struct Queue_t
 
 XY getCurrentSector();
 
-
 Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
 Queue* currentPath;
 Queue* nonVisited;

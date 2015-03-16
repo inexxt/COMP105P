@@ -17,11 +17,6 @@ faza 1:
 Jacek - graf, structy etc
 Jedrzej - ma isc do X,Y, niech dziad jedzie do X,Y, funkcja goto(x,y)
 
-
-
-
-
-
 funkcje:
 void goTo(double x, double y); // do jezdzenia
 
@@ -38,4 +33,4 @@ void followPath(node *head); // podaza za sciezka <- stare goBack();
 
 
 NOTES TO TALK THROUGH
-gotoXY has to be able to deal with negative values
+D gotoXY has to be able to deal with negative values

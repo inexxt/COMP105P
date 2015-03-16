@@ -49,30 +49,3 @@ void goToXY(XY destination)
 	}
 	correctPosition();
 }
-
-void goToSector(XY destination)
-{
-	printf("going to: %d\t%d",destination.x,destination.y);
-	//goToXY(destination);
-
-	XY first = {0,1};
-	XY second = {0,3};
-
-	goToXY(first);
-	set_motors(0,0);
-
-	updateSector(); 
-
-	sleep(2);
-
-	// goToXY(second);
-	/*
-	printf("Current X: %d\t Current Y: %d\n", currectSector.x, currectSector.y);
-	goToXY(second);
-	currectSector = getCurrentSector();
-	printf("Current X: %d\t Current Y: %d\n", currectSector.x, currectSector.y);*/
-	/*
-	<complicatedStuff>
-	goToXY(...);
-	goToXY(...);*/
-}

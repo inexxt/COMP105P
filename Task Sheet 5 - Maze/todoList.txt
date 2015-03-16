@@ -15,7 +15,8 @@ D!	4. implement Queue struct (just list)
 D!	5. implement Queue popFront(q), pushBack(q, s) and isEmpty() methods (from J. old list files)
 Dx	6. implement BFS on maze
 
+
 7a. Change needed variables to static - especially these ones from phase1 map
 7b. move all initialization (xyPos, bearing, curPath?) to init function
-
+7c. getCurrentSector threshold
 10. phase2.c - followPath(...)
