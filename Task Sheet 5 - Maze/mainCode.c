@@ -27,13 +27,13 @@ int main()
 	
 	//////////////////////////// phase1
 	XY act = {.x = 0, .y = 0};
-	while(act.y != -1)
+	while(act.y != -1 && act.x != -1)
 	{
 		goToSector(act);
 		updateSector(act);
 		act = nextSector();
 	}
-// 	somehow go to sector(0,-1);
+
 // 	endPhase1();
 	/////////////////////////// 
 	

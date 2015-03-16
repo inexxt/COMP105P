@@ -1,6 +1,11 @@
 TODO LIST:
 
-D	-1. porzadek w plikach
+D	done
+D?	not sure if done
+D!	done, should be checked
+Dx	it's not longer needed
+
+D	-1. clean mess in files
 D	0. makefile
 D?	1. phase1.map.c -  struct XY getCurrentSector() 
 D?	2. phase1.move.c - goToXY(...)
@@ -8,8 +13,9 @@ D?	3. phase1.move.c - goToSector(...)
 
 D!	4. implement Queue struct (just list)
 D!	5. implement Queue popFront(q), pushBack(q, s) and isEmpty() methods (from J. old list files)
-6. implement BFS on maze
+Dx	6. implement BFS on maze
 
-7. move all initialization (xyPos, bearing, curPath?) to init function
+7a. Change needed variables to static - especially these ones from phase1 map
+7b. move all initialization (xyPos, bearing, curPath?) to init function
 
 10. phase2.c - followPath(...)

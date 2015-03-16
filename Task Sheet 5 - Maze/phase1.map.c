@@ -1,4 +1,6 @@
 #include "phase1.map.h"
+#define RETURN 1
+#define EXPLORING 2
 
 extern double bearing;
 
@@ -9,17 +11,8 @@ int sideLeftIR = 0;
 int sideRightIR = 0;
 int usValue = 0; //what's that? J.
 
-
-
 extern Queue* nonVisited;
 extern Queue* currentPath;
-
-Queue* pathTo(XY dest)
-{
-	Queue* path = NULL;
-	//BFS on maze
-	return path;
-}
 
 XY popFront(Queue** q) //pointer to pointer, because we want to modify the real queue
 {
@@ -28,7 +21,7 @@ XY popFront(Queue** q) //pointer to pointer, because we want to modify the real 
 	return sxy;
 }
 
-void pushBack(Queue* q, XY sxy) //not sure about this one (i don't know if malloc will modify q or just local copy)
+void pushBack(Queue* q, XY sxy, int type) //not sure about this one (i don't know if malloc will modify q or just local copy)
 {
 	Queue* current = q;
     while (current != NULL) 
@@ -51,24 +44,47 @@ XY popNonVisited(Queue* q)
 	if(isEmpty(q))
 	{
 		XY cs = getCurrentSector();
-		if(cs.x == 0 && cs.y == 0) return (XY){.x = 0, .y = -1}; //if we have nowhere else to go and we are already in (0,0), that's the end
-		else return (XY){.x = 0, .y = 0}; //we have visited all sectors, so we have to return to (0,0)
+		if(cs.x == 0 && cs.y == -1) return (XY){.x = -1, .y = -1}; //if we have nowhere else to go and we are already in (0,-1), that's the end
+		else 
+		{
+			printf("\tERROR\tERROR\tERROR\tERROR\n");
+			printf("%d %d \n", cs.x, cs.y);
+			return (XY){.x = -100, .y = -100}; //something went wrong, that situations shoudn't occur
 	}
 	return popFront(&q);
 }
 
 XY nextSector()
 {
-	if(isEmpty(currentPath))
-	{
-		XY goal_dest = popNonVisited(nonVisited);
-		if(goal_dest.y == -1) return goal_dest; //it means that we don't have any unvisited sectors and we had returned to (0,0)
-		currentPath = pathTo(goal_dest);
-	}
+	if(isEmpty(currentPath)) return (XY){.x = 0, .y = -1};
 	return popFront(&currentPath);
 }
 
-
+int availSector(int x, int y, int type)
+{
+	
+// 	static int maze_indicators_init = 0;
+// 	static int maze_indicators[MAZE_WIDTH][MAZE_HEIGHT];
+// 	
+// 	if(maze_indicators_init == 0)
+// 	{
+// 		maze_indicators_init == 1;
+// 		int i = 0, j = 0;
+// 		for(i = 0; i<MAZE_WIDTH; i++)
+// 		{
+// 			for(j = 0; j<MAZE_HEIGHT; j++)
+// 			{
+// 				maze_indicators[i][j] = 0;
+// 			}
+// 		}
+// 	}
+	
+	if(x > MAZE_WIDTH - 1 || x < 0 || y > MAZE_HEIGHT - 1 || y < 0) return 0;
+	if(maze[x][y].visited == 1 && type == EXPLORING) return 0; //checking if visited only if i want to explore it - if that's my return path, do not do that
+	
+	return 1;
+}
+	
 
 void updateSector()
 {
@@ -113,9 +129,12 @@ void updateSector()
 		
 		maze[x][y] = (Sector){.northWall = northWall, .southWall = southWall, .eastWall = eastWall, .westWall = westWall, .visited = 1};
 		
-		if(northWall == 0 && maze[x][y + 1].visited == 0) pushBack(nonVisited, (XY){.x = x, .y = y + 1});
-		if(southWall == 0 && maze[x][y - 1].visited == 0) pushBack(nonVisited, (XY){.x = x, .y = y - 1});
-		if(eastWall == 0 && maze[x + 1][y].visited == 0) pushBack(nonVisited, (XY){.x = x + 1, .y = y});
-		if(westWall == 0 && maze[x - 1][y].visited == 0) pushBack(nonVisited, (XY){.x = x - 1, .y = y});
+		//add previous location - the place we just left, with type = RETURN, instead of some north/south etc
+		//DANGER add it on the beginning, before anything else
+		
+		if(northWall == 0 && availSector(x, y+1, EXPLORING) == 1) pushBack(nonVisited, (XY){.x = x, .y = y+1});
+		if(southWall == 0 && availSector(x, y-1, EXPLORING) == 1) pushBack(nonVisited, (XY){.x = x, .y = y-1});
+		if(eastWall == 0 && availSector(x+1, y, EXPLORING) == 1) pushBack(nonVisited, (XY){.x = x+1, .y = y});
+		if(westWall == 0 && availSector(x-1, y, EXPLORING) == 1) pushBack(nonVisited, (XY){.x = x-1, .y = y});
 	}
 }
