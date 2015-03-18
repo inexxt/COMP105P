@@ -4,28 +4,51 @@
 #define SECTOR_WIDTH_SECTOR 60
 extern double bearing;
 
-extern Queue* currentPath;
+// extern Queue* currentPath;
+
 
 XY popFront(Queue** q) //pointer to pointer, because we want to modify the real queue
 {
+	printf("POP\n");
+	
+	printf("before\n");
+	printQueue(*q);
+	
 	XY sxy = (*q)->sxy;
 	*q = (*q)->next;
+	
+	printf("after\n");
+	printQueue(*q);
 	return sxy;
 }
 
-void pushBack(Queue* q, XY sxy) //not sure about this one (i don't know if malloc will modify q or just local copy)
+void pushBack(Queue** q, XY sxy) //not sure about this one (i don't know if malloc will modify q or just local copy)
 {
-	printf("ADDED sxy x %d y %d\n", sxy.x, sxy.y);
+	printf("ADDING sxy x %d y %d\n", sxy.x, sxy.y);
 	maze[sxy.x][sxy.y].visited = 1;
-	
-	Queue* current = q;
-    while (current->next != NULL) 
+
+	Queue* current = (*q);
+    printf("b\n");
+	if(*q == NULL)
 	{
+		printf("x\n");
+		*q = malloc(sizeof(Queue));
+		(*q)->sxy = sxy;
+		(*q)->next = NULL;
+		return;
+	}
+	while (current->next != NULL) 
+	{
+		printf("c\n");
         current = current->next;
     }
+    printf("d\n");
     current->next = malloc(sizeof(Queue));
+	printf("e\n");
     current->next->sxy = sxy;
+	printf("f\n");
     current->next->next = NULL;
+	printf("h\n");
 }
 
 int isEmpty(Queue* q)
@@ -34,7 +57,7 @@ int isEmpty(Queue* q)
 	else return 0;
 }
 
-XY popcurrentPath(Queue* q)
+XY popCurrentPath(Queue* q)
 {
 	if(isEmpty(q))
 	{
@@ -50,7 +73,7 @@ XY popcurrentPath(Queue* q)
 	return popFront(&q);
 }
 
-XY nextSector()
+XY nextSector(Queue* currentPath)
 {
 	if(isEmpty(currentPath))
 	{
@@ -61,24 +84,7 @@ XY nextSector()
 }
 
 int availSector(int x, int y, int type)
-{
-	
-// 	static int maze_indicators_init = 0;
-// 	static int maze_indicators[MAZE_WIDTH][MAZE_HEIGHT];
-// 	
-// 	if(maze_indicators_init == 0)
-// 	{
-// 		maze_indicators_init == 1;
-// 		int i = 0, j = 0;
-// 		for(i = 0; i<MAZE_WIDTH; i++)
-// 		{
-// 			for(j = 0; j<MAZE_HEIGHT; j++)
-// 			{
-// 				maze_indicators[i][j] = 0;
-// 			}
-// 		}
-// 	}
-	
+{	
 	if(x > MAZE_WIDTH - 1 || x < 0 || y > MAZE_HEIGHT - 1 || y < 0) return 0;
 	if(maze[x][y].visited == 1 && type == EXPLORING) return 0; //checking if visited only if i want to explore it - if that's my return path, do not do that
 	
@@ -95,16 +101,17 @@ double convertToDegrees(double radians)
 // 	
 // }
 
-void updateSector()
+void updateSector(Queue* currentPath)
 {
+	if(currentPath == NULL) printf("XX\n");
+	
 	XY currSect = getCurrentSector();
 	
 	int x = currSect.x;
 	int y = currSect.y;
-	printf("CURRENT SECTOR is %d %d\n", x, y);
 	
-	if(maze[x][y].visited == 0)
-	{
+// 	if(maze[x][y].visited == 0)
+// 	{
 		set_ir_angle(LEFT, -45);
 		set_ir_angle(RIGHT, 45);  
 		sleep(1);
@@ -197,9 +204,9 @@ void updateSector()
 			eastType = RETURN;
 		}
 		
-		printf("DEBUG\tN %d S %d E %d W %d\n", northType, southType, eastType, westType);
-		printf("WALLS\tN %d S %d E %d W %d\n", northWall, southWall, eastWall, westWall);
-		printf("ULTRA %d\n", ultraSound);
+		printf("DEBUG TYP\tN %d S %d E %d W %d\n", northType, southType, eastType, westType);
+		printf("DEBUG WAL\tN %d S %d E %d W %d\n", northWall, southWall, eastWall, westWall);
+		printf("DEBUG ULT\t%d\n", ultraSound);
 // 		/*rotate(&northWall, &westWall, &southWall, &eastWall, bearing);*/
 		
 // 		set_ir_angle(LEFT, 45);
@@ -214,16 +221,16 @@ void updateSector()
 		//add previous location - the place we just left, with type = RETURN, instead of some north/south etc
 		//DANGER add it at the END!!!, after everything else
 		
-		if(northWall == 0 && availSector(x, y+1, EXPLORING) == 1) pushBack(currentPath, (XY){.x = x, .y = y+1});
-		if(southWall == 0 && availSector(x, y-1, EXPLORING) == 1) pushBack(currentPath, (XY){.x = x, .y = y-1});
-		if(eastWall == 0 && availSector(x+1, y, EXPLORING) == 1) pushBack(currentPath, (XY){.x = x+1, .y = y});
-		if(westWall == 0 && availSector(x-1, y, EXPLORING) == 1) pushBack(currentPath, (XY){.x = x-1, .y = y});
+		if(northWall == 0 && availSector(x, y+1, EXPLORING) == 1) pushBack(&currentPath, (XY){.x = x, .y = y+1});
+		if(southWall == 0 && availSector(x, y-1, EXPLORING) == 1) pushBack(&currentPath, (XY){.x = x, .y = y-1});
+		if(eastWall == 0 && availSector(x+1, y, EXPLORING) == 1) pushBack(&currentPath, (XY){.x = x+1, .y = y});
+		if(westWall == 0 && availSector(x-1, y, EXPLORING) == 1) pushBack(&currentPath, (XY){.x = x-1, .y = y});
 		
-		if(northWall == 0 && availSector(x, y+1, northType) == 1) pushBack(currentPath, (XY){.x = x, .y = y+1});
-		if(southWall == 0 && availSector(x, y-1, southType) == 1) pushBack(currentPath, (XY){.x = x, .y = y-1});
-		if(eastWall == 0 && availSector(x+1, y, eastType) == 1) pushBack(currentPath, (XY){.x = x+1, .y = y});
-		if(westWall == 0 && availSector(x-1, y, westType) == 1) pushBack(currentPath, (XY){.x = x-1, .y = y});
+		if(northWall == 0 && availSector(x, y+1, northType) == 1) pushBack(&currentPath, (XY){.x = x, .y = y+1});
+		if(southWall == 0 && availSector(x, y-1, southType) == 1) pushBack(&currentPath, (XY){.x = x, .y = y-1});
+		if(eastWall == 0 && availSector(x+1, y, eastType) == 1) pushBack(&currentPath, (XY){.x = x+1, .y = y});
+		if(westWall == 0 && availSector(x-1, y, westType) == 1) pushBack(&currentPath, (XY){.x = x-1, .y = y});
 		
 		printf("QUEUE FIRST ELEM: x %d y %d\n", currentPath->sxy.x, currentPath->sxy.y);
-	}
+// 	}
 }

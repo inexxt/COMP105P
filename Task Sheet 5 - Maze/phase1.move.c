@@ -23,7 +23,8 @@ void goToXY(XY destination)
 	printf("\n%f %f %f", xPos, yPos, bearing); // debug
 	while (remainingDistance > 10) // value to change
 	{
-		printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos, yPos, bearing); // debug
+// 		printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos, yPos, bearing); // debug
+		printf("remain %.2f\n", remainingDistance);
 		updateRobotPosition(); 
 		xDifference = xCoordinate - xPos;
 		yDifference = yCoordinate - yPos;
@@ -49,4 +50,5 @@ void goToXY(XY destination)
 	}
 	set_motors(0,0);
 	correctPosition();
+	printf("getting out\n");
 }

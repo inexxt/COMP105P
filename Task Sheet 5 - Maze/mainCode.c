@@ -3,6 +3,29 @@
 #include "phase1.move.h"
 //#include "phase2.h"
 
+void debug()
+{
+	printCurrentSector();
+}
+
+void printfSector(XY s)
+{
+	printf("sector x %d y%d", s.x, s.y);
+}
+
+void printQueue(Queue* q)
+{
+	printf("PRINTING QUEUE\n");
+	int i = 0;
+	Queue* current = q;
+	while (current != NULL)
+	{
+		printf("Q[%d] : x %d y %d \n", i, current->sxy.x, current->sxy.y);
+        current = current->next;
+    }
+}
+
+
 int main() 
 {
 	connect_to_robot();
@@ -23,16 +46,22 @@ int main()
 
 	yPos = -600;
 	//////////////////////////// phase1
-	XY first = {.x = 0, .y = 0};
+	Queue* currentPath = NULL;
 	XY current;
-	currentPath = malloc(sizeof(Queue));
-	currentPath->
+	
+	XY first = {.x = 0, .y = 0};
+	maze[0][0].visited = 1;
+
+	pushBack(&currentPath, first);
+	printf("beginning\n");
 	
 	while(current.y != -1 && current.x != -1)
 	{
-		current = nextSector();
+		printQueue(currentPath);
+		current = nextSector(currentPath);
+		printfSector(current);
 		goToXY(current);
-		updateSector(current);
+		updateSector(current, currentPath);
 	}
 
 // 	endPhase1();

@@ -10,3 +10,9 @@ XY getCurrentSector()
 
 	return (XY){.x = xSquare, .y = ySquare};
 }
+
+void printCurrentSector()
+{
+	XY cs = getCurrentSector();
+	printf("DEBUG CUR\tX %d Y %d\n", cs.x, cs.y);
+}

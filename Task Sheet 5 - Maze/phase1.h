@@ -26,9 +26,9 @@ typedef struct Queue_t
 } Queue;
 
 XY getCurrentSector();
+void printCurrentSector();
 
 Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
-Queue* currentPath;
-Queue* nonVisited;
+
 
 #endif
