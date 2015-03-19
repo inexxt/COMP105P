@@ -1,11 +1,21 @@
 #include "phase1.map.h"
 #define RETURN 1
 #define EXPLORING 0
-#define SECTOR_WIDTH_SECTOR 60
 extern double bearing;
 
 // extern Queue* currentPath;
 
+void printQueue(Queue* q)
+{
+	printf("PRINTING QUEUE\n");
+	int i = 0;
+	Queue* current = q;
+	while (current != NULL)
+	{
+		printf("Q[%d] : x %d y %d \n", i, current->sxy.x, current->sxy.y);
+        current = current->next;
+    }
+}
 
 XY popFront(Queue** q) //pointer to pointer, because we want to modify the real queue
 {
@@ -77,7 +87,7 @@ XY nextSector(Queue* currentPath)
 {
 	if(isEmpty(currentPath))
 	{
-		printf("QUEUE IST EMPTY!!\n");
+		printf("QUEUE IST EMPTY!!\n"); //NEIN!!!
 		return (XY){.x = 0, .y = -1};
 	}
 	return popFront(&currentPath);
@@ -93,7 +103,10 @@ int availSector(int x, int y, int type)
 
 double convertToDegrees(double radians)
 {
+  if(radians)
 	return radians*180/M_PI;
+  else
+  	return 360 + radians*180/M_PI;
 }
 
 // void rotate(int* n, int* w, int* s, int* e, double angle)
@@ -135,15 +148,15 @@ void updateSector(Queue* currentPath)
 		if(convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) //first case - it's heading north
 		{
 				
-			if((frontLeftReading < SECTOR_WIDTH_SECTOR/2) && (sideLeftReading < SECTOR_WIDTH_SECTOR/2))
+			if((frontLeftReading < SECTOR_WIDTH/2) && (sideLeftReading < SECTOR_WIDTH/2))
 			{
 				westWall = 1;
 			}
-			if((frontRightReading < SECTOR_WIDTH_SECTOR/2) && (sideRightReading < SECTOR_WIDTH_SECTOR/2))
+			if((frontRightReading < SECTOR_WIDTH/2) && (sideRightReading < SECTOR_WIDTH/2))
 			{
 				eastWall = 1;
 			}
-			if(ultraSound < SECTOR_WIDTH_SECTOR/2)
+			if(ultraSound < SECTOR_WIDTH/2)
 			{
 				northWall = 1;
 			}
@@ -153,15 +166,15 @@ void updateSector(Queue* currentPath)
 		if(convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) //first case - it's heading north
 		{
 				
-			if((frontLeftReading < SECTOR_WIDTH_SECTOR/2) && (sideLeftReading < SECTOR_WIDTH_SECTOR/2))
+			if((frontLeftReading < SECTOR_WIDTH/2) && (sideLeftReading < SECTOR_WIDTH/2))
 			{
 				northWall = 1;
 			}
-			if((frontRightReading < SECTOR_WIDTH_SECTOR/2) && (sideRightReading < SECTOR_WIDTH_SECTOR/2))
+			if((frontRightReading < SECTOR_WIDTH/2) && (sideRightReading < SECTOR_WIDTH/2))
 			{
 				southWall = 1;
 			}
-			if(ultraSound < SECTOR_WIDTH_SECTOR/2)
+			if(ultraSound < SECTOR_WIDTH/2)
 			{
 				eastWall = 1;
 			}
@@ -171,15 +184,15 @@ void updateSector(Queue* currentPath)
 		if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165) //first case - it's heading north
 		{
 				
-			if((frontLeftReading < SECTOR_WIDTH_SECTOR/2) && (sideLeftReading < SECTOR_WIDTH_SECTOR/2))
+			if((frontLeftReading < SECTOR_WIDTH/2) && (sideLeftReading < SECTOR_WIDTH/2))
 			{
 				eastWall = 1;
 			}
-			if((frontRightReading < SECTOR_WIDTH_SECTOR/2) && (sideRightReading < SECTOR_WIDTH_SECTOR/2))
+			if((frontRightReading < SECTOR_WIDTH/2) && (sideRightReading < SECTOR_WIDTH/2))
 			{
 				westWall = 1;
 			}
-			if(ultraSound < SECTOR_WIDTH_SECTOR/2)
+			if(ultraSound < SECTOR_WIDTH/2)
 			{
 				southWall = 1;
 			}
@@ -189,15 +202,15 @@ void updateSector(Queue* currentPath)
 		if(convertToDegrees(bearing) < 285 && convertToDegrees(bearing) > 255) //first case - it's heading north
 		{
 				
-			if((frontLeftReading < SECTOR_WIDTH_SECTOR/2) && (sideLeftReading < SECTOR_WIDTH_SECTOR/2))
+			if((frontLeftReading < SECTOR_WIDTH/2) && (sideLeftReading < SECTOR_WIDTH/2))
 			{
 				southWall = 1;
 			}
-			if((frontRightReading < SECTOR_WIDTH_SECTOR/2) && (sideRightReading < SECTOR_WIDTH_SECTOR/2))
+			if((frontRightReading < SECTOR_WIDTH/2) && (sideRightReading < SECTOR_WIDTH/2))
 			{
 				northWall = 1;
 			}
-			if(ultraSound < SECTOR_WIDTH_SECTOR/2)
+			if(ultraSound < SECTOR_WIDTH/2)
 			{
 				westWall = 1;
 			}

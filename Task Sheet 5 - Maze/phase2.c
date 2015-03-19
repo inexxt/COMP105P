@@ -42,13 +42,13 @@ void followPath() //TODO
     printf("\nRequired angle change: %f\n", requiredAngleChange);
     /**********DEBUG**********/
      
-    if(remainingDistance > 1000) // breaks the loop in case the robot goes wild
+    if(remainingDistance > 100) // breaks the loop in case the robot goes wild
       return;
 
-    if(remainingDistance < 70)
+    if(remainingDistance < 7)
     {
     	double distanceFromNextPoint = 0.0;
-    	while(distanceFromNextPoint < MINIMUM_DISTANCE_BETWEEN_POINTS)
+    	while(distanceFromNextPoint < MINIMUM_DISTANCE_BETWEEN_POINTS/10)
     	{
     	  xDifference = *(xStorage+size) - xPos;
  		  yDifference = *(yStorage+size) - yPos;

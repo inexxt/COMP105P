@@ -1,3 +1,4 @@
 #include "phase1.h"
 
-void goToSector(XY destination);
+void goToXY(XY destination);
+void centerStartingPosition();
