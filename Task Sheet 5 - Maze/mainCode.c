@@ -21,32 +21,33 @@ int main()
 	connect_to_robot();
 	initialize_robot();
 	
-	centerStartingPosition();
 
+// 	printf("beginning\n");
 	//////////////////////////// phase1
 	Queue* currentPath = NULL;
 	XY current;
 	
+	centerStartingPosition();
 	XY first = {.x = 0, .y = 0};
 	XY second = {.x = 0, .y = 1};
 	XY third = {.x = 1,. y = 1};
-	goToXY(first);
-	goToXY(second);
-	goToXY(third);
+// 	goToXY(first);
+// 	goToXY(second);
+// 	goToXY(third);
 
 	maze[0][0].visited = 1;
 
-	pushBack(&currentPath, first);
-	printf("beginning\n");
-	
-	// while(current.y != -1 && current.x != -1)
-	// {
-	// 	printQueue(currentPath);
-	// 	current = nextSector(currentPath);
-	// 	printfSector(current);
-	// 	goToXY(current);
-	// 	updateSector(current, currentPath);
-	// }
+	pushFront(&currentPath, first);
+
+	while(current.y != -1 && current.x != -1)
+	{
+		printf("BEING IN %d %d\n", current.x, current.y);
+		printQueue(currentPath);
+		current = nextSector(&currentPath);
+		printfSector(current);
+		goToXY(current);
+		updateSector(&currentPath);
+	}
 
 // 	endPhase1();
 	/////////////////////////// 

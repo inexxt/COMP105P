@@ -50,10 +50,13 @@ void adjustCoordinates()
 void centerStartingPosition()
 {
   int i;
+
   for(i = 0; i < 3; i++)
   {
     turnByAngleDegree(-90.00);
-    usleep(400000);
+
+	usleep(400000);
+
     adjustAngle();
     usleep(400000);
     adjustCoordinates();
@@ -65,7 +68,6 @@ void centerStartingPosition()
   xPos = 0;
   yPos = -60;
   updateRobotPosition();
-  printf("%f, %f, %f",xPos,yPos,bearing);
 }
 
 void correctPosition()
@@ -83,20 +85,16 @@ void goToXY(XY destination)
 
   double xCoordinate = destination.x * SECTOR_WIDTH; //TODO
   double yCoordinate = destination.y * SECTOR_WIDTH; //TODO
-  printf("\nCoordinates: %f\t%f", xCoordinate,yCoordinate); // debug
-  printf("\n%f %f %f", xPos, yPos, bearing); // debug
-  while ((fabs(remainingDistance)) > 2) // value to change
+//   printf("\nCoordinates: %f\t%f", xCoordinate,yCoordinate); // debug
+//   printf("\n%f %f %f", xPos, yPos, bearing); // debug
+  while ((fabs(remainingDistance)) > 5) // value to change
   {
-    printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
-    printf("remain %.2f\n", remainingDistance);
+//     printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
+//     printf("remain %.2f\n", remainingDistance);
     updateRobotPosition(); 
   	xDifference = xCoordinate - xPos;
     yDifference = yCoordinate - yPos;
     requiredAngleChange = atan2(xDifference,yDifference) - bearing;
-    if(requiredAngleChange > (2*M_PI))
-       requiredAngleChange -= (2*M_PI);
-    if(requiredAngleChange < (-2*M_PI))
-       requiredAngleChange += M_PI;
     // printf("angleCh: %f, bearing: %f\n",requiredAngleChange,bearing);
     remainingDistance = sqrt(xDifference*xDifference + yDifference*yDifference);
 
@@ -119,6 +117,5 @@ void goToXY(XY destination)
   }
   set_motors(0,0);
   correctPosition();
-  printf("getting out\n");
 }
 
