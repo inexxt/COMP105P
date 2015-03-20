@@ -89,6 +89,8 @@ void goToXY(XY destination)
 //   printf("\n%f %f %f", xPos, yPos, bearing); // debug
   while ((fabs(remainingDistance)) > 5) // value to change
   {
+	  set_point(xPos,yPos);
+	  log_trail();
 //     printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
 //     printf("remain %.2f\n", remainingDistance);
     updateRobotPosition(); 
@@ -102,6 +104,9 @@ void goToXY(XY destination)
     {
     	while(fabs(requiredAngleChange) > 0.10)
     	{
+				  set_point(xPos,yPos);
+				  log_trail();
+
           updateRobotPosition(); 
           requiredAngleChange = atan2(xDifference,yDifference) - bearing;
           set_motors(requiredAngleChange*14.0,-requiredAngleChange*14.0);
