@@ -35,7 +35,7 @@ int main()
 // 	goToXY(second);
 // 	goToXY(third);
 
-	maze[0][0].visited = 1;
+	maze[0][0].visited = 2;
 
 	pushFront(&currentPath, first);
 

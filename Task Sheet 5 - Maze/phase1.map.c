@@ -19,7 +19,6 @@ void printQueue(Queue* q)
 
 XY popFront(Queue** q) //pointer to pointer, because we want to modify the real queue
 {
-	
 	printf("============= POP QUEUE ===========\n");
 	
 	printf("before\n");
@@ -38,7 +37,6 @@ XY popFront(Queue** q) //pointer to pointer, because we want to modify the real 
 void pushFront(Queue** q, XY sxy) //not sure about this one (i don't know if malloc will modify q or just local copy)
 {
 	printf("ADDING sxy x %d y %d\n", sxy.x, sxy.y);
-	maze[sxy.x][sxy.y].visited = 1;
 
 	if(*q == NULL)
 	{
@@ -48,9 +46,9 @@ void pushFront(Queue** q, XY sxy) //not sure about this one (i don't know if mal
 		return;
 	}
 	
-    Queue* new_beginning = malloc(sizeof(Queue));
-    new_beginning->sxy = sxy;
-    new_beginning->next = (*q);
+	Queue* new_beginning = malloc(sizeof(Queue));
+	new_beginning->sxy = sxy;
+	new_beginning->next = (*q);
 	(*q) = new_beginning;
 }
 
@@ -88,28 +86,20 @@ XY nextSector(Queue** currentPath)
 
 int availSector(int x, int y, int type)
 {	
-	if(x > MAZE_WIDTH - 1 || x < 0 || y > MAZE_HEIGHT - 1 || y < 0) return 0;
-	if(maze[x][y].visited == 1 && type == EXPLORING) return 0; //checking if visited only if i want to explore it - if that's my return path, do not do that
-	
+	printf("AVAIL X %d Y %d type %d\n", x, y, type);
+	if(x > MAZE_WIDTH - 1 || x < 0 || y > (MAZE_HEIGHT - 1) || y < 0) return 0;
+	if(maze[x][y].visited != 0 && type == EXPLORING) return 0; //checking if visited only if i want to explore it - if that's my return path, do not do that
 	return 1;
 }
 
 double convertToDegrees(double radians)
 {
-  if(radians)
-	return radians*180/M_PI;
-  else
-  	return 360 + radians*180/M_PI;
+	if(radians > 0) return radians*180/M_PI;
+	else return 360 + radians*180/M_PI;
 }
-
-// void rotate(int* n, int* w, int* s, int* e, double angle)
-// {
-// 	
-// }
 
 void updateSector(Queue** currentPath)
 {
-	
 	printQueue(*currentPath);
 	
 	if((*currentPath) == NULL) printf("XX\n");
@@ -119,8 +109,9 @@ void updateSector(Queue** currentPath)
 	int x = currSect.x;
 	int y = currSect.y;
 	
-// 	if(maze[x][y].visited == 0)
-// 	{
+	if(maze[x][y].visited != 1)
+	{
+		maze[x][y].visited = 1;
 		set_ir_angle(LEFT, -45);
 		set_ir_angle(RIGHT, 45);  
 		sleep(1);
@@ -157,7 +148,7 @@ void updateSector(Queue** currentPath)
 				northWall = 1;
 			}
 			southType = RETURN;
-			pushFront(currentPath, (XY){.x = x, .y = y-1});
+			pushFront(currentPath, (XY){.x = x, .y = y-1}); 
 		}
 		
 		if(convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) //first case - it's heading north
@@ -217,6 +208,8 @@ void updateSector(Queue** currentPath)
 			pushFront(currentPath, (XY){.x = x+1, .y = y});
 		}
 		
+		printf("bearing: %.2f toDegree: %.2f\n", bearing, convertToDegrees(bearing));
+		
 		printf("DEBUG TYP\tN %d S %d E %d W %d\n", northType, southType, eastType, westType);
 		printf("DEBUG WAL\tN %d S %d E %d W %d\n", northWall, southWall, eastWall, westWall);
 		printf("DEBUG ULT\t%d\n", ultraSound);
@@ -236,5 +229,5 @@ void updateSector(Queue** currentPath)
 		if(eastWall == 0 && availSector(x+1, y, EXPLORING) == 1) pushFront(currentPath, (XY){.x = x+1, .y = y});
 		if(westWall == 0 && availSector(x-1, y, EXPLORING) == 1) pushFront(currentPath, (XY){.x = x-1, .y = y});
 		
-// 	}
+	}
 }
