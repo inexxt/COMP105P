@@ -12,7 +12,9 @@ void printQueue(Queue* q)
 	Queue* current = q;
 	while (current != NULL)
 	{
-		printf("Q[%d] : x %d y %d \n", i, current->sxy.x, current->sxy.y);
+		int x = current->sxy.x;
+		int y = current->sxy.y;
+		if(x >= 0 && y >= 0) printf("Q[%d] : x %d y %d VIS %d\n", i, x, y, maze[x][y].visited);
         current = current->next;
     }
 }
@@ -31,13 +33,14 @@ XY popFront(Queue** q) //pointer to pointer, because we want to modify the real 
 	printQueue(*q);
 	printf("============= ENDING ===========\n");
 	
+	maze[sxy.x][sxy.y].visited -= 2;
 	return sxy;
 }
 
 void pushFront(Queue** q, XY sxy) //not sure about this one (i don't know if malloc will modify q or just local copy)
 {
 	printf("ADDING sxy x %d y %d\n", sxy.x, sxy.y);
-
+	
 	if(*q == NULL)
 	{
 		*q = malloc(sizeof(Queue));
@@ -50,6 +53,8 @@ void pushFront(Queue** q, XY sxy) //not sure about this one (i don't know if mal
 	new_beginning->sxy = sxy;
 	new_beginning->next = (*q);
 	(*q) = new_beginning;
+	
+	maze[sxy.x][sxy.y].visited += 2;
 }
 
 int isEmpty(Queue* q)
@@ -119,7 +124,7 @@ void updateSector(Queue** currentPath)
 		get_front_ir_dists(&frontLeftReading, &frontRightReading);
 		get_side_ir_dists(&sideLeftReading, &sideRightReading);
 		ultraSound = get_us_dist();
-		printf("frontleft: %d, frontRight: %d, sideLeft: %d, sideRight: %d, US: %d", frontLeftReading, frontRightReading, sideLeftReading,sideRightReading,ultraSound);
+// 		printf("frontleft: %d, frontRight: %d, sideLeft: %d, sideRight: %d, US: %d", frontLeftReading, frontRightReading, sideLeftReading,sideRightReading,ultraSound);
 		int northWall = 0;
 		int southWall = 0;
 		int westWall = 0;
@@ -208,7 +213,7 @@ void updateSector(Queue** currentPath)
 			pushFront(currentPath, (XY){.x = x+1, .y = y});
 		}
 		
-		printf("bearing: %.2f toDegree: %.2f\n", bearing, convertToDegrees(bearing));
+// 		printf("bearing: %.2f toDegree: %.2f\n", bearing, convertToDegrees(bearing));
 		
 		printf("DEBUG TYP\tN %d S %d E %d W %d\n", northType, southType, eastType, westType);
 		printf("DEBUG WAL\tN %d S %d E %d W %d\n", northWall, southWall, eastWall, westWall);

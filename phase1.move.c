@@ -98,7 +98,7 @@ void goToXY(XY destination)
   {
 	  set_point(xPos,yPos);
 	  log_trail();
-    printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
+//     printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
 //     printf("remain %.2f\n", remainingDistance);
     updateRobotPosition(); 
   	xDifference = xCoordinate - xPos;
