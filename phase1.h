@@ -28,6 +28,9 @@ typedef struct Queue_t
 XY getCurrentSector();
 void printCurrentSector();
 
+void getSideIR(double *left, double *right);
+void getFrontIR(double *left, double *right);
+
 Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
 
 

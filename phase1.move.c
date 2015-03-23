@@ -15,21 +15,21 @@ int targetUS;
 void adjustAngle()
 {
   int speedMultiplier = 2;
-  int frontLeftIR, frontRightIR;
+  double frontLeftIR, frontRightIR;
   set_ir_angle(LEFT, 20);
   set_ir_angle(RIGHT, -20);    
-  usleep(1000000);
-  get_front_ir_dists(&frontLeftIR, &frontRightIR);
+  usleep(500000);
+  getFrontIR(&frontLeftIR, &frontRightIR);
   int sensorDifference;
   while(((frontLeftIR > SAFE_RANGE) && (frontRightIR > SAFE_RANGE))  && ((frontLeftIR < MAX_IR_RANGE) && (frontRightIR < MAX_IR_RANGE)))
   {
     set_motors(5,5);
-    get_front_ir_dists(&frontLeftIR, &frontRightIR);
+    getFrontIR(&frontLeftIR, &frontRightIR);
   }
   set_motors(0,0);
-  while(frontRightIR != frontLeftIR)
+  while(fabs(frontRightIR - frontLeftIR) > 0.5)
   {
-    get_front_ir_dists(&frontLeftIR, &frontRightIR);
+    getFrontIR(&frontLeftIR, &frontRightIR);
     sensorDifference = frontLeftIR - frontRightIR;
     if(sensorDifference > 5)
       sensorDifference = 5;
@@ -40,10 +40,10 @@ void adjustAngle()
   set_motors(0,0);
 }
 
-void adjustCoordinates()
+void adjustPosition()
 {
   int ultraSound;
-  targetUS = targetIR + 2;
+  targetUS = targetIR + 6;
   ultraSound = get_us_dist();
   while(ultraSound != targetUS)
   {
@@ -57,19 +57,19 @@ void adjustCoordinates()
 void centerStartingPosition()
 {
   int i;
-  int sideLeft, sideRight;
-  get_side_ir_dists(&sideLeft, &sideRight);
+  double sideLeft, sideRight;
+  getSideIR(&sideLeft, &sideRight);
   targetIR = ((double)(sideLeft + sideRight))/2;
   for(i = 0; i < 3; i++)
   {
-    get_side_ir_dists(&sideLeft, &sideRight);
+    getSideIR(&sideLeft, &sideRight);
     if((sideLeft < MAX_IR_RANGE) && (sideRight < MAX_IR_RANGE))
       targetIR = ((double)(sideLeft + sideRight))/2;
     turnByAngleDegree(-90.00);
 	  usleep(400000);
     adjustAngle();
     usleep(400000);
-    adjustCoordinates();
+    adjustPosition();
     usleep(400000);
   }
   turnByAngleDegree(-90.00);
@@ -90,6 +90,7 @@ void updateCoordinates(XY crs, int US, int value, int side)
    {
      xPos = crs.x * SECTOR_WIDTH - IROffSet * side; //
      yPos = crs.y * SECTOR_WIDTH; //
+     // bearing = 0;
      printf("case north, side: %d \n", side);
    }
     
@@ -97,6 +98,7 @@ void updateCoordinates(XY crs, int US, int value, int side)
    {
      xPos = crs.x * SECTOR_WIDTH; //
      yPos = crs.y * SECTOR_WIDTH + IROffSet * side; //
+     // bearing = M_PI/2;
         printf("case east, side: %d \n", side);
    }
     
@@ -104,6 +106,7 @@ void updateCoordinates(XY crs, int US, int value, int side)
    {
      xPos = crs.x * SECTOR_WIDTH + IROffSet * side; //
      yPos = crs.y * SECTOR_WIDTH; //
+     // bearing = M_PI;
         printf("case south, side: %d \n", side);
    }
     
@@ -111,15 +114,26 @@ void updateCoordinates(XY crs, int US, int value, int side)
    {
      xPos = crs.x * SECTOR_WIDTH; //
      yPos = crs.y * SECTOR_WIDTH - IROffSet * side;//
+     // bearing = - M_PI/2;
         printf("case west, side: %d \n", side);
    }
+   // reset_motor_encoders();
 }
 
-void correctPosition(XY crs)
+void correctPosition(XY currentSector)
 {
-  int wallCountNorth = maze[crs.x][crs.y].eastWall + maze[crs.x][crs.y].westWall; //sprawdza czy sa 2 przylegle sciany
-  int wallCountSouth = maze[crs.x][crs.y].eastWall + maze[crs.x][crs.y].westWall;
-  if(((maze[crs.x][crs.y].northWall) && (wallCountNorth > 0)) || ((maze[crs.x][crs.y].southWall) && (wallCountSouth > 0)))
+  int x = currentSector.x;
+  int y = currentSector.y;
+  int wallCountNorth = maze[x][y].eastWall + maze[x][y].westWall; //sprawdza czy sa 2 przylegle sciany
+  int wallCountSouth = maze[x][y].eastWall + maze[x][y].westWall;
+  // int wallCount = maze[x][y].eastWall + maze[x][y].westWall + maze[x][y].southWall + maze[x][y].northWall;
+  // if(wallCount > 2)
+  // {
+
+
+  // }
+
+  if(((maze[x][y].northWall) && (wallCountNorth > 0)) || ((maze[x][y].southWall) && (wallCountSouth > 0)))
   {
     adjustAngle();
     int ultraSound = get_us_dist();
@@ -133,20 +147,20 @@ void correctPosition(XY crs)
     set_ir_angle(LEFT, -45);
     set_ir_angle(RIGHT, 45); 
     usleep(1000000);
-    int sideLeft, sideRight;
-    int frontLeft, frontRight;
-    get_side_ir_dists(&sideLeft, &sideRight);
-    get_front_ir_dists(&frontLeft, &frontRight);
+    double sideLeft, sideRight;
+    double frontLeft, frontRight;
+    getSideIR(&sideLeft, &sideRight);
+    getFrontIR(&frontLeft, &frontRight);
     if((sideLeft < MAX_IR_RANGE) && (frontLeft < MAX_IR_RANGE))
     {
       int leftValue = ((double)(sideLeft + frontLeft))/2;
-      updateCoordinates(crs, ultraSound, leftValue, LEFT_SIDE);
+      updateCoordinates(currentSector, ultraSound, leftValue, LEFT_SIDE);
     }
 
     else if((sideRight < MAX_IR_RANGE) && (frontRight < MAX_IR_RANGE))
     {
       int rightValue = ((double)(sideRight + frontRight))/2;
-      updateCoordinates(crs, ultraSound,rightValue,RIGHT_SIDE);
+      updateCoordinates(currentSector, ultraSound,rightValue,RIGHT_SIDE);
     }
 
   }
@@ -169,7 +183,7 @@ void goToXY(XY destination)
   {
 	  set_point(xPos,yPos);
 	  log_trail();
-    printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
+    // printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
 //     printf("remain %.2f\n", remainingDistance);
     updateRobotPosition(); 
   	xDifference = xCoordinate - xPos;
@@ -224,4 +238,4 @@ void endPhase1()
 	set_ir_angle(RIGHT, -90);
 	sleep(2);
 }
-	
+

@@ -119,10 +119,11 @@ void updateSector(Queue** currentPath)
 		maze[x][y].visited = 1;
 		set_ir_angle(LEFT, -45);
 		set_ir_angle(RIGHT, 45);  
-		usleep(1000000);
-		int frontLeftReading, frontRightReading, sideLeftReading, sideRightReading, ultraSound;
-		get_front_ir_dists(&frontLeftReading, &frontRightReading);
-		get_side_ir_dists(&sideLeftReading, &sideRightReading);
+		usleep(500000);
+		double frontLeftReading, frontRightReading, sideLeftReading, sideRightReading; 
+		int ultraSound;
+		getFrontIR(&frontLeftReading, &frontRightReading);
+		getSideIR(&sideLeftReading, &sideRightReading);
 		ultraSound = get_us_dist();
 		//printf("frontleft: %d, frontRight: %d, sideLeft: %d, sideRight: %d, US: %d", frontLeftReading, frontRightReading, sideLeftReading,sideRightReading,ultraSound);
 		int northWall = 0;

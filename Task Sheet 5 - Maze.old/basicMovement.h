@@ -1,1 +1,0 @@
-void turnByAngleDegree(double angle);

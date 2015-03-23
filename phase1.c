@@ -16,3 +16,33 @@ void printCurrentSector()
 	XY cs = getCurrentSector();
 	printf("DEBUG CUR\tX %d Y %d\n", cs.x, cs.y);
 }
+
+void getSideIR(double *left, double *right)
+{
+  int i;
+  for(i = 0; i < NUMBER_OF_READINGS; i++)
+  {
+  	printf("READING SIDE\n");
+  	int leftReading, rightReading;
+  	get_side_ir_dists(&leftReading, &rightReading);
+  	*left += leftReading;
+  	*right += rightReading;
+  }
+  *left /= NUMBER_OF_READINGS*1.0;
+  *right /= NUMBER_OF_READINGS*1.0;
+}
+
+void getFrontIR(double *left, double *right)
+{
+  int i;
+  for(i = 0; i < NUMBER_OF_READINGS; i++)
+  {
+  	printf("READING FRONT\n");
+  	int leftReading, rightReading;
+  	get_front_ir_dists(&leftReading, &rightReading);
+  	*left += leftReading;
+  	*right += rightReading;
+  }
+  *left /= NUMBER_OF_READINGS*1.0;
+  *right /= NUMBER_OF_READINGS*1.0;
+}
