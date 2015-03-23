@@ -15,7 +15,7 @@ void printfSector(XY s)
 
 // print Queue poszedl do phase1.map.c by kompilator sie nie burzyl
 
-
+// double xPos, yPos, bearing;
 int main() 
 {
 	connect_to_robot();
@@ -24,27 +24,30 @@ int main()
 	////////////////////////// phase1
 	Queue* currentPath = NULL;
 	XY current;
-	
-	centerStartingPosition();
+
 	XY first = {.x = 0, .y = 0};
-
-
 	maze[0][0].visited = 2;
+    pushFront(&currentPath, first);
 
-	pushFront(&currentPath, first);
-
+	centerStartingPosition();
 	while(current.y != -1 && current.x != -1)
 	{
-		if(current.x == 0 && current.y == 0) set_origin();
-		printf("BEING IN %d %d\n", current.x, current.y);
-		printQueue(currentPath);
+// 		printf("BEING IN %d %d\n", current.x, current.y);
+// 		printQueue(currentPath);
 		current = nextSector(&currentPath);
-		printfSector(current);
+// 		printfSector(current);
 		goToXY(current);
 		updateSector(&currentPath);
+		correctPosition(current);
+		if(current.x == 0 && current.y == 0) set_origin();
 	}
-
-// 	endPhase1();
+		
+	endPhase1();
+	Queue* optimalPath = calculateOptimalPath();
+	followPath(optimalPath);
+	
+	set_motors(0,0);
+	printf("FINISH\n");
 	/////////////////////////// 
 	
 	return 0;

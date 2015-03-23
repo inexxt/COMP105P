@@ -2,3 +2,4 @@
 
 void goToXY(XY destination);
 void centerStartingPosition();
+void correctPosition(XY current);
