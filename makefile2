@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-c -Wall
-SOURCES=calibrate.c phase1.c phase1.map.c phase1.move.c recordPosition.c picomms.c basicMovement.c
+SOURCES=mainCode.c phase1.c phase1.map.c phase1.move.c recordPosition.c picomms.c basicMovement.c
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=calibrate
+EXECUTABLE=mazeTask
 
 all:	$(SOURCES) $(EXECUTABLE)
 	

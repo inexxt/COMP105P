@@ -77,3 +77,11 @@ void followPath() //TODO add Queue* support void followPath(Queue* path)
     }
   }
 }
+
+Queue* calculateOptimalPath()
+{
+	Queue* oP = NULL;
+	XY current = {.x = -1, .y = 0};
+	
+	return oP;
+}

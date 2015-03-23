@@ -43,8 +43,8 @@ int main()
 	}
 		
 	endPhase1();
-	Queue* optimalPath = calculateOptimalPath();
-	followPath(optimalPath);
+// 	Queue* optimalPath = calculateOptimalPath();
+// 	followPath(optimalPath);
 	
 	set_motors(0,0);
 	printf("FINISH\n");
