@@ -29,3 +29,4 @@ int get_motor_encoders(int *leftenc, int *rightenc);
 void log_trail();
 void set_origin();
 void set_point(int x, int y);
+void reset_motor_encoders();

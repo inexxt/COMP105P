@@ -40,7 +40,7 @@ XY popFront(Queue** q) //pointer to pointer, because we want to modify the real 
 void pushFront(Queue** q, XY sxy) //not sure about this one (i don't know if malloc will modify q or just local copy)
 {
 	printf("ADDING sxy x %d y %d\n", sxy.x, sxy.y);
-	
+
 	if(*q == NULL)
 	{
 		*q = malloc(sizeof(Queue));
@@ -53,7 +53,7 @@ void pushFront(Queue** q, XY sxy) //not sure about this one (i don't know if mal
 	new_beginning->sxy = sxy;
 	new_beginning->next = (*q);
 	(*q) = new_beginning;
-	
+
 	maze[sxy.x][sxy.y].visited += 2;
 }
 
@@ -119,12 +119,13 @@ void updateSector(Queue** currentPath)
 		maze[x][y].visited = 1;
 		set_ir_angle(LEFT, -45);
 		set_ir_angle(RIGHT, 45);  
-		sleep(1);
-		int frontLeftReading, frontRightReading, sideLeftReading, sideRightReading, ultraSound;
-		get_front_ir_dists(&frontLeftReading, &frontRightReading);
-		get_side_ir_dists(&sideLeftReading, &sideRightReading);
+		usleep(500000);
+		double frontLeftReading, frontRightReading, sideLeftReading, sideRightReading; 
+		int ultraSound;
+		getFrontIR(&frontLeftReading, &frontRightReading);
+		getSideIR(&sideLeftReading, &sideRightReading);
 		ultraSound = get_us_dist();
-// 		printf("frontleft: %d, frontRight: %d, sideLeft: %d, sideRight: %d, US: %d", frontLeftReading, frontRightReading, sideLeftReading,sideRightReading,ultraSound);
+		//printf("frontleft: %d, frontRight: %d, sideLeft: %d, sideRight: %d, US: %d", frontLeftReading, frontRightReading, sideLeftReading,sideRightReading,ultraSound);
 		int northWall = 0;
 		int southWall = 0;
 		int westWall = 0;
@@ -213,7 +214,7 @@ void updateSector(Queue** currentPath)
 			pushFront(currentPath, (XY){.x = x+1, .y = y});
 		}
 		
-// 		printf("bearing: %.2f toDegree: %.2f\n", bearing, convertToDegrees(bearing));
+		printf("bearing: %.2f toDegree: %.2f\n", bearing, convertToDegrees(bearing));
 		
 		printf("DEBUG TYP\tN %d S %d E %d W %d\n", northType, southType, eastType, westType);
 		printf("DEBUG WAL\tN %d S %d E %d W %d\n", northWall, southWall, eastWall, westWall);
