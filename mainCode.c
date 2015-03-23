@@ -30,16 +30,24 @@ int main()
     pushFront(&currentPath, first);
 
 	centerStartingPosition();
+	int setOrigin = 1; // so it wouldnt try to set origin again
 	while(current.y != -1 && current.x != -1)
 	{
 // 		printf("BEING IN %d %d\n", current.x, current.y);
 // 		printQueue(currentPath);
 		current = nextSector(&currentPath);
 // 		printfSector(current);
+		printf("about to go to XY\n");
 		goToXY(current);
+		printf("about to updateSector\n");
 		updateSector(&currentPath);
+		printf("about to correctPosition\n");
 		correctPosition(current);
-		if(current.x == 0 && current.y == 0) set_origin();
+		if((current.x == 0 && current.y == 0) && (setOrigin))
+		{
+			set_origin();
+			setOrigin = 0;
+		}
 	}
 		
 	endPhase1();

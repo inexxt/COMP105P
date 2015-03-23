@@ -20,29 +20,41 @@ void printCurrentSector()
 void getSideIR(double *left, double *right)
 {
   int i;
-  for(i = 0; i < NUMBER_OF_READINGS; i++)
+  for(i = 0; i < NUMBER_OF_IR_READINGS; i++)
   {
-  	printf("READING SIDE\n");
+  	// printf("READING SIDE\n");
   	int leftReading, rightReading;
   	get_side_ir_dists(&leftReading, &rightReading);
   	*left += leftReading;
   	*right += rightReading;
   }
-  *left /= NUMBER_OF_READINGS*1.0;
-  *right /= NUMBER_OF_READINGS*1.0;
+  *left /= NUMBER_OF_IR_READINGS*1.0;
+  *right /= NUMBER_OF_IR_READINGS*1.0;
 }
 
 void getFrontIR(double *left, double *right)
 {
   int i;
-  for(i = 0; i < NUMBER_OF_READINGS; i++)
+  for(i = 0; i < NUMBER_OF_IR_READINGS; i++)
   {
-  	printf("READING FRONT\n");
+  	// printf("READING FRONT\n");
   	int leftReading, rightReading;
   	get_front_ir_dists(&leftReading, &rightReading);
   	*left += leftReading;
   	*right += rightReading;
   }
-  *left /= NUMBER_OF_READINGS*1.0;
-  *right /= NUMBER_OF_READINGS*1.0;
+  *left /= NUMBER_OF_IR_READINGS*1.0;
+  *right /= NUMBER_OF_IR_READINGS*1.0;
+}
+
+double getUSValue()
+{
+  double USValue;
+  int i;
+  for(i = 0; i < NUMBER_OF_US_READINGS; i++)
+  {
+    USValue += get_us_dist();
+  }
+  USValue /= NUMBER_OF_US_READINGS*1.0;
+  return USValue;
 }

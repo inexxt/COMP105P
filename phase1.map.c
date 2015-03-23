@@ -7,16 +7,16 @@ extern double bearing;
 
 void printQueue(Queue* q)
 {
-	printf("PRINTING QUEUE\n");
-	int i = 0;
-	Queue* current = q;
-	while (current != NULL)
-	{
-		int x = current->sxy.x;
-		int y = current->sxy.y;
-		if(x >= 0 && y >= 0) printf("Q[%d] : x %d y %d VIS %d\n", i, x, y, maze[x][y].visited);
-        current = current->next;
-    }
+	// printf("PRINTING QUEUE\n");
+	// int i = 0;
+	// Queue* current = q;
+	// while (current != NULL)
+	// {
+	// 	int x = current->sxy.x;
+	// 	int y = current->sxy.y;
+	// 	if(x >= 0 && y >= 0) printf("Q[%d] : x %d y %d VIS %d\n", i, x, y, maze[x][y].visited);
+ //        current = current->next;
+ //    }
 }
 
 XY popFront(Queue** q) //pointer to pointer, because we want to modify the real queue
@@ -141,15 +141,15 @@ void updateSector(Queue** currentPath)
 		if(convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) //first case - it's heading north
 		{
 				
-			if((frontLeftReading < SECTOR_WIDTH/2) || (sideLeftReading < SECTOR_WIDTH/2))
+			if((frontLeftReading < DETECT_WALL_DISTANCE) || (sideLeftReading < DETECT_WALL_DISTANCE))
 			{
 				westWall = 1;
 			}
-			if((frontRightReading < SECTOR_WIDTH/2) || (sideRightReading < SECTOR_WIDTH/2))
+			if((frontRightReading < DETECT_WALL_DISTANCE) || (sideRightReading < DETECT_WALL_DISTANCE))
 			{
 				eastWall = 1;
 			}
-			if(ultraSound < SECTOR_WIDTH/2)
+			if(ultraSound < DETECT_WALL_DISTANCE)
 			{
 				northWall = 1;
 			}
@@ -160,15 +160,15 @@ void updateSector(Queue** currentPath)
 		if(convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) //first case - it's heading north
 		{
 				
-			if((frontLeftReading < SECTOR_WIDTH/2) || (sideLeftReading < SECTOR_WIDTH/2))
+			if((frontLeftReading < DETECT_WALL_DISTANCE) || (sideLeftReading < DETECT_WALL_DISTANCE))
 			{
 				northWall = 1;
 			}
-			if((frontRightReading < SECTOR_WIDTH/2) || (sideRightReading < SECTOR_WIDTH/2))
+			if((frontRightReading < DETECT_WALL_DISTANCE) || (sideRightReading < DETECT_WALL_DISTANCE))
 			{
 				southWall = 1;
 			}
-			if(ultraSound < SECTOR_WIDTH/2)
+			if(ultraSound < DETECT_WALL_DISTANCE)
 			{
 				eastWall = 1;
 			}
@@ -179,15 +179,15 @@ void updateSector(Queue** currentPath)
 		if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165) //first case - it's heading north
 		{
 				
-			if((frontLeftReading < SECTOR_WIDTH/2) || (sideLeftReading < SECTOR_WIDTH/2))
+			if((frontLeftReading < DETECT_WALL_DISTANCE) || (sideLeftReading < DETECT_WALL_DISTANCE))
 			{
 				eastWall = 1;
 			}
-			if((frontRightReading < SECTOR_WIDTH/2) || (sideRightReading < SECTOR_WIDTH/2))
+			if((frontRightReading < DETECT_WALL_DISTANCE) || (sideRightReading < DETECT_WALL_DISTANCE))
 			{
 				westWall = 1;
 			}
-			if(ultraSound < SECTOR_WIDTH/2)
+			if(ultraSound < DETECT_WALL_DISTANCE)
 			{
 				southWall = 1;
 			}
@@ -198,15 +198,15 @@ void updateSector(Queue** currentPath)
 		if(convertToDegrees(bearing) < 285 && convertToDegrees(bearing) > 255) //first case - it's heading north
 		{
 				
-			if((frontLeftReading < SECTOR_WIDTH/2) || (sideLeftReading < SECTOR_WIDTH/2))
+			if((frontLeftReading < DETECT_WALL_DISTANCE) || (sideLeftReading < DETECT_WALL_DISTANCE))
 			{
 				southWall = 1;
 			}
-			if((frontRightReading < SECTOR_WIDTH/2) || (sideRightReading < SECTOR_WIDTH/2))
+			if((frontRightReading < DETECT_WALL_DISTANCE) || (sideRightReading < DETECT_WALL_DISTANCE))
 			{
 				northWall = 1;
 			}
-			if(ultraSound < SECTOR_WIDTH/2)
+			if(ultraSound < DETECT_WALL_DISTANCE)
 			{
 				westWall = 1;
 			}

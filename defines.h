@@ -14,7 +14,12 @@
 
 #define MAZE_WIDTH 4
 #define MAZE_HEIGHT 4
-#define NUMBER_OF_READINGS 16
+#define NUMBER_OF_IR_READINGS 16
+#define NUMBER_OF_US_READINGS 4
+
+#define SLEEPTIME 400000
+
+#define DETECT_WALL_DISTANCE 32
 
 extern double xPos;
 extern double yPos;
