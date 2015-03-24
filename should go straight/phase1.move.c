@@ -2,10 +2,10 @@
 #include "phase1.map.h"
 #include "basicMovement.h"
 
-#define US_OFFSET 4 //difference between av. IR and US (simulator - 2, real robot ~ 6) - zeby latwiej bylo zmieniac
+#define US_OFFSET 2 //difference between av. IR and US (simulator - 2, real robot ~ 6) - zeby latwiej bylo zmieniac
 #define ADJUST_IR_ANGLE 25
 #define MIN_IR_RANGE 12
-#define MAX_IR_RANGE 34
+#define MAX_IR_RANGE 36
 #define SENSOR_THRESHOLD 0.9
 
 double xPos, yPos, bearing;
@@ -20,14 +20,14 @@ void goToSafeWallDistance()
   getFrontIR(&frontLeftIR, &frontRightIR);
   while((frontLeftIR > MAX_IR_RANGE) || (frontRightIR > MAX_IR_RANGE))
   {
-  	printf("greater than max\n");
+  	// printf("greater than max\n");
     set_motors(movementSpeed,movementSpeed);
     getFrontIR(&frontLeftIR, &frontRightIR);
   }
   set_motors(0,0);
   while((frontLeftIR < MIN_IR_RANGE) || (frontRightIR < MIN_IR_RANGE))
   {
-  	printf("less than min\n");
+  	// printf("less than min\n");
     set_motors(-movementSpeed,-movementSpeed);
     getFrontIR(&frontLeftIR, &frontRightIR);
   }
@@ -52,11 +52,11 @@ void adjustAngle()
     if(sensorDifference < -10)
       sensorDifference = -10;
     else if(sensorDifference < 0)
-      sensorDifference = -5;
+      sensorDifference = -2;
     else if(sensorDifference > 10)
       sensorDifference = 10;
     else if(sensorDifference > 0)
-      sensorDifference = 5;
+      sensorDifference = 2;
     set_motors(sensorDifference, -sensorDifference);
   }
   set_motors(0,0);
@@ -227,14 +227,24 @@ void correctPosition(XY currentSector)
 void centerStartingPosition()
 {
   double frontLeftIR, frontRightIR, sideLeftIR, sideRightIR;
+  turnByAngleDegree(180.00);
+  adjustAngle();
   set_ir_angle(LEFT, -45);
   set_ir_angle(RIGHT, 45);    
   usleep(SLEEPTIME);
   getFrontIR(&frontLeftIR, &frontRightIR);
   getSideIR(&sideLeftIR, &sideRightIR);
   targetIR = (frontLeftIR + frontRightIR + sideLeftIR + sideRightIR)/4;
+  adjustWallDistance();
+  turnByAngleDegree(90.00);
+  adjustAngle();
+  adjustWallDistance();
   turnByAngleDegree(180.00);
-  correctPositionDeadEnd();
+  adjustAngle();
+  printf("I SHOULDNT MOVE IF I MOVE CORRECT US_OFFSET!!\n");
+  adjustWallDistance();
+  turnByAngleDegree(-90.00);
+
   bearing = 0; // so that the bearing would be affected by this movement (so we would know it's slightly off ( important!))
   updateRobotPosition();
   
@@ -242,6 +252,12 @@ void centerStartingPosition()
   xPos = 0;
   yPos = -SECTOR_WIDTH;
   updateRobotPosition();
+
+
+
+
+
+
 }
 
 void goToXY(XY destination)
@@ -283,14 +299,14 @@ void goToXY(XY destination)
 		  set_point(xPos,yPos);
 		  log_trail();
           int speed = requiredAngleChange*35.0;
-          if(speed < -10)
-    	    speed = -10;
+          if(speed < -15)
+    	    speed = -15;
     	  else if(speed < 0)
-    	    speed = -2;
-    	  else if(speed > 10)
-    	    speed = 10;
+    	    speed = -8;
+    	  else if(speed > 15)
+    	    speed = 15;
    		  else if(speed > 0)
-    	    speed = 2;
+    	    speed = 8;
           updateRobotPosition(); 
           requiredAngleChange = atan2(xDifference,yDifference) - bearing;
           while(requiredAngleChange > (M_PI))
