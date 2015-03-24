@@ -292,6 +292,7 @@ void goToXY(XY destination)
     // printf("angleCh: %f, bearing: %f\n",requiredAngleChange,bearing);
     remainingDistance = sqrt(xDifference*xDifference + yDifference*yDifference);
 
+	
     if(fabs(requiredAngleChange) > 1.2) 
     {
     	while(fabs(requiredAngleChange) > 0.03)
@@ -333,9 +334,19 @@ void goToXY(XY destination)
 
 void endPhase1()
 {
-	// juz sie obracam na koncu wiec wywalilem //DANGER nie obracasz sie
 	set_ir_angle(LEFT, 90);
 	set_ir_angle(RIGHT, -90);
 	sleep(2);
+}
+
+void bumpers()
+{
+	if(check_bump(LEFT) == 1 || check_bump(RIGHT) == 1)
+	{
+		printf("\t\tBUMPER HIT\n");
+		set_motors(-10,-10);
+		usleep(1000000);
+		set_motors(0,0);
+	}
 }
 

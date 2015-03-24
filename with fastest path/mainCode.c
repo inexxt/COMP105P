@@ -25,8 +25,8 @@ void printfMaze()
 
 int main() 
 {
-// 	connect_to_robot();
-// 	initialize_robot();
+	connect_to_robot();
+	initialize_robot();
 // 	printf("beginning\n");
 // 	////////////////////////// phase1
 // 	Queue* currentPath = NULL;
@@ -36,7 +36,7 @@ int main()
 // 	maze[0][0].visited = 2;
 //     pushFront(&currentPath, first);
 // 
-// 	centerStartingPosition();
+	centerStartingPosition();
 // 	int setOrigin = 1; // so it wouldnt try to set origin again
 // 	while(current.y != -1 && current.x != -1)
 // 	{
@@ -82,6 +82,12 @@ int main()
 	maze[3][3] = (Sector){1, 1, 0, 1, 1};
 
 	Queue* a = calculateOptimalPath();
+	
+	while(!isEmpty(a))
+	{
+		goToXY(popFront(&a));
+	}
+	
 	/////////////////////////// 
 	
 	return 0;

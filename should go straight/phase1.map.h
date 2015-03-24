@@ -1,9 +1,9 @@
 #include "phase1.h"
 
-//void initialiseMaze();
 void updateSector(Queue** currentPath);
 XY nextSector(Queue** currentPath);
-// struct queue currentPath;
 void pushFront(Queue** q, XY sxy);
+XY popFront(Queue** q);
+int isEmpty(Queue* q);
 double convertToDegrees(double radians);
 void printQueue(Queue* q);

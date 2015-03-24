@@ -22,4 +22,3 @@ void turnByAngleDegree(double angle)
   }
   set_motors(0,0);
 }
-

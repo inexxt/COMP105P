@@ -1,7 +1,7 @@
 #include "defines.h"
 #include "phase1.map.h"
 #include "phase1.move.h"
-//#include "phase2.h"
+#include "phase2.h"
 
 void debug()
 {
@@ -51,9 +51,13 @@ int main()
 	}
 		
 	endPhase1();
-// 	Queue* optimalPath = calculateOptimalPath();
-// 	followPath(optimalPath);
 	
+	Queue* a = calculateOptimalPath();
+	while(!isEmpty(a))
+	{
+		goToXY(popFront(&a));
+	}
+
 	set_motors(0,0);
 	printf("FINISH\n");
 	/////////////////////////// 
