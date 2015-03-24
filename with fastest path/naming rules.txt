@@ -1,0 +1,4 @@
+functions - first lowercase, then every word capitalised
+vars - whole lowercase, underline instead of space
+consts - uppercase
+types - capitalised
