@@ -81,12 +81,7 @@ int main()
 	maze[3][2] = (Sector){1, 0, 0, 1, 1};
 	maze[3][3] = (Sector){1, 1, 0, 1, 1};
 
-	Queue* a = calculateOptimalPath();
-	
-	while(!isEmpty(a))
-	{
-		goToXY(popFront(&a));
-	}
+
 	
 	/////////////////////////// 
 	

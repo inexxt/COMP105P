@@ -174,6 +174,52 @@ void correctPositionParallelWalls()
   usleep(SLEEPTIME);
 }
 
+void singleWallCase(XY currentSector)
+{
+  int x = currentSector.x;
+  int y = currentSector.y;
+  double angleToTurn;
+  turnByAngleDegree(-convertToDegrees(bearing));
+  // printf("OBRACAM O: %.2f", -bearing);
+  // int z;
+  // scanf("%d",&z);
+  if(maze[x][y].northWall)
+  {
+	angleToTurn = 0.0;
+  }
+  else if(maze[x][y].southWall)
+  {
+  	angleToTurn = 180.0;
+  }
+  else if(maze[x][y].eastWall)
+  {
+  	angleToTurn = 90.0;
+  }
+  else if(maze[x][y].westWall)
+  {
+  	angleToTurn = -90.0;
+  }
+
+  if(angleToTurn > 180)
+  { 
+ 	angleToTurn -= 360;
+  }
+  else if(angleToTurn < -180)
+  {
+  	angleToTurn += 360;
+  }
+
+
+	turnByAngleDegree(angleToTurn);
+
+  // printf("OBRACAM O: %.2f", angleToTurn);
+  // scanf("%d",&z);
+
+  	adjustAngle();
+  	adjustWallDistance();
+  	bearing = -(angleToTurn * M_PI / 180);
+}
+
 void correctPosition(XY currentSector)
 {
   int x = currentSector.x;
@@ -197,6 +243,7 @@ void correctPosition(XY currentSector)
   	xPos = x * SECTOR_WIDTH;
   	yPos = y * SECTOR_WIDTH;
   }
+
   else if((xAxisWalls) && (yAxisWalls))
   {
   	printf("CASE 2\n");
@@ -206,22 +253,27 @@ void correctPosition(XY currentSector)
   	xPos = x * SECTOR_WIDTH;
   	yPos = y * SECTOR_WIDTH;
   }
-  // else if(wallCount == 2) // z jakiegos powodu robot tego nie lubi i w ogole sie gubi
-  // {
-  // 	printf("CASE 3\n");
-  // 	correctPositionParallelWalls();
-  // 	updateRobotPosition();
-  //   printf("unupdated: X: %f, Y: %f\n",xPos,yPos);
-  // 	if((convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) || (convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165))
-  // 	{
-  //     xPos = x * SECTOR_WIDTH;
-  //   }
+  else if(wallCount == 2) // z jakiegos powodu robot tego nie lubi i w ogole sie gubi
+  {
+  	printf("CASE 3\n");
+  	correctPositionParallelWalls();
+  	updateRobotPosition();
+    printf("unupdated: X: %f, Y: %f\n",xPos,yPos);
+  	if((convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) || (convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165))
+  	{
+      xPos = x * SECTOR_WIDTH;
+    }
     
-  //   if((convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) || (convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165))
-  //   {
-  //     yPos = y * SECTOR_WIDTH;
-  //   }
-  // }  
+    if((convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) || (convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165))
+    {
+      yPos = y * SECTOR_WIDTH;
+    }
+    printf("after update: x: %.2f y: %.2f\n",xPos,yPos);
+  }
+  else if(wallCount == 1)
+  {
+   singleWallCase(currentSector);
+  }
 }
 
 void centerStartingPosition()
@@ -270,11 +322,12 @@ void goToXY(XY destination)
   double xCoordinate = destination.x * SECTOR_WIDTH; //TODO
   double yCoordinate = destination.y * SECTOR_WIDTH; //TODO
   //printf("\nCoordinates: %f\t%f", xCoordinate,yCoordinate); // debug
-  printf("\n BEARING %.2f", bearing); // debug
+  // printf("\n BEARING %.2f", bearing); // debug
   while ((fabs(remainingDistance)) > 3) // value to change
   {	
     set_point(xPos,yPos);
     log_trail();
+      printf("\n BEARING %.2f", bearing); // debug
     // printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
 //     printf("remain %.2f\n", remainingDistance);
     updateRobotPosition(); 
