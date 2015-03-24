@@ -2,6 +2,10 @@
 #include "phase1.map.h"
 #include "basicMovement.h"
 
+
+//TODO: wywalic updaterobotposition();
+//TODO: update gotoXY();
+
 #define US_OFFSET 2 //difference between av. IR and US (simulator - 2, real robot ~ 6) - zeby latwiej bylo zmieniac
 #define ADJUST_IR_ANGLE 25
 #define MIN_IR_RANGE 12
@@ -179,7 +183,7 @@ void singleWallCase(XY currentSector)
   int x = currentSector.x;
   int y = currentSector.y;
   double angleToTurn;
-  turnByAngleDegree(-convertToDegrees(bearing));
+  turnByAngleDegree((-convertToDegrees(bearing)));
   // printf("OBRACAM O: %.2f", -bearing);
   // int z;
   // scanf("%d",&z);
@@ -217,7 +221,9 @@ void singleWallCase(XY currentSector)
 
   	adjustAngle();
   	adjustWallDistance();
-  	bearing = -(angleToTurn * M_PI / 180);
+    turnByAngleDegree(-angleToTurn);
+    updateRobotPosition();
+  	bearing = 0;
 }
 
 void correctPosition(XY currentSector)
