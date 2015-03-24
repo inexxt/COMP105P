@@ -7,16 +7,16 @@ extern double bearing;
 
 void printQueue(Queue* q)
 {
-	// printf("PRINTING QUEUE\n");
-	// int i = 0;
-	// Queue* current = q;
-	// while (current != NULL)
-	// {
-	// 	int x = current->sxy.x;
-	// 	int y = current->sxy.y;
-	// 	if(x >= 0 && y >= 0) printf("Q[%d] : x %d y %d VIS %d\n", i, x, y, maze[x][y].visited);
- //        current = current->next;
- //    }
+	printf("PRINTING QUEUE\n");
+	int i = 0;
+	Queue* current = q;
+	while (current != NULL)
+	{
+		int x = current->sxy.x;
+		int y = current->sxy.y;
+		if(x >= 0 && y >= 0) printf("Q[%d] : x %d y %d VIS %d\n", i, x, y, maze[x][y].visited);
+        current = current->next;
+    }
 }
 
 XY popFront(Queue** q) //pointer to pointer, because we want to modify the real queue
