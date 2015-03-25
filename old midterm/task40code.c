@@ -11,9 +11,9 @@
 #include <math.h>
 
 #define CORNER_DISTANCE 23
-#define DISTANCE_TO_KEEP_SIDE 24
-#define DISTANCE_TO_KEEP_FRONT 33
-#define MEDIUM_SPEED 50
+#define DISTANCE_TO_KEEP_SIDE 20
+#define DISTANCE_TO_KEEP_FRONT 25
+#define MEDIUM_SPEED 30
 #define DISTANCE_TO_STOP_AT 16
 #define MINIMUM_DISTANCE_BETWEEN_POINTS 300
 
@@ -26,8 +26,8 @@ int usValue = 0;
 double bearing = 0.0000;
 double xPos = 0.0000;
 double yPos = 0.0000;
-double xStorage[2000];
-double yStorage[2000];
+double xStorage[20000];
+double yStorage[20000];
 int size = 1;
 
 void updateIRSensors()
@@ -71,12 +71,20 @@ void storeCoordinates(int *storageSize)
     *(yStorage + size) = yPos;
 }
 
+void goBackALittle()
+{
+	set_motors(-3, -3);
+	usleep(500000);
+	set_motors(0,0);
+}
+
 void followLeft()
 { 
   int leftSpeed, rightSpeed;
   int differenceSide, differenceFront;
   double theConstantLeft, theConstantRight;
   int storageSize = 1;
+  int vaar = 1;
   while(1)
   {
     updateRobotPosition(&bearing, &xPos, &yPos);
@@ -94,10 +102,11 @@ void followLeft()
       differenceSide = -30;
       theConstantLeft = 0.10; 
     }
-    if(differenceFront > 30)
+    if(differenceFront > 10)
     {
-      differenceFront = 30;
-      theConstantRight = 0.90;
+//       differenceFront = 15;
+//       theConstantRight = 0.90;
+		vaar = 0;
     }
 
     if(differenceFront < -8)
@@ -105,10 +114,22 @@ void followLeft()
       theConstantRight = 1.6;
       theConstantLeft = 1.2;
     }
-
-    leftSpeed = MEDIUM_SPEED + MEDIUM_SPEED * ((double)differenceSide/DISTANCE_TO_KEEP_SIDE*theConstantLeft);
-    rightSpeed = MEDIUM_SPEED + MEDIUM_SPEED * ((double)differenceFront/DISTANCE_TO_KEEP_FRONT*theConstantRight);
- 
+   
+	if(vaar)
+	{
+		leftSpeed = MEDIUM_SPEED + MEDIUM_SPEED * ((double)differenceSide/DISTANCE_TO_KEEP_SIDE*theConstantLeft);
+		rightSpeed = MEDIUM_SPEED + MEDIUM_SPEED * ((double)differenceFront/DISTANCE_TO_KEEP_FRONT*theConstantRight);
+	}
+	else
+	{
+		if(differenceSide < -10)
+			leftSpeed = 5;
+		else
+			leftSpeed = 18;
+		rightSpeed = 30;
+		vaar = 1;
+	}
+	printf("%d %d %d %d\n", leftSpeed, rightSpeed, differenceFront, differenceSide);
     set_motors(leftSpeed,rightSpeed);
 
     if(frontRightIR < CORNER_DISTANCE)
@@ -119,7 +140,8 @@ void followLeft()
       {
         slowDown();
         set_motors(0,0);
-        break;
+		goBackALittle();
+        turnRight();
       }
     } 
     size++;
@@ -210,7 +232,7 @@ int main()
   initialize_robot();
   set_origin();
 
-  set_ir_angle(LEFT, 0);
+  set_ir_angle(LEFT, -16);
   set_ir_angle(RIGHT, -75);   
   //xStorage = malloc(sizeof(double) * 1);
   //yStorage = malloc(sizeof(double) * 1);
