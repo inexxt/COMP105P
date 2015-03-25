@@ -14,7 +14,7 @@
 #define DISTANCE_TO_KEEP_SIDE 20
 #define DISTANCE_TO_KEEP_FRONT 25
 #define MEDIUM_SPEED 30
-#define DISTANCE_TO_STOP_AT 16
+#define DISTANCE_TO_STOP_AT 24
 #define MINIMUM_DISTANCE_BETWEEN_POINTS 300
 
 int frontLeftIR = 0;
@@ -23,9 +23,9 @@ int sideLeftIR = 0;
 
 int sideRightIR = 0;
 int usValue = 0;
-double bearing = 0.0000;
-double xPos = 0.0000;
-double yPos = 0.0000;
+extern double bearing = 0.0000;
+extern double xPos = 0.0000;
+extern double yPos = 0.0000;
 double xStorage[20000];
 double yStorage[20000];
 int size = 1;
@@ -73,9 +73,9 @@ void storeCoordinates(int *storageSize)
 
 void goBackALittle()
 {
-	set_motors(-3, -3);
-	usleep(500000);
-	set_motors(0,0);
+// 	set_motors(-3, -3);
+// 	usleep(500000);
+// 	set_motors(0,0);
 }
 
 void followLeft()
@@ -245,7 +245,7 @@ int main()
   showCoordinates();
   printf("Final coordinates: X: %f \t Y: %f\n",xPos,yPos);
   printf("Distance from origin: %f mm\n", (sqrt(xPos*xPos + yPos * yPos)));
-  printf("at angle: %f (radians) or %f (degrees) \n", bearing, (toDegree(bearing)));
+//   printf("at angle: %f (radians) or %f (degrees) \n", bearing, (toDegree(bearing)));
 
   set_motors(0,0);
   printf("Trying to go back...\n");
