@@ -88,22 +88,29 @@ typedef struct
 } Elem;
 
 int visited[4][4]; //1 - visited, 2 - added to q
+int checker = 1;
 
 int available(XY s, XY sp, int dir)
 {	
-	int x = s.x;
-	int y = s.y;
-	int xp = sp.x;
-	int yp = sp.y;
-// 	printf("AVAIL X %d Y %d type %d\n", x, y, type);
-	if(x > MAZE_WIDTH - 1 || x < 0 || y > (MAZE_HEIGHT - 1) || y < 0) return 0;
-	if(dir == 1 && maze[xp][yp].northWall != 0) return 0;
-	if(dir == 2 && maze[xp][yp].southWall != 0) return 0;
-	if(dir == 3 && maze[xp][yp].westWall != 0) return 0;
-	if(dir == 4 && maze[xp][yp].eastWall != 0) return 0;
-	if(visited[x][y] != 0) return 0; //checking if visited only if i want to explore it - if that's my return path, do not do that
-	printf("Adding (%d %d) from (%d %d)\n", x,y,xp,yp);
-	return 1;
+	if(checker)
+	{
+		int x = s.x;
+		int y = s.y;
+		int xp = sp.x;
+		int yp = sp.y;
+	// 	printf("AVAIL X %d Y %d type %d\n", x, y, type);
+		if(x > MAZE_WIDTH - 1 || x < 0 || y > (MAZE_HEIGHT - 1) || y < 0) return 0;
+		if(dir == 1 && maze[xp][yp].northWall != 0) return 0;
+		if(dir == 2 && maze[xp][yp].southWall != 0) return 0;
+		if(dir == 3 && maze[xp][yp].westWall != 0) return 0;
+		if(dir == 4 && maze[xp][yp].eastWall != 0) return 0;
+		if(visited[x][y] != 0) return 0; //checking if visited only if i want to explore it - if that's my return path, do not do that
+		printf("Adding (%d %d) from (%d %d)\n", x,y,xp,yp);
+		if(x == 3 && y == 3) checker = 0;
+		return 1;
+	}
+	else 
+		return 0;
 }
 
 Queue* calculateOptimalPath()
@@ -122,8 +129,10 @@ Queue* calculateOptimalPath()
 	q[0].act = cur;
 	q[0].prev = -1;
 	
-	while(!(cur.x == 3 && cur.y == 3))
+	while(checker)
 	{
+		cur = q[currctr].act;
+		
 		int x = cur.x;
 		int y = cur.y;
 		visited[x][y] = 1;
@@ -150,7 +159,6 @@ Queue* calculateOptimalPath()
 			visited[x][y-1] = 2;
 		}
 		currctr++;
-		cur = q[currctr].act;
 	}
 	
 	for(i = 0; i<16; i++)
@@ -159,10 +167,10 @@ Queue* calculateOptimalPath()
 	counter--;
 	while(!(cur.x == 0 && cur.y == 0))
 	{
+		cur = q[counter].act;
 		printf("counter %d\n", counter);
 		pushFront(&oP, cur);
 		counter = q[counter].prev;
-		cur = q[counter].act;
 	}
 	pushFront(&oP, (XY){0,0});
 	
