@@ -1,6 +1,6 @@
 #include "defines.h"
 
-int leftEncoder,rightEncoder;
+int leftEncoder,rightEncoder; 
 int previousLeftEncoder = 0;
 int previousRightEncoder = 0;
 double xPos, yPos, bearing; // global variables from extern in defines.h
@@ -42,8 +42,8 @@ void updateRobotPosition()
 
 	double leftOffset = (double)leftEncoder - previousLeftEncoder;
 	double rightOffset = (double)rightEncoder - previousRightEncoder;
-	double distanceLeft = leftOffset * (CIRCUMFERENCE/360);
-	double distanceRight = rightOffset * (CIRCUMFERENCE/360);
+	double distanceLeft = leftOffset * (CIRCUMFERENCE/360.0);
+	double distanceRight = rightOffset * (CIRCUMFERENCE/360.0);
 
 	updateAngle(distanceLeft, distanceRight);
 	updateX(distanceLeft, distanceRight);

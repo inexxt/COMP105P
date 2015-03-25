@@ -30,6 +30,17 @@ int main()
     pushFront(&currentPath, first);
 
 	centerStartingPosition();
+
+	// XY second = {.x = 0, .y = 1};
+	// XY third = {.x = 1, .y = 1};
+
+	// goToXY(first);
+	// set_motors(0,0);
+	// goToXY(second);
+	// 	set_motors(0,0);
+	// goToXY(third);
+	// 	set_motors(0,0);
+
 	int setOrigin = 1; // so it wouldnt try to set origin again
 	while(current.y != -1 && current.x != -1)
 	{
@@ -57,10 +68,18 @@ int main()
 	{
 		goToXY(popFront(&a));
 	}
-
 	set_motors(0,0);
+	
+	double frontLeft, frontRight;
+	getFrontIR(&frontLeft, &frontRight);
+	if(((frontLeft+frontRight)/2) < (SECTOR_WIDTH/2))
+	{
+		set_motors(2,2);
+		sleep(2);
+		set_motors(0,0);
+	}
 	printf("FINISH\n");
-	/////////////////////////// 
+	///////////////////////// 
 	
 	return 0;
 }

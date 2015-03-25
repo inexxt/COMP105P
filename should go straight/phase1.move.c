@@ -10,12 +10,15 @@
 #define ADJUST_IR_ANGLE 25
 #define MIN_IR_RANGE 12
 #define MAX_IR_RANGE 36
-#define SENSOR_THRESHOLD 0.9
+#define SENSOR_THRESHOLD 0.2
 
 double xPos, yPos, bearing;
 int targetIR = SECTOR_WIDTH/2 - ROBOT_WIDTH/2; //INICJALIZACJA TYLKO -> POTEM SIE WARTOSC ZMIENIA/POPRAWIA // wiem ze mozna jako lokanlna, ale wg. mnie w ten sposob jest bardziej czytelne i dostepne
 // dotyczy side sensorow, front : side + 2;
 int targetUS;
+
+
+
 
 void goToSafeWallDistance()
 {
@@ -27,6 +30,12 @@ void goToSafeWallDistance()
   	// printf("greater than max\n");
     set_motors(movementSpeed,movementSpeed);
     getFrontIR(&frontLeftIR, &frontRightIR);
+    // if((frontLeftIR < MIN_IR_RANGE) || (frontRightIR < MIN_IR_RANGE))
+    // {
+    //   set_motors(0,0);
+    //   turnByAngleDegree(-15.00);
+    //   usleep(SLEEPTIME);
+    // }
   }
   set_motors(0,0);
   while((frontLeftIR < MIN_IR_RANGE) || (frontRightIR < MIN_IR_RANGE))
@@ -34,6 +43,12 @@ void goToSafeWallDistance()
   	// printf("less than min\n");
     set_motors(-movementSpeed,-movementSpeed);
     getFrontIR(&frontLeftIR, &frontRightIR);
+    // if((frontLeftIR < MAX_IR_RANGE) || (frontRightIR < MAX_IR_RANGE))
+    // {
+    //   set_motors(0,0);
+    //   turnByAngleDegree(-15.00);
+    //   usleep(SLEEPTIME);
+    // }
   }
   set_motors(0,0);
 }
@@ -95,7 +110,9 @@ void adjustWallDistance()
 void correctPositionPerpendicularWalls()
 {
   adjustAngle();
+  usleep(SLEEPTIME);
   adjustWallDistance();
+  usleep(SLEEPTIME);
 
   set_ir_angle(LEFT, -45);
   set_ir_angle(RIGHT, 45); 
@@ -182,48 +199,46 @@ void singleWallCase(XY currentSector)
 {
   int x = currentSector.x;
   int y = currentSector.y;
-  double angleToTurn;
-  turnByAngleDegree((-convertToDegrees(bearing)));
-  // printf("OBRACAM O: %.2f", -bearing);
-  // int z;
-  // scanf("%d",&z);
+  double angleToTurn = -(convertToDegrees(bearing));
+
   if(maze[x][y].northWall)
   {
-	angleToTurn = 0.0;
+	  angleToTurn += 0.0;
   }
   else if(maze[x][y].southWall)
   {
-  	angleToTurn = 180.0;
+  	angleToTurn += 180.0;
   }
   else if(maze[x][y].eastWall)
   {
-  	angleToTurn = 90.0;
+  	angleToTurn += 90.0;
   }
   else if(maze[x][y].westWall)
   {
-  	angleToTurn = -90.0;
+  	angleToTurn += -90.0;
   }
 
-  if(angleToTurn > 180)
+  while(angleToTurn > 180)
   { 
- 	angleToTurn -= 360;
+ 	  angleToTurn -= 360;
   }
-  else if(angleToTurn < -180)
+  while(angleToTurn < -180)
   {
   	angleToTurn += 360;
   }
 
-
+  usleep(SLEEPTIME);
 	turnByAngleDegree(angleToTurn);
 
   // printf("OBRACAM O: %.2f", angleToTurn);
   // scanf("%d",&z);
-
+  usleep(SLEEPTIME);
   	adjustAngle();
+      usleep(SLEEPTIME);
   	adjustWallDistance();
-    turnByAngleDegree(-angleToTurn);
-    updateRobotPosition();
-  	bearing = 0;
+      usleep(SLEEPTIME);
+
+
 }
 
 void correctPosition(XY currentSector)
@@ -240,8 +255,10 @@ void correctPosition(XY currentSector)
   printf("SOUTH KURWA WALL: %d\n", maze[x][y].southWall);
     printf("**************************\n");
   printf("wall count: %d \n", wallCount);
+  int updated = 0;
   if(wallCount == 3)
   {	
+    updated = 1;
   	printf("CASE 1\n");
   	correctPositionDeadEnd();
   	updateRobotPosition();
@@ -252,6 +269,7 @@ void correctPosition(XY currentSector)
 
   else if((xAxisWalls) && (yAxisWalls))
   {
+    updated = 1;
   	printf("CASE 2\n");
 	correctPositionPerpendicularWalls();
 	updateRobotPosition();
@@ -261,25 +279,51 @@ void correctPosition(XY currentSector)
   }
   else if(wallCount == 2) // z jakiegos powodu robot tego nie lubi i w ogole sie gubi
   {
+    updated = 1;
   	printf("CASE 3\n");
   	correctPositionParallelWalls();
   	updateRobotPosition();
     printf("unupdated: X: %f, Y: %f\n",xPos,yPos);
-  	if((convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) || (convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165))
+  	if(yAxisWalls)
   	{
       xPos = x * SECTOR_WIDTH;
     }
     
-    if((convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) || (convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165))
+    else if(xAxisWalls)
     {
       yPos = y * SECTOR_WIDTH;
     }
     printf("after update: x: %.2f y: %.2f\n",xPos,yPos);
   }
-  else if(wallCount == 1)
+  // else if(wallCount == 1)
+  // {
+  //   updated = 1;
+  //   singleWallCase(currentSector);
+  //   updateRobotPosition();
+  //   if(yAxisWalls)
+  //   {
+  //     yPos = y * SECTOR_WIDTH;
+  //   }
+    
+  //   if(xAxisWalls)
+  //   {
+  //     xPos = x * SECTOR_WIDTH;
+  //   }
+  // }
+
+  if(updated)
   {
-   singleWallCase(currentSector);
+    updated = 0;
+    if(convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) 
+      bearing = 0;
+    else if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165)
+      bearing = M_PI; 
+    else if(convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) 
+      bearing = M_PI/2;
+    else if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165)
+      bearing = (-(M_PI/2)); 
   }
+  usleep(SLEEPTIME);
 }
 
 void centerStartingPosition()
@@ -310,13 +354,22 @@ void centerStartingPosition()
   xPos = 0;
   yPos = -SECTOR_WIDTH;
   updateRobotPosition();
-
-
-
-
-
-
 }
+
+
+void bumpers(XY currentSector)
+{
+  if(check_bump(LEFT) == 1 || check_bump(RIGHT) == 1)
+  {
+    printf("\t\tBUMPER HIT\n");
+    set_motors(-10,-10);
+    usleep(1000000);
+    set_motors(0,0);
+    correctPosition(currentSector);
+  }
+}
+
+
 
 void goToXY(XY destination)
 {
@@ -356,6 +409,7 @@ void goToXY(XY destination)
     {
     	while(fabs(requiredAngleChange) > 0.03)
     	{
+        bumpers(getCurrentSector());
 		  set_point(xPos,yPos);
 		  log_trail();
           int speed = requiredAngleChange*35.0;
@@ -367,21 +421,22 @@ void goToXY(XY destination)
     	    speed = 15;
    		  else if(speed > 0)
     	    speed = 8;
-          updateRobotPosition(); 
-          requiredAngleChange = atan2(xDifference,yDifference) - bearing;
-          while(requiredAngleChange > (M_PI))
-          {
-            requiredAngleChange -= (2 * M_PI);
-          }
-          while(requiredAngleChange < (-M_PI))
-          {
-            requiredAngleChange += (2 * M_PI);
-          }
-          set_motors(speed,-speed);
+        updateRobotPosition(); 
+        requiredAngleChange = atan2(xDifference,yDifference) - bearing;
+        while(requiredAngleChange > (M_PI))
+        {
+          requiredAngleChange -= (2 * M_PI);
+        }
+        while(requiredAngleChange < (-M_PI))
+        {
+          requiredAngleChange += (2 * M_PI);
+        }
+        set_motors(speed,-speed);
     	}
     }
     else
     {
+      bumpers(getCurrentSector());
       updateRobotPosition(); 
       set_motors((MEDIUM_SPEED + MEDIUM_SPEED * requiredAngleChange*1.2),(MEDIUM_SPEED - MEDIUM_SPEED * requiredAngleChange*1.2));
 
@@ -395,17 +450,8 @@ void endPhase1()
 {
 	set_ir_angle(LEFT, 90);
 	set_ir_angle(RIGHT, -90);
-	sleep(2);
+	sleep(1);
+  set_ir_angle(LEFT, 45);
+  set_ir_angle(RIGHT, -45);
+  sleep(1);
 }
-
-void bumpers()
-{
-	if(check_bump(LEFT) == 1 || check_bump(RIGHT) == 1)
-	{
-		printf("\t\tBUMPER HIT\n");
-		set_motors(-10,-10);
-		usleep(1000000);
-		set_motors(0,0);
-	}
-}
-
