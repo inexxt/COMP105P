@@ -13,6 +13,16 @@ void printfSector(XY s)
 	printf("sector x %d y%d", s.x, s.y);
 }
 
+void printfMaze()
+{
+	int i,j;
+	for(i = 0; i<4; i++)
+		for(j = 0; j<4; j++)
+		{
+			printf("maze[%d][%d] = (Sector){%d, %d, %d, %d, %d};\n", i, j, maze[i][j].northWall, maze[i][j].southWall, maze[i][j].westWall, maze[i][j].eastWall, maze[i][j].visited);
+		}
+}
+
 // print Queue poszedl do phase1.map.c by kompilator sie nie burzyl
 
 // double xPos, yPos, bearing;
@@ -44,6 +54,7 @@ int main()
 		}
 	}
 		
+	printfMaze();
 	// endPhase1();
 	
 	// Queue* a = calculateOptimalPath();
