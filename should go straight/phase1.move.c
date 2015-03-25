@@ -173,8 +173,6 @@ void correctPositionDeadEnd()
   usleep(SLEEPTIME);
   turnByAngleDegree(90.00);
   usleep(SLEEPTIME);
-  // xPos = x * SECTOR_WIDTH;
-  // yPos = y * SECTOR_WIDTH;
 }
 
 void correctPositionParallelWalls()
@@ -218,37 +216,22 @@ void singleWallCase(XY currentSector)
   	angleToTurn += -90.0;
   }
 
-  while(angleToTurn > 180)
+  while(angleToTurn > 180.0)
   { 
- 	  angleToTurn -= 360;
+ 	  angleToTurn -= 360.0;
   }
-  while(angleToTurn < -180)
+  while(angleToTurn < -180.0)
   {
-  	angleToTurn += 360;
+  	angleToTurn += 360.0;
   }
 
   usleep(SLEEPTIME);
 	turnByAngleDegree(angleToTurn);
-
-  
-  // scanf("%d",&z);
   usleep(SLEEPTIME);
-  	adjustAngle();
-      usleep(SLEEPTIME);
-  	adjustWallDistance();
-<<<<<<< HEAD
-      usleep(SLEEPTIME);
-
-
-=======
-
-  	turnByAngleDegree(-angleToTurn);
-	bearing = 0;
-	printf("\t1angleToTurn: %.2f", angleToTurn);
-	printf("\tBEARING: %.2f", bearing);
-	int p;
-	scanf("%d", &p);
->>>>>>> origin/addQueueAndStuff
+ 	adjustAngle();
+  usleep(SLEEPTIME);
+  adjustWallDistance();
+  usleep(SLEEPTIME);
 }
 
 void correctPosition(XY currentSector)
@@ -266,13 +249,13 @@ void correctPosition(XY currentSector)
     printf("**************************\n");
   printf("wall count: %d \n", wallCount);
   int updated = 0;
+  printf("PRE- UPDATED X: %.2f Y: %.2f\n",xPos,yPos);
   if(wallCount == 3)
   {	
     updated = 1;
   	printf("CASE 1\n");
   	correctPositionDeadEnd();
   	updateRobotPosition();
-  	printf("unupdated: X: %f, Y: %f\n",xPos,yPos);
   	xPos = x * SECTOR_WIDTH;
   	yPos = y * SECTOR_WIDTH;
   }
@@ -283,7 +266,6 @@ void correctPosition(XY currentSector)
   	printf("CASE 2\n");
 	correctPositionPerpendicularWalls();
 	updateRobotPosition();
-    printf("unupdated: X: %f, Y: %f\n",xPos,yPos);
   	xPos = x * SECTOR_WIDTH;
   	yPos = y * SECTOR_WIDTH;
   }
@@ -293,7 +275,6 @@ void correctPosition(XY currentSector)
   	printf("CASE 3\n");
   	correctPositionParallelWalls();
   	updateRobotPosition();
-    printf("unupdated: X: %f, Y: %f\n",xPos,yPos);
   	if(yAxisWalls)
   	{
       xPos = x * SECTOR_WIDTH;
@@ -303,24 +284,23 @@ void correctPosition(XY currentSector)
     {
       yPos = y * SECTOR_WIDTH;
     }
-    printf("after update: x: %.2f y: %.2f\n",xPos,yPos);
   }
-  // else if(wallCount == 1)
-  // {
-  //   updated = 1;
-  //   singleWallCase(currentSector);
-  //   updateRobotPosition();
-  //   if(yAxisWalls)
-  //   {
-  //     yPos = y * SECTOR_WIDTH;
-  //   }
+  else if(wallCount == 1)
+  {
+    updated = 1;
+    singleWallCase(currentSector);
+    updateRobotPosition();
+    if(yAxisWalls)
+    {
+      yPos = y * SECTOR_WIDTH;
+    }
     
-  //   if(xAxisWalls)
-  //   {
-  //     xPos = x * SECTOR_WIDTH;
-  //   }
-  // }
-
+    if(xAxisWalls)
+    {
+      xPos = x * SECTOR_WIDTH;
+    }
+  }
+  printf("JUST UPDATED X: %.2f Y: %.2f\n",xPos,yPos);
   if(updated)
   {
     updated = 0;
@@ -392,11 +372,11 @@ void goToXY(XY destination)
   double yCoordinate = destination.y * SECTOR_WIDTH; //TODO
   //printf("\nCoordinates: %f\t%f", xCoordinate,yCoordinate); // debug
   // printf("\n BEARING %.2f", bearing); // debug
-  while ((fabs(remainingDistance)) > 3) // value to change
+  while ((fabs(remainingDistance)) > 1.5) // value to change
   {	
     set_point(xPos,yPos);
     log_trail();
-      printf("\n BEARING %.2f", bearing); // debug
+      // printf("\n BEARING %.2f", bearing); // debug
     // printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
 //     printf("remain %.2f\n", remainingDistance);
     updateRobotPosition(); 

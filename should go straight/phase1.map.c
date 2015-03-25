@@ -17,6 +17,7 @@ void printQueue(Queue* q)
 		int y = current->sxy.y;
 		if(x >= 0 && y >= 0) printf("Q[%d] : x %d y %d VIS %d\n", i, x, y, maze[x][y].visited);
         current = current->next;
+        i++;
     }
 }
 
