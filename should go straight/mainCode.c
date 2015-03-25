@@ -40,38 +40,38 @@ int main()
     pushFront(&currentPath, first);
 
 	centerStartingPosition();
-// 	int setOrigin = 1; // so it wouldnt try to set origin again
-// 	while(current.y != -1 && current.x != -1)
-// 	{
-// 		current = nextSector(&currentPath);
-// 		goToXY(current);
-// 		updateSector(&currentPath);
-// 		correctPosition(current);
-// 		if((current.x == 0 && current.y == 0) && (setOrigin))
-// 		{
-// 			set_origin();
-// 			setOrigin = 0;
-// 		}
-// 	}
+	// int setOrigin = 1; // so it wouldnt try to set origin again
+	while(current.y != -1 && current.x != -1)
+	{
+		current = nextSector(&currentPath);
+		goToXY(current);
+		updateSector(&currentPath);
+		correctPosition(current);
+		// if((current.x == 0 && current.y == 0) && (setOrigin))
+		// {
+		// 	set_origin();
+		// 	setOrigin = 0;
+		// }
+	}
 		
 	printfMaze();
 	
-	maze[0][0] = (Sector){0, 0, 1, 0, 1};
-maze[0][1] = (Sector){1, 0, 1, 0, 1};
-maze[0][2] = (Sector){0, 1, 1, 0, 1};
-maze[0][3] = (Sector){1, 0, 1, 0, 1};
-maze[1][0] = (Sector){1, 1, 0, 0, 1};
-maze[1][1] = (Sector){0, 1, 0, 1, 1};
-maze[1][2] = (Sector){1, 0, 0, 0, 1};
-maze[1][3] = (Sector){1, 1, 0, 0, 1};
-maze[2][0] = (Sector){1, 1, 0, 0, 1};
-maze[2][1] = (Sector){0, 1, 1, 0, 1};
-maze[2][2] = (Sector){1, 0, 0, 0, 1};
-maze[2][3] = (Sector){1, 1, 0, 1, 1};
-maze[3][0] = (Sector){0, 1, 0, 1, 1};
-maze[3][1] = (Sector){1, 0, 0, 1, 1};
-maze[3][2] = (Sector){0, 1, 0, 1, 1};
-maze[3][3] = (Sector){1, 0, 1, 1, 1};
+// 	maze[0][0] = (Sector){0, 0, 1, 0, 1};
+// maze[0][1] = (Sector){1, 0, 1, 0, 1};
+// maze[0][2] = (Sector){0, 1, 1, 0, 1};
+// maze[0][3] = (Sector){1, 0, 1, 0, 1};
+// maze[1][0] = (Sector){1, 1, 0, 0, 1};
+// maze[1][1] = (Sector){0, 1, 0, 1, 1};
+// maze[1][2] = (Sector){1, 0, 0, 0, 1};
+// maze[1][3] = (Sector){1, 1, 0, 0, 1};
+// maze[2][0] = (Sector){1, 1, 0, 0, 1};
+// maze[2][1] = (Sector){0, 1, 1, 0, 1};
+// maze[2][2] = (Sector){1, 0, 0, 0, 1};
+// maze[2][3] = (Sector){1, 1, 0, 1, 1};
+// maze[3][0] = (Sector){0, 1, 0, 1, 1};
+// maze[3][1] = (Sector){1, 0, 0, 1, 1};
+// maze[3][2] = (Sector){0, 1, 0, 1, 1};
+// maze[3][3] = (Sector){1, 0, 1, 1, 1};
 
 	endPhase1();
 	
@@ -81,13 +81,13 @@ maze[3][3] = (Sector){1, 0, 1, 1, 1};
 		goToXY(popFront(&a));
 	}
 	set_motors(0,0);
-	
-	double frontLeft, frontRight;
-	getFrontIR(&frontLeft, &frontRight);
-	if(((frontLeft+frontRight)/2) < (SECTOR_WIDTH/2))
+	sleep(1);
+	int frontLeft, frontRight;
+	get_front_ir_dists(&frontLeft, &frontRight);
+	if(((frontLeft+frontRight)/2) > (SECTOR_WIDTH/2))
 	{
-		set_motors(2,2);
-		sleep(2);
+		set_motors(8,8);
+		sleep(1);
 		set_motors(0,0);
 	}
 	printf("FINISH\n");

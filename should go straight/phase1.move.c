@@ -244,9 +244,6 @@ void correctPosition(XY currentSector)
   //case 1: 3 sciany -dead end
   // case 2: 2 przylegle - swastyka, etc
   //case 3: 2 rownolegle sciany
-  printf("**************************\n");
-  printf("SOUTH KURWA WALL: %d\n", maze[x][y].southWall);
-    printf("**************************\n");
   printf("wall count: %d \n", wallCount);
   int updated = 0;
   printf("PRE- UPDATED X: %.2f Y: %.2f\n",xPos,yPos);
@@ -372,9 +369,9 @@ void goToXY(XY destination)
   double yCoordinate = destination.y * SECTOR_WIDTH; //TODO
   //printf("\nCoordinates: %f\t%f", xCoordinate,yCoordinate); // debug
   // printf("\n BEARING %.2f", bearing); // debug
-  while ((fabs(remainingDistance)) > 1.5) // value to change
+  while ((fabs(remainingDistance)) > 2) // value to change
   {	
-    set_point(xPos,yPos);
+    //set_point(xPos,yPos);
     log_trail();
       // printf("\n BEARING %.2f", bearing); // debug
     // printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
@@ -400,7 +397,7 @@ void goToXY(XY destination)
     	while(fabs(requiredAngleChange) > 0.03)
     	{
         bumpers(getCurrentSector());
-		  set_point(xPos,yPos);
+		  //set_point(xPos,yPos);
 		  log_trail();
           int speed = requiredAngleChange*35.0;
           if(speed < -15)
