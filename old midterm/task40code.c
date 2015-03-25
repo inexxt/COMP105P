@@ -125,11 +125,11 @@ void followLeft()
 		if(differenceSide < -10)
 			leftSpeed = 5;
 		else
-			leftSpeed = 18;
+			leftSpeed = 18	;
 		rightSpeed = 30;
 		vaar = 1;
 	}
-	printf("%d %d %d %d\n", leftSpeed, rightSpeed, differenceFront, differenceSide);
+	printf("%d %d %.2f %.2f\n", leftSpeed, rightSpeed, xPos, yPos);
     set_motors(leftSpeed,rightSpeed);
 
     if(frontRightIR < CORNER_DISTANCE)
@@ -143,7 +143,8 @@ void followLeft()
 		goBackALittle();
         turnRight();
       }
-    } 
+    }
+//     if(size > 100 && xPos < 
     size++;
   }
  }
