@@ -57,21 +57,21 @@ int main()
 	printfMaze();
 	
 	maze[0][0] = (Sector){0, 0, 1, 0, 1};
-maze[0][1] = (Sector){1, 0, 1, 0, 1};
-maze[0][2] = (Sector){0, 1, 1, 0, 1};
-maze[0][3] = (Sector){1, 0, 1, 0, 1};
-maze[1][0] = (Sector){1, 1, 0, 0, 1};
-maze[1][1] = (Sector){0, 1, 0, 1, 1};
-maze[1][2] = (Sector){1, 0, 0, 0, 1};
-maze[1][3] = (Sector){1, 1, 0, 0, 1};
-maze[2][0] = (Sector){1, 1, 0, 0, 1};
-maze[2][1] = (Sector){0, 1, 1, 0, 1};
-maze[2][2] = (Sector){1, 0, 0, 0, 1};
-maze[2][3] = (Sector){1, 1, 0, 1, 1};
-maze[3][0] = (Sector){0, 1, 0, 1, 1};
-maze[3][1] = (Sector){1, 0, 0, 1, 1};
-maze[3][2] = (Sector){0, 1, 0, 1, 1};
-maze[3][3] = (Sector){1, 0, 1, 1, 1};
+	maze[0][1] = (Sector){1, 0, 1, 0, 1};
+	maze[0][2] = (Sector){0, 1, 1, 0, 1};
+	maze[0][3] = (Sector){1, 0, 1, 0, 1};
+	maze[1][0] = (Sector){1, 1, 0, 0, 1};
+	maze[1][1] = (Sector){0, 1, 0, 1, 1};
+	maze[1][2] = (Sector){1, 0, 0, 0, 1};
+	maze[1][3] = (Sector){1, 1, 0, 0, 1};
+	maze[2][0] = (Sector){1, 1, 0, 0, 1};
+	maze[2][1] = (Sector){0, 1, 1, 0, 1};
+	maze[2][2] = (Sector){1, 0, 0, 0, 1};
+	maze[2][3] = (Sector){1, 1, 0, 1, 1};
+	maze[3][0] = (Sector){0, 1, 0, 1, 1};
+	maze[3][1] = (Sector){1, 0, 0, 1, 1};
+	maze[3][2] = (Sector){0, 1, 0, 1, 1};
+	maze[3][3] = (Sector){1, 0, 1, 1, 1};
 
 	endPhase1();
 	
@@ -86,7 +86,7 @@ maze[3][3] = (Sector){1, 0, 1, 1, 1};
 	getFrontIR(&frontLeft, &frontRight);
 	if(((frontLeft+frontRight)/2) < (SECTOR_WIDTH/2))
 	{
-		set_motors(2,2);
+		set_motors(5,5);
 		sleep(2);
 		set_motors(0,0);
 	}

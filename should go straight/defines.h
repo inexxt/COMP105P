@@ -9,7 +9,7 @@
 #define ROBOT_WIDTH 22.5//22.0//23.0//22.50 
 #define CIRCUMFERENCE 9.5*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
 
-#define SECTOR_WIDTH 57.0
+#define SECTOR_WIDTH 55.0
 #define MEDIUM_SPEED 25
 
 #define MAZE_WIDTH 4
