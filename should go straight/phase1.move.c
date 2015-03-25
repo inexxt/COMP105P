@@ -230,15 +230,25 @@ void singleWallCase(XY currentSector)
   usleep(SLEEPTIME);
 	turnByAngleDegree(angleToTurn);
 
-  // printf("OBRACAM O: %.2f", angleToTurn);
+  
   // scanf("%d",&z);
   usleep(SLEEPTIME);
   	adjustAngle();
       usleep(SLEEPTIME);
   	adjustWallDistance();
+<<<<<<< HEAD
       usleep(SLEEPTIME);
 
 
+=======
+
+  	turnByAngleDegree(-angleToTurn);
+	bearing = 0;
+	printf("\t1angleToTurn: %.2f", angleToTurn);
+	printf("\tBEARING: %.2f", bearing);
+	int p;
+	scanf("%d", &p);
+>>>>>>> origin/addQueueAndStuff
 }
 
 void correctPosition(XY currentSector)
