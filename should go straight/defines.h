@@ -6,8 +6,8 @@
 
 
 
-#define ROBOT_WIDTH 23.5//22.0//23.0//22.50 
-#define CIRCUMFERENCE 9.9*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
+#define ROBOT_WIDTH 23.4//22.0//23.0//22.50 
+#define CIRCUMFERENCE 9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
 
 #define SECTOR_WIDTH 59.0
 #define MEDIUM_SPEED 26

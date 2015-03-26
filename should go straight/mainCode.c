@@ -89,6 +89,7 @@ int main()
 	while(!isEmpty(a))
 	{
 		goToXY(popFront(&a));
+		// correctPosition(a->sxy);
 	}
 	set_motors(0,0);
 	sleep(1);
