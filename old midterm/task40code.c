@@ -182,8 +182,9 @@ int main()
   followLeft(PHA1);
   printf("bearing %.2f %.2f\n", bearing, -bearing/M_PI * 180);
   int p;
-  scanf("%d", &p);
-  turnByAngleDegree(-bearing/M_PI * 180 - 20);
+//   scanf("%d", &p);
+  usleep(1000000);
+  turnByAngleDegree(-bearing/M_PI * 180 - 15);
   usleep(500000);
   centerStartingPosition();
   bearing = 0;
