@@ -82,9 +82,10 @@ int main()
 	
 // 	centerStartingPosition();
 	Queue* a = calculateOptimalPath();
+	updateRobotPosition();
 	xPos = 0;
 	yPos = -SECTOR_WIDTH;
-	bearing = 0;
+	// bearing = 0;
 	while(!isEmpty(a))
 	{
 		goToXY(popFront(&a));

@@ -6,11 +6,11 @@
 //TODO: wywalic updaterobotposition();
 //TODO: update gotoXY();
 
-#define US_OFFSET 7 //difference between av. IR and US (simulator - 2, real robot ~ 6) - zeby latwiej bylo zmieniac
+#define US_OFFSET 6.5 //difference between av. IR and US (simulator - 2, real robot ~ 6) - zeby latwiej bylo zmieniac
 #define ADJUST_IR_ANGLE 25
 #define MIN_IR_RANGE 12
 #define MAX_IR_RANGE 36
-#define SENSOR_THRESHOLD 0.2
+#define SENSOR_THRESHOLD 0.45
 
 double xPos, yPos, bearing;
 int targetIR = SECTOR_WIDTH/2 - ROBOT_WIDTH/2; //INICJALIZACJA TYLKO -> POTEM SIE WARTOSC ZMIENIA/POPRAWIA // wiem ze mozna jako lokanlna, ale wg. mnie w ten sposob jest bardziej czytelne i dostepne
@@ -123,7 +123,7 @@ void correctPositionPerpendicularWalls()
   getSideIR(&sideLeft, &sideRight);
   getFrontIR(&frontLeft, &frontRight);
 
-  if((sideLeft < DETECT_WALL_DISTANCE) || (frontLeft < DETECT_WALL_DISTANCE))
+  if((sideLeft < DETECT_WALL_DISTANCE) && (frontLeft < DETECT_WALL_DISTANCE))
   {
   	turnByAngleDegree(-90.00);
   	usleep(SLEEPTIME);
@@ -138,7 +138,7 @@ void correctPositionPerpendicularWalls()
     // updateCoordinates(currentSector, ultraSound, leftValue, LEFT_SIDE);
   }
 
-  else if((sideRight < DETECT_WALL_DISTANCE) || (frontRight < DETECT_WALL_DISTANCE))
+  else if((sideRight < DETECT_WALL_DISTANCE) && (frontRight < DETECT_WALL_DISTANCE))
   {
   	turnByAngleDegree(90.00);
   	usleep(SLEEPTIME);
@@ -317,7 +317,9 @@ void centerStartingPosition()
 {
   double frontLeftIR, frontRightIR, sideLeftIR, sideRightIR;
   turnByAngleDegree(180.00);
+  usleep(SLEEPTIME);
   adjustAngle();
+  usleep(SLEEPTIME);
   set_ir_angle(LEFT, -45);
   set_ir_angle(RIGHT, 45);    
   usleep(SLEEPTIME);
@@ -325,14 +327,25 @@ void centerStartingPosition()
   getSideIR(&sideLeftIR, &sideRightIR);
   targetIR = (frontLeftIR + frontRightIR + sideLeftIR + sideRightIR)/4;
   adjustWallDistance();
+  usleep(SLEEPTIME);
   turnByAngleDegree(90.00);
+    usleep(SLEEPTIME);
   adjustAngle();
+    usleep(SLEEPTIME);
   adjustWallDistance();
+    usleep(SLEEPTIME);
   turnByAngleDegree(180.00);
+    usleep(SLEEPTIME);
   adjustAngle();
+    usleep(SLEEPTIME);
   printf("I SHOULDNT MOVE IF I MOVE CORRECT US_OFFSET!!\n");
   adjustWallDistance();
-  turnByAngleDegree(-90.00);
+    usleep(SLEEPTIME);
+    // updateRobotPosition();
+    // bearing = M_PI/2;
+    usleep(SLEEPTIME);
+      turnByAngleDegree(-90.00);
+        usleep(SLEEPTIME);
 
   bearing = 0; // so that the bearing would be affected by this movement (so we would know it's slightly off ( important!))
   updateRobotPosition();
@@ -400,14 +413,14 @@ void goToXY(XY destination)
 		  //set_point(xPos,yPos);
 		  log_trail();
           int speed = requiredAngleChange*35.0;
-          if(speed < -MEDIUM_SPEED)
-    	    speed = -MEDIUM_SPEED;
+          if(speed < -(MEDIUM_SPEED/2))
+    	    speed = -(MEDIUM_SPEED/2);
     	  else if(speed < 0)
-    	    speed = -MEDIUM_SPEED/2;
-    	  else if(speed > MEDIUM_SPEED)
-    	    speed = MEDIUM_SPEED;
+    	    speed = -(MEDIUM_SPEED/4);
+    	  else if(speed > (MEDIUM_SPEED/2))
+    	    speed = (MEDIUM_SPEED/2);
    		  else if(speed > 0)
-    	    speed = MEDIUM_SPEED/2;
+    	    speed = (MEDIUM_SPEED/4);
         updateRobotPosition(); 
         requiredAngleChange = atan2(xDifference,yDifference) - bearing;
         while(requiredAngleChange > (M_PI))

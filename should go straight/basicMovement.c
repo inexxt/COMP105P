@@ -22,3 +22,23 @@ void turnByAngleDegree(double angle)
   }
   set_motors(0,0);
 }
+
+void goStraight(double distance)
+{
+  int leftEncoder, rightEncoder;
+  get_motor_encoders(&leftEncoder, &rightEncoder);
+  double tickDifference = (360*distance)/(CIRCUMFERENCE);
+  int targetLeftEncoder = leftEncoder + tickDifference;
+  int speed;
+  while(abs(targetLeftEncoder - leftEncoder) > 1)
+  {
+    speed = (targetLeftEncoder - leftEncoder);
+    if(speed > 20)
+      speed = 20;
+    if(speed < -20)
+      speed = -20;
+    get_motor_encoders(&leftEncoder, &rightEncoder);
+    set_motors(speed, speed);
+  }
+  set_motors(0,0);
+}
