@@ -6,7 +6,7 @@
 //TODO: wywalic updaterobotposition();
 //TODO: update gotoXY();
 
-#define US_OFFSET 2 //difference between av. IR and US (simulator - 2, real robot ~ 6) - zeby latwiej bylo zmieniac
+#define US_OFFSET 7 //difference between av. IR and US (simulator - 2, real robot ~ 6) - zeby latwiej bylo zmieniac
 #define ADJUST_IR_ANGLE 25
 #define MIN_IR_RANGE 12
 #define MAX_IR_RANGE 36
@@ -165,13 +165,13 @@ void correctPositionDeadEnd()
   usleep(SLEEPTIME);
   adjustWallDistance();
   usleep(SLEEPTIME);
-  turnByAngleDegree(180.00);
-  usleep(SLEEPTIME);
-  adjustAngle();
-  usleep(SLEEPTIME);
-  adjustWallDistance();
-  usleep(SLEEPTIME);
-  turnByAngleDegree(90.00);
+//   turnByAngleDegree(180.00);
+//   usleep(SLEEPTIME);
+//   adjustAngle();
+//   usleep(SLEEPTIME);
+//   adjustWallDistance();
+//   usleep(SLEEPTIME);
+  turnByAngleDegree(-90.00);
   usleep(SLEEPTIME);
 }
 
@@ -183,13 +183,13 @@ void correctPositionParallelWalls()
   usleep(SLEEPTIME);
   adjustWallDistance();
   usleep(SLEEPTIME);
-  turnByAngleDegree(180.00);
-  usleep(SLEEPTIME);
-  adjustAngle();
-  usleep(SLEEPTIME);
-  adjustWallDistance();
-  usleep(SLEEPTIME);
-  turnByAngleDegree(90.00);
+//   turnByAngleDegree(180.00);
+//   usleep(SLEEPTIME);
+//   adjustAngle();
+//   usleep(SLEEPTIME);
+//   adjustWallDistance();
+//   usleep(SLEEPTIME);
+  turnByAngleDegree(-90.00);
   usleep(SLEEPTIME);
 }
 
@@ -369,7 +369,7 @@ void goToXY(XY destination)
   double yCoordinate = destination.y * SECTOR_WIDTH; //TODO
   //printf("\nCoordinates: %f\t%f", xCoordinate,yCoordinate); // debug
   // printf("\n BEARING %.2f", bearing); // debug
-  while ((fabs(remainingDistance)) > 2) // value to change
+  while ((fabs(remainingDistance)) > 3) // value to change
   {	
     //set_point(xPos,yPos);
     log_trail();
@@ -400,14 +400,14 @@ void goToXY(XY destination)
 		  //set_point(xPos,yPos);
 		  log_trail();
           int speed = requiredAngleChange*35.0;
-          if(speed < -15)
-    	    speed = -15;
+          if(speed < -MEDIUM_SPEED)
+    	    speed = -MEDIUM_SPEED;
     	  else if(speed < 0)
-    	    speed = -8;
-    	  else if(speed > 15)
-    	    speed = 15;
+    	    speed = -MEDIUM_SPEED/2;
+    	  else if(speed > MEDIUM_SPEED)
+    	    speed = MEDIUM_SPEED;
    		  else if(speed > 0)
-    	    speed = 8;
+    	    speed = MEDIUM_SPEED/2;
         updateRobotPosition(); 
         requiredAngleChange = atan2(xDifference,yDifference) - bearing;
         while(requiredAngleChange > (M_PI))
