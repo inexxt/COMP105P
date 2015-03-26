@@ -9,13 +9,18 @@
 #include "recordPosition.h"
 #include <stdio.h>
 #include <math.h>
+#include "phase1.move.h"
 
 #define CORNER_DISTANCE 23
 #define DISTANCE_TO_KEEP_SIDE 20
 #define DISTANCE_TO_KEEP_FRONT 25
-#define MEDIUM_SPEED 30
+
 #define DISTANCE_TO_STOP_AT 24
 #define MINIMUM_DISTANCE_BETWEEN_POINTS 300
+
+#define PHA1 1
+#define PHA2 2
+
 
 int frontLeftIR = 0;
 int frontRightIR = 0;
@@ -23,9 +28,6 @@ int sideLeftIR = 0;
 
 int sideRightIR = 0;
 int usValue = 0;
-extern double bearing = 0.0000;
-extern double xPos = 0.0000;
-extern double yPos = 0.0000;
 double xStorage[20000];
 double yStorage[20000];
 int size = 1;
@@ -78,16 +80,17 @@ void goBackALittle()
 // 	set_motors(0,0);
 }
 
-void followLeft()
+void followLeft(int type)
 { 
   int leftSpeed, rightSpeed;
   int differenceSide, differenceFront;
   double theConstantLeft, theConstantRight;
   int storageSize = 1;
   int vaar = 1;
-  while(1)
+  int ending = 0;
+  while(ending == 0)
   {
-    updateRobotPosition(&bearing, &xPos, &yPos);
+    updateRobotPosition();
     storeCoordinates(&storageSize);
     
     updateIRSensors();
@@ -138,93 +141,28 @@ void followLeft()
       usValue = get_us_dist();
       if(usValue < DISTANCE_TO_STOP_AT+2)
       {
-        slowDown();
+//         slowDown();
         set_motors(0,0);
 		goBackALittle();
-        turnRight();
+		turnByAngleDegree(90);
+//         turnRight();
+// 		bearing += M_PI/2;
       }
+      
     }
+    int EPS = 10;
+      if(size > 100 && (fabs(xPos) < EPS && fabs(yPos + 60) < EPS) && type == PHA1)
+	  {
+		  ending = 1;
+	  }
+	  if(size > 100 && (fabs(xPos - 180) < EPS && fabs(yPos - 180) < EPS) && type == PHA2)
+	  {
+		  ending = 1;
+	  }
 //     if(size > 100 && xPos < 
     size++;
   }
- }
-
-void goBack()
-{
-  double xDifference;
-  double yDifference;
-  double requiredAngleChange;
-  double remainingDistance;
-  int start = 1;
-  size -= 40;
-  while (size > 0) // while there are still stored points left
-  {
-    log_trail();
-    updateRobotPosition(&bearing, &xPos, &yPos);
-  	xDifference = *(xStorage+size) - xPos;
-    yDifference = *(yStorage+size) - yPos;
-    requiredAngleChange = atan2(xDifference,yDifference) - bearing;
-    remainingDistance = sqrt(xDifference*xDifference + yDifference*yDifference);
-
-    /*So the robot would operate in a -pi to +pi range: */
-  	if(requiredAngleChange > (M_PI))
-  	  requiredAngleChange -= (2*M_PI);
-  	if(requiredAngleChange < (-M_PI))
-  	  requiredAngleChange += (2*M_PI);
-
-    if((fabs(xDifference) < 5.0) && (!start)) // start ensures the robot will rotate at the beginning regardless of relative position
-    {
-    	if(yDifference > 0)
-    		requiredAngleChange = 0;
-    	else
-    		requiredAngleChange = M_PI;
-    	start = 0;
-    }
-
-  	/**********DEBUG**********/
-    printf("\nCurrently at... %f     %f\n",xPos,yPos);
-    printf("Bearing: %f\n", bearing);
-    printf("going to... %f     %f\n", (*(xStorage+size)),(*(yStorage+size)));
-    set_point(*(xStorage+size)/10.00,*(yStorage+size)/10.00);  // draw the point the robot is going to
-    printf("Remaining distance: %f\n", remainingDistance);
-    printf("xDif: %f\tyDif: %f\n", xDifference, yDifference);
-    printf("\nRequired angle change: %f\n", requiredAngleChange);
-    /**********DEBUG**********/
-     
-    if(remainingDistance > 1000) // breaks the loop in case the robot goes wild
-      return;
-
-    if(remainingDistance < 70)
-    {
-    	double distanceFromNextPoint = 0.0;
-    	while(distanceFromNextPoint < MINIMUM_DISTANCE_BETWEEN_POINTS)
-    	{
-    	  xDifference = *(xStorage+size) - xPos;
- 		  yDifference = *(yStorage+size) - yPos;
- 		  distanceFromNextPoint = sqrt(xDifference*xDifference + yDifference*yDifference);
- 		  size--;
- 		  if(size == 1) //ensures robot will go to the starting position
-    	  	break;
-    	}
-    }
-
-    if(fabs(requiredAngleChange) > 1.8) // for sharp turns, in practice only for turning back at the beginning
-    {
-    	while(fabs(requiredAngleChange) > 0.30)
-    	{
-    	  log_trail();
-          updateRobotPosition(&bearing, &xPos, &yPos);
-          requiredAngleChange = atan2(xDifference,yDifference) - bearing;
-          set_motors(requiredAngleChange*14.0,-requiredAngleChange*14.0);
-    	}
-    }
-    else
-    {
-      log_trail();
-      updateRobotPosition(&bearing, &xPos, &yPos);
-      set_motors((MEDIUM_SPEED + MEDIUM_SPEED * requiredAngleChange*1.2),(MEDIUM_SPEED - MEDIUM_SPEED * requiredAngleChange*1.2));
-    }
-  }
+  set_motors(0,0);
 }
 
 int main() 
@@ -232,7 +170,8 @@ int main()
   connect_to_robot();
   initialize_robot();
   set_origin();
-
+  
+  centerStartingPosition();
   set_ir_angle(LEFT, -16);
   set_ir_angle(RIGHT, -75);   
   //xStorage = malloc(sizeof(double) * 1);
@@ -240,16 +179,29 @@ int main()
   *xStorage = 0.0000;
   *yStorage = 0.0000;
   
-  followLeft();
-
-  showCoordinates();
-  printf("Final coordinates: X: %f \t Y: %f\n",xPos,yPos);
-  printf("Distance from origin: %f mm\n", (sqrt(xPos*xPos + yPos * yPos)));
-//   printf("at angle: %f (radians) or %f (degrees) \n", bearing, (toDegree(bearing)));
-
+  followLeft(PHA1);
+  printf("bearing %.2f %.2f\n", bearing, -bearing/M_PI * 180);
+  int p;
+  scanf("%d", &p);
+  turnByAngleDegree(-bearing/M_PI * 180 - 20);
+  usleep(500000);
+  centerStartingPosition();
+  bearing = 0;
+  xPos = 0;
+  yPos = -SECTOR_WIDTH;
+  set_ir_angle(LEFT, -16);
+  set_ir_angle(RIGHT, -75);   
+  
+  followLeft(PHA2);
+//   showCoordinates();
+//   printf("Final coordinates: X: %f \t Y: %f\n",xPos,yPos);
+//   printf("Distance from origin: %f mm\n", (sqrt(xPos*xPos + yPos * yPos)));
+// //   printf("at angle: %f (radians) or %f (degrees) \n", bearing, (toDegree(bearing)));
+  
+  
   set_motors(0,0);
   printf("Trying to go back...\n");
-  goBack();
+//   goBack();
   set_motors(0,0);
   //free(xStorage);
   //free(yStorage);

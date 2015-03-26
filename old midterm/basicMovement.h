@@ -3,3 +3,4 @@
 void turnRight();
 void turnLeft();
 void moveForward(int distance, int speed);
+void turnByAngleDegree(double angle);

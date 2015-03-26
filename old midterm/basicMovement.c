@@ -1,4 +1,6 @@
 #include "picomms.h"
+#include "defines.h"
+
 #define ENCODER_TICKS_PER_MM 1.322
 
 int speedBig = 15;
@@ -55,6 +57,29 @@ void moveForward(int distance, int speed)
   {
   	set_motors(speedSmall,speedSmall);
     get_motor_encoders(&leftEncoder, &rightEncoder);
+  }
+  set_motors(0,0);
+}
+
+void turnByAngleDegree(double angle)
+{
+  int leftEncoder, rightEncoder;
+  get_motor_encoders(&leftEncoder, &rightEncoder);
+  double spinCircumference = ROBOT_WIDTH * M_PI;
+  double distanceToCover = spinCircumference * (angle/360.00);
+  double tickDifference = (360*distanceToCover)/(CIRCUMFERENCE);
+  int targetLeftEncoder = leftEncoder + tickDifference;
+  int speed;
+  while(abs(targetLeftEncoder - leftEncoder) > 1)
+  {
+    speed = (targetLeftEncoder - leftEncoder);
+    if(speed > 20)
+      speed = 20;
+    if(speed < -20)
+      speed = -20;
+//     printf("speed: %d\n",speed);
+    get_motor_encoders(&leftEncoder, &rightEncoder);
+    set_motors(speed, -speed);
   }
   set_motors(0,0);
 }
