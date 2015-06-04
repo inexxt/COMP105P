@@ -5,6 +5,6 @@ int main()
 {
 	connect_to_robot();
 	initialize_robot();
-	turnByAngleDegree(360.0);
+	turnByAngleDegree(1080.0);
 	return 0;
 }

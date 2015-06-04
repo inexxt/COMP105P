@@ -127,7 +127,7 @@ void updateSector(Queue** currentPath)
 		getFrontIR(&frontLeftReading, &frontRightReading);
 		getSideIR(&sideLeftReading, &sideRightReading);
 		ultraSound = get_us_dist();
-		//printf("frontleft: %d, frontRight: %d, sideLeft: %d, sideRight: %d, US: %d", frontLeftReading, frontRightReading, sideLeftReading,sideRightReading,ultraSound);
+		printf("frontleft: %f, frontRight: %f, sideLeft: %f, sideRight: %f, US: %d", frontLeftReading, frontRightReading, sideLeftReading,sideRightReading,ultraSound);
 		int northWall = 0;
 		int southWall = 0;
 		int westWall = 0;
@@ -143,11 +143,11 @@ void updateSector(Queue** currentPath)
 		if(convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) //first case - it's heading north
 		{
 				
-			if((frontLeftReading < DETECT_WALL_DISTANCE) || (sideLeftReading < DETECT_WALL_DISTANCE))
+			if((frontLeftReading < DETECT_WALL_DISTANCE) && (sideLeftReading < DETECT_WALL_DISTANCE))
 			{
 				westWall = 1;
 			}
-			if((frontRightReading < DETECT_WALL_DISTANCE) || (sideRightReading < DETECT_WALL_DISTANCE))
+			if((frontRightReading < DETECT_WALL_DISTANCE) && (sideRightReading < DETECT_WALL_DISTANCE))
 			{
 				eastWall = 1;
 			}
