@@ -14,8 +14,8 @@
 #define SIZE 241
 
 #define UP 0
-#define DOWN 1
-#define RIGHT 2
+#define RIGHT 1
+#define DOWN 2
 #define LEFT 3
 
 #define HORIZONTAL 1
@@ -49,13 +49,13 @@ typedef struct positionQ_t
 } positionQ;
 
 
-position center[WID][HEI]; //for each sector it contains the position of it's center, supplied by (map phase)
+// position center[WID][HEI]; //for each sector it contains the position of it's center, supplied by (map phase)
 int map[SIZE][SIZE];
 bool visited[SIZE][SIZE];
 move cameFrom[SIZE][SIZE];
 positionQ* BFSQueue;
 
-int goalx, goaly;
+position goal1, goal2;
 
 void swap(int* a, int* b)
 {
@@ -220,15 +220,34 @@ void setWall(int x1, int y1, int x2, int y2, int option) //for now - just normal
 
 void mapPreprocessing() //TODO map preprocessing - setting walls, setting walls' margins etc
 {
-    setWall(0, 0, 0, SIZE/2, VERTICAL);
-    setWall(0, SIZE/2, SIZE/2, SIZE/2, HORIZONTAL);
-    setWall(SIZE/2, SIZE/2, SIZE/2, SIZE-1, VERTICAL);
-    setWall(SIZE/2, SIZE-1, SIZE-1, SIZE-1, HORIZONTAL);
-    setWall(SIZE-1, SIZE-1, SIZE-1, 0, VERTICAL);
-    setWall(SIZE-1, 0, 0, 0, HORIZONTAL);
-    goalx = SIZE-4;
-    goaly = SIZE-4;
+    int i,j;
+    xcenter = 0;
+    ycenter = -RES;
+    setWall(-1, -RES, -RES/2, -RES, HORIZONTAL);
+    setWall(1, -RES, RES/2, -RES, HORIZONTAL);
+    setWall(-RES/2, -RES, -RES/2, 0, VERTICAL);
+    setWall(RES/2, -RES, RES/2, -RES/2, VERTICAL);
+    
+    for(i=0; i<WID; i++)
+        for(j=0; j<HEI; j++)
+        {
+            int xcenter = maze[x][y].xCenter;
+            int ycenter = maze[x][y].yCenter;
+            if(maze[i][j].northWall)
+                setWall(xcenter - RES/2, ycenter + RES/2, xcenter + RES/2, ycenter + RES/2, VERTICAL);
+            if(maze[i][j].southWall)
+                setWall(xcenter - RES/2, ycenter - RES/2, xcenter + RES/2, ycenter - RES/2, VERTICAL);
+            if(maze[i][j].eastWall)
+                setWall(xcenter + RES/2, ycenter - RES/2, xcenter + RES/2, ycenter + RES/2, HORIZONTAL);
+            if(maze[i][j].westWall)
+                setWall(xcenter - RES/2, ycenter - RES/2, xcenter - RES/2, ycenter + RES/2, HORIZONTAL);
+        }
+    goal1.x = (WID-1)*SIZE-SIZE/6;
+    goal1.y = (HEI-1)*SIZE-SIZE/6;
+    goal2.x = (WID-1)*SIZE+SIZE/6;
+    goal2.y = (HEI-1)*SIZE+SIZE/6;
 }
+
 int abc = 1;
 
 void printPath(position current) //DISCUSS 
