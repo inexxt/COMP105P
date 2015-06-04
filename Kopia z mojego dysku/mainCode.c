@@ -20,7 +20,6 @@ void printfSector(XY s)
 
 void printfMaze()
 {
-	/*
 	printf("------------------PRINTING MAZE---------------------\n");
 	printf("----------------------------------------------------\n");
 	int i,j;
@@ -31,7 +30,6 @@ void printfMaze()
 		}
 	printf("-------------------------------------------------\n");
 	printf("------------------EDING MAZE---------------------\n");
-	*/
 }
 
 void calibrateWallDistance()
@@ -80,6 +78,7 @@ int main()
 	XY first = {.x = 0, .y = 0};
 	maze[0][0].visited = 2;
     pushFront(&currentPath, first);
+    updateRobotPosition();
     xPos = 0;
 	yPos = -SECTOR_WIDTH;
 	// centerStartingPosition();
@@ -88,13 +87,13 @@ int main()
 
 	// while(!(current.y == 0 && current.x == 3)) // do testow byle tylko maly kawalek przejechalo
 	{
+		printf("x: %f, y: %f\n", xPos, yPos);
 		current = nextSector(&currentPath);
 		goToXY(current, 1);
 		updateSector(&currentPath);
 		// correctPosition(current);
-		printfMaze();
+		// printfMaze();
 	}
-		
 	printfMaze();
 	endPhase1();
 	
