@@ -4,6 +4,13 @@
 #include "defines.h"
 #include "recordPosition.h"
 
+// TODO: dodac defines tego:
+// visited 0: exploring - dopiero dojechac, jeszcze nie byl
+// visited 1: return: ma przez to wracac
+// visited 2: visited - juz w ogole nie wjezdzac
+// visited 3: equivalent do 2
+
+
 typedef struct
 {
 	int x;
@@ -17,8 +24,10 @@ typedef struct
 	int westWall;
 	int eastWall;
 	int visited;
-   int xCenter;
-   int yCenter;
+
+	double xCenter;
+	double yCenter;
+
 } Sector;
 
 typedef struct Queue_t

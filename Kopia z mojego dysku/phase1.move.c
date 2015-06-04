@@ -12,12 +12,18 @@
 #define MAX_IR_RANGE 36
 #define SENSOR_THRESHOLD 0.45
 
+#define MIN_US_DIST 12
+#define OPTIMAL_US_DIST 16
+#define MAX_US_DIST 20
+
 double xPos, yPos, bearing;
 int targetIR = SECTOR_WIDTH/2 - ROBOT_WIDTH/2; //INICJALIZACJA TYLKO -> POTEM SIE WARTOSC ZMIENIA/POPRAWIA // wiem ze mozna jako lokanlna, ale wg. mnie w ten sposob jest bardziej czytelne i dostepne
 // dotyczy side sensorow, front : side + 2;
 int targetUS;
+double targetWallReadings;
+double sensorDifference;
 
-
+double localSectorWidth = SECTOR_WIDTH;
 
 
 void goToSafeWallDistance()
@@ -357,37 +363,121 @@ void centerStartingPosition()
 }
 
 
-void bumpers(XY currentSector)
+void bumpers()
 {
-  if(check_bump(LEFT) == 1 || check_bump(RIGHT) == 1)
+  if(check_bump(LEFT) == 1 && check_bump(RIGHT) == 1)
   {
     printf("\t\tBUMPER HIT\n");
     set_motors(-10,-10);
-    usleep(1000000);
+    usleep(2000000);
     set_motors(0,0);
-    correctPosition(currentSector);
+  }
+  else if(check_bump(LEFT) == 1)
+  {
+    set_motors(-5,-15);
+    usleep(2000000);
+    set_motors(0,0);
+  }
+  else if(check_bump(RIGHT) == 1)
+  {
+    set_motors(-15,-5);
+    usleep(2000000);
+    set_motors(0,0);
   }
 }
 
 
+int isHeadingStraight()
+{
+  if(convertToDegrees(bearing) < 2 || convertToDegrees(bearing) > 358) 
+  {
+    return 1;
+  }
+    
+  if(convertToDegrees(bearing) < 92 && convertToDegrees(bearing) > 88) 
+  {
+    return 1;
+  }
+    
+  if(convertToDegrees(bearing) < 182 && convertToDegrees(bearing) > 178) 
+  {
+    return 1;
+  }
+    
+  if(convertToDegrees(bearing) < 272 && convertToDegrees(bearing) > 268) 
+  {
+    return 1;
+  }
 
+  return 0;
+}
+
+
+<<<<<<< HEAD
 void goToXY(XY destination) //TODO: dodac ifa z bearingiem czy dojechal
+=======
+void goToXY(XY destination, int phase)
+>>>>>>> 2f7442780613d410e41fdb083b6f121ef2387e92
 {
   double xDifference;
   double yDifference;
   double requiredAngleChange;
   double remainingDistance = 10000.00;
 
-  double xCoordinate = destination.x * SECTOR_WIDTH; //TODO
-  double yCoordinate = destination.y * SECTOR_WIDTH; //TODO
+  double xCoordinate;
+  double yCoordinate;
+
+  int canUpdate = 1;
+  double targetThreshold;
+  double angleThreshold;
+
+  double phase1SpeedConstant = 30.0; 
+  double phase2SpeedConstant = 50.0;
+  int baseSpeed;
+  int turnSpeed;
+
+  if(phase != 2)
+  {
+    targetThreshold = 1;
+    angleThreshold = 0.05;
+    baseSpeed = MEDIUM_SPEED;
+  }
+  
+  else
+  {
+    targetThreshold = 5;
+    angleThreshold = 0.75;
+    baseSpeed = 2 * MEDIUM_SPEED;
+  }
+
+
+  if(maze[destination.x][destination.y].xCenter == 0)
+  {
+    xCoordinate = destination.x * localSectorWidth;
+    maze[destination.x][destination.y].xCenter = xCoordinate;
+  }
+  else
+    xCoordinate = maze[destination.x][destination.y].xCenter;
+  if(maze[destination.x][destination.y].yCenter == 0)
+  {
+    yCoordinate = destination.y * localSectorWidth;
+    maze[destination.x][destination.y].yCenter = yCoordinate;
+  }
+  else
+    yCoordinate = maze[destination.x][destination.y].yCenter;
+
+
+
+
   //printf("\nCoordinates: %f\t%f", xCoordinate,yCoordinate); // debug
   // printf("\n BEARING %.2f", bearing); // debug
-  while ((fabs(remainingDistance)) > 3) // value to change
+  while (((fabs(remainingDistance)) > targetThreshold ) || (fabs(remainingDistance > 2) && isHeadingStraight() == 0)) // value to change
   {	
+
     //set_point(xPos,yPos);
     log_trail();
       // printf("\n BEARING %.2f", bearing); // debug
-    // printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
+   // printf("\nCurrent X: %f\t current Y: %f \t current bearing: %f \n\n",xPos,yPos,bearing); // debug
 //     printf("remain %.2f\n", remainingDistance);
     updateRobotPosition(); 
   	xDifference = xCoordinate - xPos;
@@ -401,28 +491,32 @@ void goToXY(XY destination) //TODO: dodac ifa z bearingiem czy dojechal
     {
       requiredAngleChange += (2 * M_PI);
     }
-    // printf("angleCh: %f, bearing: %f\n",requiredAngleChange,bearing);
+
     remainingDistance = sqrt(xDifference*xDifference + yDifference*yDifference);
 
-	
-    if(fabs(requiredAngleChange) > 1.2) 
+
+	  if(fabs(requiredAngleChange) > 1.2) 
     {
-    	while(fabs(requiredAngleChange) > 0.03)
+    	while(fabs(requiredAngleChange) > angleThreshold)
     	{
-        bumpers(getCurrentSector());
-		  //set_point(xPos,yPos);
-		  log_trail();
-          int speed = requiredAngleChange*35.0;
-          if(speed < -(MEDIUM_SPEED/2))
-    	    speed = -(MEDIUM_SPEED/2);
-    	  else if(speed < 0)
-    	    speed = -(MEDIUM_SPEED/4);
-    	  else if(speed > (MEDIUM_SPEED/2))
-    	    speed = (MEDIUM_SPEED/2);
-   		  else if(speed > 0)
-    	    speed = (MEDIUM_SPEED/4);
+		    log_trail();
+        
+        
+        if(turnSpeed < -(baseSpeed/2))
+    	    turnSpeed = -(baseSpeed/2);
+    	  else if(turnSpeed < 0)
+    	    turnSpeed = -(baseSpeed/8);
+    	  else if(turnSpeed > (baseSpeed/2))
+    	    turnSpeed = (baseSpeed/2);
+   		  else if(turnSpeed > 0)
+    	    turnSpeed = (baseSpeed/8);
+        
         updateRobotPosition(); 
         requiredAngleChange = atan2(xDifference,yDifference) - bearing;
+        if(phase != 2)
+          turnSpeed = requiredAngleChange * phase1SpeedConstant;    
+        else
+          turnSpeed = requiredAngleChange * phase2SpeedConstant;
         while(requiredAngleChange > (M_PI))
         {
           requiredAngleChange -= (2 * M_PI);
@@ -431,23 +525,197 @@ void goToXY(XY destination) //TODO: dodac ifa z bearingiem czy dojechal
         {
           requiredAngleChange += (2 * M_PI);
         }
-        set_motors(speed,-speed);
+        set_motors(turnSpeed,-turnSpeed);
     	}
     }
     else
     {
-      bumpers(getCurrentSector());
-      updateRobotPosition(); 
-      set_motors((MEDIUM_SPEED + MEDIUM_SPEED * requiredAngleChange*1.2),(MEDIUM_SPEED - MEDIUM_SPEED * requiredAngleChange*1.2));
+      bumpers();
 
-      // TODO: add sensor correction
+      updateRobotPosition(); 
+      int leftSpeed = baseSpeed + baseSpeed * requiredAngleChange;
+      int rightSpeed = baseSpeed - baseSpeed * requiredAngleChange;
+      if(phase != 2)
+      {
+        if(remainingDistance < 20)
+        {
+          leftSpeed /= 2;
+          rightSpeed /= 2;
+        }
+        if(remainingDistance < 10)
+        {
+          leftSpeed /= 2;
+          rightSpeed /= 2;
+        }
+      }
+      if(phase == 1)
+      {
+        int frontLeftReading, frontRightReading, sideLeftReading, sideRightReading; 
+    
+        double leftOffset = 0;
+        double rightOffset = 0;
+        double offSet = 0;;
+        double currentSensorDifference;
+        if(canUpdate)
+        {
+          get_front_ir_dists(&frontLeftReading, &frontRightReading);
+          get_side_ir_dists(&sideLeftReading, &sideRightReading);
+          double leftWallValue = (frontLeftReading + sideLeftReading)/2;
+          double rightWallValue = (frontRightReading + sideRightReading)/2;
+
+          if(frontLeftReading < DETECT_WALL_DISTANCE && sideLeftReading < DETECT_WALL_DISTANCE)
+          {
+            leftOffset = (targetWallReadings - leftWallValue);
+            currentSensorDifference = frontLeftReading - sideLeftReading;
+            // printf("LEFT OFFSET: %f\n", leftOffset);
+          }
+          if(frontRightReading < DETECT_WALL_DISTANCE && sideRightReading < DETECT_WALL_DISTANCE)
+          {
+            rightOffset = -(targetWallReadings - rightWallValue);
+            currentSensorDifference = (currentSensorDifference + (frontRightReading + sideRightReading))/2.0;
+            // printf("RIGHT OFFSET: %f\n", rightOffset);
+          }
+          if(leftOffset)
+            offSet = leftOffset;
+          else
+            offSet = rightOffset;
+        }
+
+
+        if(canUpdate && offSet) // ((fabs(currentSensorDifference) - 2.5) < sensorDifference) &&
+        {  
+          offSet /= 3;
+          if(convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) 
+          {
+            printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+          
+            maze[destination.x][destination.y].xCenter += offSet;
+            xCoordinate = maze[destination.x][destination.y].xCenter;
+
+            printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+            printf("IR CHANGE 1\n");
+          }
+        
+          if(convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) 
+          {
+            printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+
+            maze[destination.x][destination.y].yCenter -= offSet;
+            yCoordinate = maze[destination.x][destination.y].yCenter;
+
+            printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+                        printf("IR CHANGE 2\n");
+          }
+            
+          if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165) 
+          {
+            printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+           
+            maze[destination.x][destination.y].xCenter -= offSet;
+            xCoordinate = maze[destination.x][destination.y].xCenter;
+          
+            printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+                        printf("IR CHANGE 3\n");
+          }
+            
+          if(convertToDegrees(bearing) < 285 && convertToDegrees(bearing) > 255) 
+          {
+            printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+          
+            maze[destination.x][destination.y].yCenter += offSet;
+            yCoordinate = maze[destination.x][destination.y].yCenter;
+            
+            printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+                        printf("IR CHANGE 4\n");
+          }
+          canUpdate = 0;
+          // localSectorWidth += 
+        }
+
+        int usReading = get_us_dist();
+        if((usReading < MIN_US_DIST) || ((usReading > MAX_US_DIST) && (usReading < (0.35*localSectorWidth))))
+        {
+          printf("\n\n US READING: %d\n\n", usReading);
+          int distanceToMove = (OPTIMAL_US_DIST - usReading);
+          while(usReading < OPTIMAL_US_DIST)
+          {
+            usReading = get_us_dist();
+            int moveSpeed = usReading - OPTIMAL_US_DIST;
+            set_motors(moveSpeed, moveSpeed);
+          }
+
+          localSectorWidth += (distanceToMove/8.0);
+
+          if(convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) 
+          {
+            printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+        
+            maze[destination.x][destination.y].yCenter -= distanceToMove;
+            xCoordinate = maze[destination.x][destination.y].yCenter;
+
+            printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+                        printf("US CHANGE 1\n");
+          }
+        
+          if(convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) 
+          {
+            printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+
+            maze[destination.x][destination.y].xCenter -= distanceToMove;
+            yCoordinate = maze[destination.x][destination.y].xCenter;
+
+            printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+                                    printf("US CHANGE 2\n");
+
+          }
+            
+          if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165) 
+          {
+            printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+           
+            maze[destination.x][destination.y].yCenter -= distanceToMove;
+            xCoordinate = maze[destination.x][destination.y].yCenter;
+          
+            printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+                                    printf("US CHANGE 3\n");
+
+          }
+            
+          if(convertToDegrees(bearing) < 285 && convertToDegrees(bearing) > 255) 
+          {
+            printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+          
+            maze[destination.x][destination.y].xCenter -= distanceToMove;
+            yCoordinate = maze[destination.x][destination.y].xCenter;
+            
+            printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+                                    printf("US CHANGE 4\n");
+
+          }
+            remainingDistance = 0;
+        }
+
+
+      }
+
+
+      set_motors((leftSpeed),(rightSpeed));
     }
   }
+
+ 
+
+
+
   set_motors(0,0);
+
 }
 
 void endPhase1()
 {
+  printf("FINAL SECTOR_WIDTH: %f\n", localSectorWidth);
+
+  turnByAngleDegree(180.0);
 	set_ir_angle(LEFT, 90);
 	set_ir_angle(RIGHT, -90);
 	sleep(1);
