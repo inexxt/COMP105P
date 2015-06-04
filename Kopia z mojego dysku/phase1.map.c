@@ -4,8 +4,6 @@
 
 double bearing;
 
-// extern Queue* currentPath;
-
 void printQueue(Queue* q)
 {
 	printf("PRINTING QUEUE\n");

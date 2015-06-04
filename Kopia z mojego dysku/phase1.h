@@ -17,6 +17,8 @@ typedef struct
 	int westWall;
 	int eastWall;
 	int visited;
+   int xCenter;
+   int yCenter;
 } Sector;
 
 typedef struct Queue_t

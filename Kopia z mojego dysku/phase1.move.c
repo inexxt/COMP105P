@@ -371,7 +371,7 @@ void bumpers(XY currentSector)
 
 
 
-void goToXY(XY destination)
+void goToXY(XY destination) //TODO: dodac ifa z bearingiem czy dojechal
 {
   double xDifference;
   double yDifference;

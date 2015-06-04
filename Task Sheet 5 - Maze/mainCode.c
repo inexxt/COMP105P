@@ -1,7 +1,7 @@
 #include "defines.h"
 #include "phase1.map.h"
 #include "phase1.move.h"
-//#include "phase2.h"
+// #include "phase2.h"
 
 int main() 
 {
@@ -24,15 +24,15 @@ int main()
 
 	set_motors(0,0);
 
-// 	struct XY act = {.x = 1, .y = 1} ;
-// 
-// 	while(act.y != -1)
-// 	{
-// 		goToSector(act);
-// 		updateSector(act);
-// 		act = nextSector();
-// 	}
-// 	//go to sector(0,-1);
-// 	prepareToPhase2();
+	struct XY act = {.x = 1, .y = 1} ;
+
+	while(act.y != -1)
+	{
+		goToSector(act);
+		updateSector(act);
+		act = nextSector();
+	}
+	//go to sector(0,-1);
+	prepareToPhase2();
 	return 0;
 }
