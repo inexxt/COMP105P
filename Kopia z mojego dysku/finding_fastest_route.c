@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #define DEBUG 0
 
@@ -370,11 +371,16 @@ position BFS(position p)
 
 positionQ* solve()
 {
+    clock_t t = clock();
     mapPreprocessing();
 //     printMap();            
     cameFrom[STARTPOSITION.x][STARTPOSITION.y] = (move){1,1};
     position finish = BFS(STARTPOSITION);
     printf("FINISH %d %d\n", finish.x, finish.y); 
+
+    t = clock() - t;
+    printf("Time taken in seconds: %f\n", ((float)t)/CLOCKS_PER_SEC);
+
     int k;
     scanf("%d", &k);
     printPath(finish);
@@ -400,9 +406,7 @@ int main()
     maze[3][1] = (Sector){1, 0, 0, 1, 1};
     maze[3][2] = (Sector){1, 1, 0, 1, 1};
     maze[3][3] = (Sector){1, 1, 0, 1, 1};
-    
     solve();
     printMapFinal();
     return 0;
 }
-
