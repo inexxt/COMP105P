@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define WID 4
 #define HEI 4
@@ -336,7 +336,7 @@ position BFS(position p)
         BFSQueue = BFSQueue->next;
         move last = cameFrom[p.x][p.y];
         
-        k += DEBUG //DEBUG LINE
+        k += DEBUG; //DEBUG LINE
         int i = 0;
         for(i=0; i<5; i++)
         {
