@@ -19,7 +19,7 @@
 // igor: 23.90, 10.00
 
 #define SECTOR_WIDTH 59//58.00//59.5//59.0
-#define MEDIUM_SPEED 22
+#define MEDIUM_SPEED 32
 
 #define MAZE_WIDTH 4
 #define MAZE_HEIGHT 4
@@ -28,7 +28,7 @@
 
 #define SLEEPTIME 150000
 
-#define DETECT_WALL_DISTANCE 38//x`x`35//38
+#define DETECT_WALL_DISTANCE 38//35//38
 #define DETECT_WALL_DISTANCE_U 40
 
 extern double xPos;

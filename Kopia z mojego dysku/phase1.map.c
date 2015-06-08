@@ -4,6 +4,8 @@
 
 double bearing;
 
+// extern Queue* currentPath;
+
 void printQueue(Queue* q)
 {
 	printf("PRINTING QUEUE\n");
@@ -157,7 +159,7 @@ void updateSector(Queue** currentPath)
 			pushFront(currentPath, (XY){.x = x, .y = y-1}); 
 		}
 		
-		if(convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) //first case - it's heading north
+		if(convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) //second case - it's heading east
 		{
 				
 			if((frontLeftReading < DETECT_WALL_DISTANCE) || (sideLeftReading < DETECT_WALL_DISTANCE))
@@ -176,7 +178,7 @@ void updateSector(Queue** currentPath)
 			pushFront(currentPath, (XY){.x = x-1, .y = y});
 		}
 		
-		if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165) //first case - it's heading north
+		if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165) //third case - it's heading south
 		{
 				
 			if((frontLeftReading < DETECT_WALL_DISTANCE) || (sideLeftReading < DETECT_WALL_DISTANCE))
@@ -195,7 +197,7 @@ void updateSector(Queue** currentPath)
 			pushFront(currentPath, (XY){.x = x, .y = y+1});
 		}
 		
-		if(convertToDegrees(bearing) < 285 && convertToDegrees(bearing) > 255) //first case - it's heading north
+		if(convertToDegrees(bearing) < 285 && convertToDegrees(bearing) > 255) //fourth case - it's heading west
 		{
 				
 			if((frontLeftReading < DETECT_WALL_DISTANCE) || (sideLeftReading < DETECT_WALL_DISTANCE))
