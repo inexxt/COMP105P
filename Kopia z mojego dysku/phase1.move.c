@@ -7,8 +7,11 @@
 #define ADJUST_IR_ANGLE 25
 #define SENSOR_THRESHOLD 0.45
 
+#define US_THRESHOLD 1
+#define IR_THRESHOLD 1
+
 #define IR_ADJUSTMENT 0
-#define US_ADJUSTMENT 0
+#define US_ADJUSTMENT 1
 
 
 double xPos, yPos, bearing; // extern global
@@ -93,7 +96,7 @@ void IR_targetAdjustment(XY destination)
   if(frontLeftReading < DETECT_WALL_DISTANCE && sideLeftReading < DETECT_WALL_DISTANCE)
   {
     currentSensorDifference = frontLeftReading - sideLeftReading;
-    while(fabs(currentSensorDifference - sensorDifference) > 0)
+    while(fabs(currentSensorDifference - sensorDifference) > IR_THRESHOLD)
     {
       currentSensorDifference = get_front_ir_dist(LEFT) - get_side_ir_dist(LEFT);
       double relativeDifference = currentSensorDifference - sensorDifference;
@@ -109,7 +112,7 @@ void IR_targetAdjustment(XY destination)
   if(frontRightReading < DETECT_WALL_DISTANCE && sideRightReading < DETECT_WALL_DISTANCE)
   {
     currentSensorDifference = frontRightReading - sideRightReading;
-    while(fabs(currentSensorDifference - sensorDifference) > 0)
+    while(fabs(currentSensorDifference - sensorDifference) > IR_THRESHOLD)
     {
       currentSensorDifference = get_front_ir_dist(RIGHT) - get_side_ir_dist(RIGHT);
       double relativeDifference = currentSensorDifference - sensorDifference;
@@ -131,10 +134,10 @@ void IR_targetAdjustment(XY destination)
 
 
   double minOffSet = 3;
-  double maxOffSet = 12.0;
+  double maxOffSet = 8.0;
 
-
-  printf("LEFT: %f, RIGHT: %f\n",leftOffset,rightOffset);
+  
+  printf("LEFT OFFSET: %f, RIGHT OFFSET: %f\n",leftOffset,rightOffset);
 
   if(fabs(leftOffset) < maxOffSet && fabs(rightOffset) < maxOffSet)
   {
@@ -240,7 +243,9 @@ void US_targetAdjustment(XY destination)
  
     if(usReading > max_US_dist)
       adjustAngle();
-    while(ultraSound != optimal_US_dist)
+
+
+    while(fabs(optimal_US_dist - ultraSound) > US_THRESHOLD)
     {
       ultraSound = get_us_dist();
       int movementSpeed = (ultraSound - optimal_US_dist);
@@ -431,9 +436,9 @@ void goToXY(XY destination, int phase)
 {
   // because C is stupid.
   optimal_US_dist = targetWallReadings + US_OFFSET;
-  min_US_dist = optimal_US_dist - 4;
-  max_US_dist = optimal_US_dist + 4;
-
+  min_US_dist = optimal_US_dist - 6;
+  max_US_dist = optimal_US_dist + 6;
+  double targetX, targetY;
   int canUpdate = 1;
 
   if(maze[destination.x][destination.y].xCenter == 0)
@@ -463,7 +468,7 @@ void goToXY(XY destination, int phase)
   {
     if(phase == 1 && canUpdate)
     {
-      IR_targetAdjustment(destination)
+      IR_targetAdjustment(destination);
       targetX = maze[destination.x][destination.y].xCenter;
       targetY = maze[destination.x][destination.y].yCenter;
     }
