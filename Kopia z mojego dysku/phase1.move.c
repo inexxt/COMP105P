@@ -4,10 +4,10 @@
 
 #define ADJUST_IR_ANGLE 18
 #define SENSOR_THRESHOLD 0.45
-
 #define US_THRESHOLD 1
 #define IR_THRESHOLD 1
 
+// for debug in order to disable/enable some position adjustment features
 #define IR_ADJUSTMENT 1
 #define US_ADJUSTMENT 1
 
@@ -15,14 +15,11 @@
 double xPos, yPos, bearing; // extern global
 double targetWallReadings; // extern global
 double sensorDifference; // extern global
-
-double localSectorWidth = SECTOR_WIDTH;
+Sector maze[MAZE_WIDTH][MAZE_HEIGHT]; // extern gkibak
 
 double optimal_US_dist;
 double min_US_dist;
 double max_US_dist;
-
-Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
 
 double startingSectorX = 0.0;
 double startingSectorY = -SECTOR_WIDTH;
@@ -56,7 +53,6 @@ void adjustAngle()
   set_ir_angle(RIGHT, 45); 
 }
 
-
 void bumpers()
 {
   if(check_bump(LEFT) == 1 && check_bump(RIGHT) == 1)
@@ -86,16 +82,13 @@ void IR_targetAdjustment(XY destination)
 {
   set_motors(0,0);
   double frontLeftReading, frontRightReading, sideLeftReading, sideRightReading; 
-
   double leftOffset = 0;
   double rightOffset = 0;
   double offSet = 0;
   double currentSensorDifference = 0;
  
-
   getFrontIR(&frontLeftReading, &frontRightReading);
   getSideIR(&sideLeftReading, &sideRightReading);
-
 
   if(frontLeftReading < DETECT_WALL_DISTANCE && sideLeftReading < DETECT_WALL_DISTANCE)
   {
@@ -133,15 +126,11 @@ void IR_targetAdjustment(XY destination)
   getSideIR(&sideLeftReading, &sideRightReading);
   double leftWallValue = (frontLeftReading + sideLeftReading)/2;
   double rightWallValue = (frontRightReading + sideRightReading)/2;
-  leftOffset = (targetWallReadings - leftWallValue); // o ile za blisko lewa sciana - o ile sie oddalic
-  rightOffset = -(targetWallReadings - rightWallValue); // o ile za blisko lewa sciana - o ile sie oddalic 
-
+  leftOffset = (targetWallReadings - leftWallValue); // says how much closer than required the robot is to the left wall
+  rightOffset = -(targetWallReadings - rightWallValue); // same as above
 
   double minOffSet = 3;
   double maxOffSet = 12.0;
-
-  
-  printf("LEFT OFFSET: %f, RIGHT OFFSET: %f\n",leftOffset,rightOffset);
 
   if(fabs(leftOffset) < maxOffSet && fabs(rightOffset) < maxOffSet)
   {
@@ -157,24 +146,14 @@ void IR_targetAdjustment(XY destination)
   else
     offSet = 0;
 
-  printf("OFFSET: %f\n",offSet);
-  // printf("\n\nPREUPDATED: Currently at: %f %f, going to: %f %f\n", xPos,yPos,maze[destination.x][destination.y].xCenter, maze[destination.x][destination.y].yCenter);
   int i;
-
-  if(destination.y == -1)
+  if(destination.y == -1) // to prevent accessing negative array index
   {
     startingSectorX -= offSet;
   }
-
-
   else if(convertToDegrees(bearing) < 10 || convertToDegrees(bearing) > 350) 
   {
-    printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
-
-    // if(fabs(offSet) > minOffSet)
-    //   maze[destination.x][destination.y].xCenter += offSet;
-    // else
-    //   maze[destination.x][destination.y].xCenter = xPos;
+    printf("Changing %f,%f ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
 
     maze[destination.x][destination.y].xCenter = xPos;
     if(fabs(offSet) > minOffSet)
@@ -184,22 +163,13 @@ void IR_targetAdjustment(XY destination)
       maze[destination.x][i].xCenter = maze[destination.x][destination.y].xCenter;
     }
 
-    printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+    printf("to %f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
     printf("IR CHANGE facing North\n");
   }
 
   else if(convertToDegrees(bearing) < 100 && convertToDegrees(bearing) > 80) 
   {
-    printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
-
-    // if(fabs(offSet) > minOffSet){
-    //   maze[destination.x][destination.y].yCenter -= offSet;
-    //   printf("overwrite1\n");
-    // }
-    // else{
-    //   maze[destination.x][destination.y].yCenter = yPos;
-    //   printf("overwrite2\n");
-    // }
+    printf("Changing %f,%f ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
 
     maze[destination.x][destination.y].yCenter = yPos;
     if(fabs(offSet) > minOffSet)
@@ -209,19 +179,14 @@ void IR_targetAdjustment(XY destination)
       maze[i][destination.y].yCenter = maze[destination.x][destination.y].yCenter;
     }
 
-    printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
-                printf("IR CHANGE facing East\n");
+    printf("to %f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+    printf("IR CHANGE facing East\n");
   }
     
   else if(convertToDegrees(bearing) < 190 && convertToDegrees(bearing) > 170) 
   {
-    printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+    printf("Changing %f,%f ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
    
-    // if(fabs(offSet) > minOffSet)
-    //   maze[destination.x][destination.y].xCenter -= offSet;
-    // else
-    //   maze[destination.x][destination.y].xCenter = xPos;
-
     maze[destination.x][destination.y].xCenter = xPos;
     if(fabs(offSet) > minOffSet)
       maze[destination.x][destination.y].xCenter -= offSet;
@@ -230,17 +195,13 @@ void IR_targetAdjustment(XY destination)
       maze[destination.x][i].xCenter = maze[destination.x][destination.y].xCenter;
     }
 
-    printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
-                printf("IR CHANGE facing South\n");
+    printf("to %f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+    printf("IR CHANGE facing South\n");
   }
     
   else if(convertToDegrees(bearing) < 280 && convertToDegrees(bearing) > 260) 
   {
-    printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
-    // if(fabs(offSet) > minOffSet)
-    //   maze[destination.x][destination.y].yCenter += offSet;
-    // else
-    //   maze[destination.x][destination.y].yCenter = yPos;
+    printf("Changing %f,%f ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
 
     maze[destination.x][destination.y].yCenter = yPos;
     if(fabs(offSet) > minOffSet)
@@ -250,10 +211,9 @@ void IR_targetAdjustment(XY destination)
       maze[i][destination.y].yCenter = maze[destination.x][destination.y].yCenter;
     }
 
-    printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
-                printf("IR CHANGE facing West\n");
+    printf("to %f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
+    printf("IR CHANGE facing West\n");
   }
-  printf("POSTUPDATED: Currently at: %f %f, going to: %f %f\n\n", xPos,yPos,maze[destination.x][destination.y].xCenter, maze[destination.x][destination.y].yCenter);
 
   set_motors(0,0);
 }
@@ -261,15 +221,14 @@ void IR_targetAdjustment(XY destination)
 
 void US_targetAdjustment(XY destination)
 {
-  double usReading = getUSValue(); // dla dodatkowej dokladnosci, zeby sie upewnic czy na pewno ma wejsc w petle
+  double usReading = getUSValue(); // for extra accuracy in order to ensure the loop should be entered
   if((usReading < min_US_dist) || ((usReading > max_US_dist) && (usReading < (1.6*max_US_dist))))
   {
-    double distanceToMove = optimal_US_dist - usReading; // ile sie odsunac od sciany
+    double distanceToMove = optimal_US_dist - usReading; // how much robot should go away from the wall
     int ultraSound = (int)round(usReading);
  
     if(usReading > max_US_dist)
-      adjustAngle();
-
+      adjustAngle(); // if it's too close then there's no point in correcting the angle since the robot would have problems in "catching" the wall
 
     while(fabs(optimal_US_dist - ultraSound) > US_THRESHOLD)
     {
@@ -287,10 +246,9 @@ void US_targetAdjustment(XY destination)
     }
     set_motors(0,0);
 
-
-// west < east < south < north
-    if(destination.x == 5 && destination.y == 5)
+    if(destination.x == 5 && destination.y == 5) // arbitrary sector that is used to only correct relative position 
       return;
+
     int i;
     if(destination.y == -1)
     {
@@ -466,17 +424,15 @@ void moveToTarget(double targetX, double targetY, int phase)
 
 void goToXY(XY destination, int phase)
 {
-
-  // because C is stupid.
+  // initializing globals 
   optimal_US_dist = targetWallReadings + US_OFFSET;
   min_US_dist = optimal_US_dist - 4;
   max_US_dist = optimal_US_dist + 4;
   double targetX, targetY;
-  int canUpdate = 1;
 
   if(maze[destination.x][destination.y].xCenter == 0)
   {
-    targetX = destination.x * localSectorWidth;
+    targetX = destination.x * SECTOR_WIDTH;
     maze[destination.x][destination.y].xCenter = targetX;
   }
   else
@@ -484,7 +440,7 @@ void goToXY(XY destination, int phase)
   
   if(maze[destination.x][destination.y].yCenter == 0)
   {
-    targetY = destination.y * localSectorWidth;
+    targetY = destination.y * SECTOR_WIDTH;
     maze[destination.x][destination.y].yCenter = targetY;
   }
   else
@@ -495,8 +451,6 @@ void goToXY(XY destination, int phase)
     targetX = startingSectorX;
     targetY = startingSectorY;
   }
-
-  printf("Going to: %f,%f\n",targetX, targetY);
 
 	rotateTowardsTarget(targetX, targetY, phase);
   if(IR_ADJUSTMENT)
@@ -514,22 +468,33 @@ void goToXY(XY destination, int phase)
     if(phase != 2 && destination.y != -1)
       US_targetAdjustment(destination);
   }
+}
 
-  printf("Reached target, I am at: %f, %f\n",xPos,yPos);
+void centerStartingPosition()
+{
+  adjustAngle();
+  US_targetAdjustment((XY){.x = 5,.y = 5});
+  usleep(SLEEPTIME);
+  turnByAngleDegree(90.00);
+  usleep(SLEEPTIME);
+  adjustAngle();
+  usleep(SLEEPTIME);
+  US_targetAdjustment((XY){.x = 5,.y = 5});
+  usleep(SLEEPTIME);
+  turnByAngleDegree(90.00);
+  usleep(SLEEPTIME);
 }
 
 void endPhase1()
 {
-  printf("FINAL SECTOR_WIDTH: %f\n", localSectorWidth);
-  int tempUS = get_us_dist();
-  while(tempUS > DETECT_WALL_DISTANCE_U)
+  int usValue = get_us_dist();
+  while(usValue > DETECT_WALL_DISTANCE_U)
   {
     set_motors(2,2);
-    tempUS = get_us_dist();
+    usValue = get_us_dist();
   }
   set_motors(0,0);
   centerStartingPosition();
-  // turnByAngleDegree(180.0);
   updateRobotPosition();
 	set_ir_angle(LEFT, 90);
 	set_ir_angle(RIGHT, -90);
@@ -538,348 +503,3 @@ void endPhase1()
   set_ir_angle(RIGHT, -45);
   sleep(1);
 }
-
-
-
-void centerStartingPosition()
-{
-  adjustAngle();
-  US_targetAdjustment((XY){.x = 5,.y = 5});
-  usleep(SLEEPTIME);
-  turnByAngleDegree(90.00);
-  usleep(SLEEPTIME);
-  adjustAngle();
-  usleep(SLEEPTIME);
-  US_targetAdjustment((XY){.x = 5,.y = 5});
-  usleep(SLEEPTIME);
-  turnByAngleDegree(90.00);
-  usleep(SLEEPTIME);
-}
-
-
-
-// SOME OLD FUNCTIONS WE USED TO USE
-
-
-/*
-#define MIN_IR_RANGE 12
-#define MAX_IR_RANGE 36
-void goToSafeWallDistance()
-{
-  set_ir_angle(LEFT, ADJUST_IR_ANGLE);
-  set_ir_angle(RIGHT, -ADJUST_IR_ANGLE);  
-
-  int movementSpeed = 3;
-  double frontLeftIR, frontRightIR;
-  getFrontIR(&frontLeftIR, &frontRightIR);
-  while((frontLeftIR > MAX_IR_RANGE) || (frontRightIR > MAX_IR_RANGE))
-  {
-    // printf("greater than max\n");
-    set_motors(movementSpeed,movementSpeed);
-    getFrontIR(&frontLeftIR, &frontRightIR);
-    // if((frontLeftIR < MIN_IR_RANGE) || (frontRightIR < MIN_IR_RANGE))
-    // {
-    //   set_motors(0,0);
-    //   turnByAngleDegree(-15.00);
-    //   usleep(SLEEPTIME);
-    // }
-  }
-  set_motors(0,0);
-  while((frontLeftIR < MIN_IR_RANGE) || (frontRightIR < MIN_IR_RANGE))
-  {
-    // printf("less than min\n");
-    set_motors(-movementSpeed,-movementSpeed);
-    getFrontIR(&frontLeftIR, &frontRightIR);
-    // if((frontLeftIR < MAX_IR_RANGE) || (frontRightIR < MAX_IR_RANGE))
-    // {
-    //   set_motors(0,0);
-    //   turnByAngleDegree(-15.00);
-    //   usleep(SLEEPTIME);
-    // }
-  }
-  set_motors(0,0);
-  set_ir_angle(LEFT, -45);
-  set_ir_angle(RIGHT, 45); 
-}
-
-double adjustWallDistance()
-{
-  double ultraSound;
-  ultraSound = getUSValue();
-
-  double adjustment = optimal_US_dist - ultraSound;
-  if(ultraSound > max_US_dist)
-    adjustAngle();
-  while(fabs(ultraSound - optimal_US_dist) > SENSOR_THRESHOLD)
-  {
-    ultraSound = get_us_dist();
-    int movementSpeed = (ultraSound - optimal_US_dist) * 2;
-    if(movementSpeed < -10)
-      movementSpeed = -10;
-    else if(movementSpeed < 0)
-      movementSpeed = -6;
-    else if(movementSpeed > 10)
-      movementSpeed = 10;
-    else if(movementSpeed > 0)
-      movementSpeed = 6;
-
-    set_motors(movementSpeed,movementSpeed);
-  }
-  set_motors(0,0);
-  return adjustment;
-}
-
-
-
-
-void correctPositionPerpendicularWalls()
-{
-  adjustAngle();
-  usleep(SLEEPTIME);
-  adjustWallDistance();
-  usleep(SLEEPTIME);
-
-  set_ir_angle(LEFT, -45);
-  set_ir_angle(RIGHT, 45); 
-  usleep(SLEEPTIME);
-
-  double sideLeft, sideRight;
-  double frontLeft, frontRight;
-  getSideIR(&sideLeft, &sideRight);
-  getFrontIR(&frontLeft, &frontRight);
-
-  if((sideLeft < DETECT_WALL_DISTANCE) && (frontLeft < DETECT_WALL_DISTANCE))
-  {
-    turnByAngleDegree(-90.00);
-    usleep(SLEEPTIME);
-    adjustAngle();
-    usleep(SLEEPTIME);
-    adjustWallDistance();
-    usleep(SLEEPTIME);
-    turnByAngleDegree(90.00);
-    usleep(SLEEPTIME);
-
-    // int leftValue = ((double)(sideLeft + frontLeft))/2;
-    // updateCoordinates(currentSector, ultraSound, leftValue, LEFT_SIDE);
-  }
-
-  else if((sideRight < DETECT_WALL_DISTANCE) && (frontRight < DETECT_WALL_DISTANCE))
-  {
-    turnByAngleDegree(90.00);
-    usleep(SLEEPTIME);
-    adjustAngle();
-    usleep(SLEEPTIME);
-    adjustWallDistance();
-    usleep(SLEEPTIME);
-    turnByAngleDegree(-90.00);
-    usleep(SLEEPTIME);
-    // int rightValue = ((double)(sideRight + frontRight))/2;
-    // updateCoordinates(currentSector, ultraSound,rightValue,RIGHT_SIDE);
-  }
-}
-
-void correctPositionDeadEnd()
-{
-  adjustAngle();
-  usleep(SLEEPTIME);
-  adjustWallDistance();
-  usleep(SLEEPTIME);
-  turnByAngleDegree(-90.00);
-  usleep(SLEEPTIME);
-  adjustAngle();
-  usleep(SLEEPTIME);
-  adjustWallDistance();
-  usleep(SLEEPTIME);
-//   turnByAngleDegree(180.00);
-//   usleep(SLEEPTIME);
-//   adjustAngle();
-//   usleep(SLEEPTIME);
-//   adjustWallDistance();
-//   usleep(SLEEPTIME);
-  turnByAngleDegree(-90.00);
-  usleep(SLEEPTIME);
-}
-
-void correctPositionParallelWalls()
-{
-  turnByAngleDegree(90.00);
-  usleep(SLEEPTIME);
-  adjustAngle();
-  usleep(SLEEPTIME);
-  adjustWallDistance();
-  usleep(SLEEPTIME);
-//   turnByAngleDegree(180.00);
-//   usleep(SLEEPTIME);
-//   adjustAngle();
-//   usleep(SLEEPTIME);
-//   adjustWallDistance();
-//   usleep(SLEEPTIME);
-  turnByAngleDegree(-90.00);
-  usleep(SLEEPTIME);
-}
-
-void singleWallCase(XY currentSector)
-{
-  int x = currentSector.x;
-  int y = currentSector.y;
-  double angleToTurn = -(convertToDegrees(bearing));
-
-  if(maze[x][y].northWall)
-  {
-    angleToTurn += 0.0;
-  }
-  else if(maze[x][y].southWall)
-  {
-    angleToTurn += 180.0;
-  }
-  else if(maze[x][y].eastWall)
-  {
-    angleToTurn += 90.0;
-  }
-  else if(maze[x][y].westWall)
-  {
-    angleToTurn += -90.0;
-  }
-
-  while(angleToTurn > 180.0)
-  { 
-    angleToTurn -= 360.0;
-  }
-  while(angleToTurn < -180.0)
-  {
-    angleToTurn += 360.0;
-  }
-
-  usleep(SLEEPTIME);
-  turnByAngleDegree(angleToTurn);
-  usleep(SLEEPTIME);
-  adjustAngle();
-  usleep(SLEEPTIME);
-  adjustWallDistance();
-  usleep(SLEEPTIME);
-}
-
-void correctPosition(XY currentSector)
-{
-  int x = currentSector.x;
-  int y = currentSector.y;
-  int wallCount = maze[x][y].eastWall + maze[x][y].westWall + maze[x][y].southWall + maze[x][y].northWall;
-  int xAxisWalls = maze[x][y].eastWall + maze[x][y].westWall;
-  int yAxisWalls = maze[x][y].southWall + maze[x][y].northWall;
-  //case 1: 3 sciany -dead end
-  // case 2: 2 przylegle - swastyka, etc
-  //case 3: 2 rownolegle sciany
-  printf("wall count: %d \n", wallCount);
-  int updated = 0;
-  printf("PRE- UPDATED X: %.2f Y: %.2f\n",xPos,yPos);
-  if(wallCount == 3)
-  { 
-    updated = 1;
-    printf("CASE 1\n");
-    correctPositionDeadEnd();
-    updateRobotPosition();
-    xPos = x * SECTOR_WIDTH;
-    yPos = y * SECTOR_WIDTH;
-  }
-
-  else if((xAxisWalls) && (yAxisWalls))
-  {
-    updated = 1;
-    printf("CASE 2\n");
-  correctPositionPerpendicularWalls();
-  updateRobotPosition();
-    xPos = x * SECTOR_WIDTH;
-    yPos = y * SECTOR_WIDTH;
-  }
-  else if(wallCount == 2) // z jakiegos powodu robot tego nie lubi i w ogole sie gubi
-  {
-    updated = 1;
-    printf("CASE 3\n");
-    correctPositionParallelWalls();
-    updateRobotPosition();
-    if(yAxisWalls)
-    {
-      xPos = x * SECTOR_WIDTH;
-    }
-    
-    else if(xAxisWalls)
-    {
-      yPos = y * SECTOR_WIDTH;
-    }
-  }
-  else if(wallCount == 1)
-  {
-    updated = 1;
-    singleWallCase(currentSector);
-    updateRobotPosition();
-    if(yAxisWalls)
-    {
-      yPos = y * SECTOR_WIDTH;
-    }
-    
-    if(xAxisWalls)
-    {
-      xPos = x * SECTOR_WIDTH;
-    }
-  }
-  printf("JUST UPDATED X: %.2f Y: %.2f\n",xPos,yPos);
-  if(updated)
-  {
-    updated = 0;
-    if(convertToDegrees(bearing) < 15 || convertToDegrees(bearing) > 345) 
-      bearing = 0;
-    else if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165)
-      bearing = M_PI; 
-    else if(convertToDegrees(bearing) < 105 && convertToDegrees(bearing) > 75) 
-      bearing = M_PI/2;
-    else if(convertToDegrees(bearing) < 195 && convertToDegrees(bearing) > 165)
-      bearing = (-(M_PI/2)); 
-  }
-  usleep(SLEEPTIME);
-}
-
-void centerStartingPosition()
-{
-  double frontLeftIR, frontRightIR, sideLeftIR, sideRightIR;
-  turnByAngleDegree(180.00);
-  usleep(SLEEPTIME);
-  adjustAngle();
-  usleep(SLEEPTIME);
-  set_ir_angle(LEFT, -45);
-  set_ir_angle(RIGHT, 45);    
-  usleep(SLEEPTIME);
-  getFrontIR(&frontLeftIR, &frontRightIR);
-  getSideIR(&sideLeftIR, &sideRightIR);
-  targetIR = (frontLeftIR + frontRightIR + sideLeftIR + sideRightIR)/4;
-  adjustWallDistance();
-  usleep(SLEEPTIME);
-  turnByAngleDegree(90.00);
-    usleep(SLEEPTIME);
-  adjustAngle();
-    usleep(SLEEPTIME);
-  adjustWallDistance();
-    usleep(SLEEPTIME);
-  turnByAngleDegree(180.00);
-    usleep(SLEEPTIME);
-  adjustAngle();
-    usleep(SLEEPTIME);
-  printf("I SHOULDNT MOVE IF I MOVE CORRECT US_OFFSET!!\n");
-  adjustWallDistance();
-    usleep(SLEEPTIME);
-    // updateRobotPosition();
-    // bearing = M_PI/2;
-    usleep(SLEEPTIME);
-      turnByAngleDegree(-90.00);
-        usleep(SLEEPTIME);
-
-  bearing = 0; // so that the bearing would be affected by this movement (so we would know it's slightly off ( important!))
-  updateRobotPosition();
-  
-  // bearing = 0;
-  xPos = 0;
-  yPos = -SECTOR_WIDTH;
-  updateRobotPosition();
-}
-
-
-*/

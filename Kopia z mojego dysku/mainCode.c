@@ -5,9 +5,9 @@
 #include "recordPosition.h"
 #include "basicMovement.h"
 
+/*defined as extern globals*/
 double targetWallReadings;
 double sensorDifference;
-
 Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
 
 void debug()
@@ -31,7 +31,7 @@ void printfMaze()
 			printf("maze[%d][%d] = (Sector){%d, %d, %d, %d, %d, %f, %f};\n", i, j, maze[i][j].northWall, maze[i][j].southWall, maze[i][j].westWall, maze[i][j].eastWall, maze[i][j].visited, maze[i][j].xCenter, maze[i][j].yCenter);
 		}
 	printf("-------------------------------------------------\n");
-	printf("------------------EDING MAZE---------------------\n");
+	printf("-----------------ENDING MAZE---------------------\n");
 }
 
 void calibrateWallDistance()
@@ -57,23 +57,10 @@ int main()
 {
 	connect_to_robot();
 	initialize_robot();
-	printf("beginning\n");
+	printf("Starting mapping...\n");
+
 	//PHASE 1
-	int temp = 0;
-	set_origin();
-	// while(temp < 10000)
-	// {
-	// 	log_trail();
-	// 	set_point(xPos,yPos);
-	// 	temp++;
-	// 	printf("X: %f\tY:%f\tBearing: %f\n", xPos,yPos,convertToDegrees(bearing));
-	// 	updateRobotPosition();
-	// }
-
-	// turnByAngleDegree(360);
 	calibrateWallDistance();
-	printf("%f", sensorDifference);
-
 
 	Queue* currentPath = NULL;
 	XY current;
@@ -83,50 +70,30 @@ int main()
     updateRobotPosition();
     xPos = 0;
 	yPos = -SECTOR_WIDTH;
-	// centerStartingPosition();
 
    
-// 	while(!(current.y == -1 && current.x == 0))
-// 	{
-// 		printf("x: %f, y: %f\n", xPos, yPos);
-// 		current = nextSector(&currentPath);
-// 		goToXY(current, 1);
-// 		updateSector(&currentPath);
-// 		// correctPosition(current);
-// 		// printfMaze();
-// 	}
-	
-    maze[0][0] = (Sector){0, 0, 1, 0, 1, -3.455002, -9.923059};
-    maze[0][1] = (Sector){0, 0, 1, 1, 1, -3.455002, 51.931629};
-    maze[0][2] = (Sector){0, 0, 1, 1, 1, -3.455002, 111.764090};
-    maze[0][3] = (Sector){1, 0, 1, 0, 1, -3.455002, -66.500000};
-    maze[1][0] = (Sector){0, 1, 0, 0, 1, 60.606468, -9.923059};
-    maze[1][1] = (Sector){0, 0, 1, 1, 1, 60.606468, 51.931629};
-    maze[1][2] = (Sector){1, 0, 1, 0, 1, 60.606468, 111.764090};
-    maze[1][3] = (Sector){0, 1, 0, 1, 1, 60.606468, -66.500000};
-    maze[2][0] = (Sector){0, 1, 0, 0, 1, 116.577644, -9.923059};
-    maze[2][1] = (Sector){1, 0, 1, 1, 1, 116.577644, 51.931629};
-    maze[2][2] = (Sector){0, 1, 0, 0, 1, 116.577644, 111.764090};
-    maze[2][3] = (Sector){1, 0, 1, 1, 1, 116.577644, -66.500000};
-    maze[3][0] = (Sector){0, 1, 0, 1, 1, 182.215865, -9.923059};
-    maze[3][1] = (Sector){0, 0, 1, 1, 1, 182.215865, 51.931629};
-    maze[3][2] = (Sector){0, 0, 0, 1, 1, 182.215865, 111.764090};
-    maze[3][3] = (Sector){1, 0, 1, 1, 1, 182.215865, 171.829015};
-
+	while(!(current.y == -1 && current.x == 0))
+	{
+		printf("Current position: x: %f, y: %f\n", xPos, yPos);
+		current = nextSector(&currentPath);
+		goToXY(current, 1);
+		updateSector(&currentPath);
+	}
 	printfMaze();
-// 	endPhase1();
+	endPhase1();
     
 	//PHASE 2
-// 	Queue* a = calculateOptimalPath();
-// 	while(!isEmpty(a))
-// 	{
-// 		goToXY(popFront(&a), 2);
-// 		// correctPosition(a->sxy);
-// 	}
+	//Solution 1
+	Queue* a = calculateOptimalPath();
+	while(!isEmpty(a))
+	{
+		goToXY(popFront(&a), 2);
+	}
    
-   go(); //PHASE 2 - everything is inside
+    //Solution 2
+    // go(); 
 	
-   set_motors(0,0);
+    set_motors(0,0);
 	sleep(1);
 	printf("FINISH\n");
 	return 0;

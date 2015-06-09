@@ -1,8 +1,5 @@
 #include "phase1.h"
 
-double xPos, yPos;
-extern Sector maze[4][4];
-
 XY getCurrentSector()
 {
 	int xSquare = round(xPos/SECTOR_WIDTH);
@@ -22,7 +19,6 @@ void getSideIR(double *left, double *right)
   int i;
   for(i = 0; i < NUMBER_OF_IR_READINGS; i++)
   {
-  	// printf("READING SIDE\n");
   	int leftReading, rightReading;
   	get_side_ir_dists(&leftReading, &rightReading);
     usleep(5000);
@@ -38,7 +34,6 @@ void getFrontIR(double *left, double *right)
   int i;
   for(i = 0; i < NUMBER_OF_IR_READINGS; i++)
   {
-  	// printf("READING FRONT\n");
   	int leftReading, rightReading;
   	get_front_ir_dists(&leftReading, &rightReading);
     usleep(5000);

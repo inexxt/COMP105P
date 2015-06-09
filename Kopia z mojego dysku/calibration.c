@@ -5,13 +5,13 @@ int main()
 {
 	connect_to_robot();
 	initialize_robot();
-   int choice = 1;
+	int choice = 1;
 	while(choice)
 	{
-		printf("Choose action: \n");
-		printf("1 go X forward\n");
-		printf("2 turn by X degree\n");
-		printf("3--- done.\n");
+		printf("Choose an action: \n");
+		printf("1. Go X cm forward\n");
+		printf("2. Turn by X degree\n");
+		printf("Anything else. Quit\n");
 		scanf("%d",&choice);
 		float distance, angle;
 		switch(choice)

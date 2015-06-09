@@ -38,7 +38,7 @@
 #define STARTPOSITION (position){30, 1}
 
 #define MAXSPEED 6 //max sped of the robot, approximately
-#define SCALE 1
+#define SCALE 5
 //DANGER TODO think about the situation when I'm not exactly at the center of square, or have some slip or anything like that
 
 typedef struct
@@ -455,6 +455,9 @@ void moveToTargetFastest(position p)
 
         leftSpeed = baseSpeed + baseSpeed * 2*requiredAngleChange;
         rightSpeed = baseSpeed - baseSpeed * 2*requiredAngleChange;
+
+        if(fabs(requiredAngleChange) > (M_PI/2))
+          break;
 
 //         if(fabs(requiredAngleChange) > (M_PI/4))
 //             break;

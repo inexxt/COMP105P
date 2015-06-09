@@ -4,18 +4,16 @@
 #include "defines.h"
 #include "recordPosition.h"
 
-// TODO: dodac defines tego:
-// visited 0: exploring - dopiero dojechac, jeszcze nie byl
-// visited 1: return: ma przez to wracac
-// visited 2: visited - juz w ogole nie wjezdzac
-// visited 3: equivalent do 2
-
-
 typedef struct
 {
 	int x;
 	int y;
 } XY;
+
+// visited explanation
+// visited 0: exploring - robot is yet to enter the sector, wasn't there before
+// visited 1: return: - robot has already visited the sector and is to return via it
+// visited 2+: visited - robot shouldn't enter the sector now
 
 typedef struct
 {
@@ -42,6 +40,5 @@ void getFrontIR(double *left, double *right);
 double getUSValue();
 
 extern Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
-
 
 #endif

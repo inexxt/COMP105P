@@ -4,34 +4,33 @@
 #include <stdio.h>
 #include <math.h>
 
-// #define SIMULATOR 1
-#define REAL 1
+#define SIMULATOR 1
+// #define REAL_ROBOT 1
 
 #ifdef SIMULATOR
-#define ROBOT_WIDTH 22.5//23.90//23.90//23.4//22.0//23.0//22.50 
-#define CIRCUMFERENCE 9.50*M_PI//10.00*M_PI//10.0*M_PI//9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
-#define US_OFFSET 2 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
-#define SECTOR_WIDTH 60//58.00//59.5//59.0
+#define ROBOT_WIDTH 22.5
+#define CIRCUMFERENCE 9.50*M_PI
+#define US_OFFSET 2 //difference between av. IR and US values (simulator - 2, real robot ~ 6.5)
+#define SECTOR_WIDTH 60
 #endif
 
-#ifdef REAL
-#define ROBOT_WIDTH 23.85//23.90//23.90//23.4//22.0//23.0//22.50 
-#define CIRCUMFERENCE 10*M_PI//10.00*M_PI//10.0*M_PI//9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
-#define US_OFFSET 6.5 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
-#define SECTOR_WIDTH 59//58.00//59.5//59.0
+#ifdef REAL_ROBOT
+#define ROBOT_WIDTH 23.85
+#define CIRCUMFERENCE 10*M_PI
+#define US_OFFSET 6.5 //difference between av. IR and US values(simulator - 2, real robot ~ 6.5)
+#define SECTOR_WIDTH 59
 #endif
 
-
-
-
-// hugo: 22.95, 9.6
-// klaus: 23.90, 10.00
-// gus: 23.90, 10.00
-// fifi: 23.90, 10.00
-// rita: 23.90, 10.00
-// igor: 23.90, 10.00
-//jeane: 23.85, 10.00
-
+/*
+calibration values:
+Hugo: 22.95, 9.60
+Klaus: 23.90, 10.00
+Gus: 23.90, 10.00
+Fifi: 23.90, 10.00
+Rita: 23.90, 10.00
+Igor: 23.90, 10.00
+Jeanne: 23.85, 10.00
+*/
 
 #define MEDIUM_SPEED 32
 
@@ -40,9 +39,9 @@
 #define NUMBER_OF_IR_READINGS 8
 #define NUMBER_OF_US_READINGS 4
 
-#define SLEEPTIME 450000
+#define SLEEPTIME 300000
 
-#define DETECT_WALL_DISTANCE 38//35//38
+#define DETECT_WALL_DISTANCE 38
 #define DETECT_WALL_DISTANCE_U 40
 
 extern double xPos;
@@ -50,7 +49,7 @@ extern double yPos;
 extern double bearing;
 
 extern double targetWallReadings;
-extern double sensorDifference;
+extern double sensorDifference; // difference between average of front and side sensors (if pointed in the same direction)
 
-extern int leftEncoder;
-extern int rightEncoder;
+extern int leftEncoder; // values to be kept and used by the recordPosition 
+extern int rightEncoder; 

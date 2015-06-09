@@ -24,10 +24,6 @@ void updateAngle(double distanceLeft, double distanceRight)
 	}
 }
 
-
-        // nx = ox - ((x-ox) * cos(angle) + (y-oy) * sin(angle))
-        // ny = oy + (y-oy) * cos(angle) - (x-ox) * sin(angle) 
-
 void updateX(double distanceLeft, double distanceRight)
 {
 	xPos += ((distanceRight + distanceLeft) / (2)) * sin(bearing);
