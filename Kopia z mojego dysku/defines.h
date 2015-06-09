@@ -18,7 +18,7 @@
 // rita: 23.90, 10.00
 // igor: 23.90, 10.00
 
-#define SECTOR_WIDTH 59//58.00//59.5//59.0
+#define SECTOR_WIDTH 60//58.00//59.5//59.0
 #define MEDIUM_SPEED 32
 
 #define MAZE_WIDTH 4

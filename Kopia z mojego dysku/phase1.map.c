@@ -75,7 +75,7 @@ XY popCurrentPath(Queue* q)
 		{
 			printf("\tERROR\tERROR\tERROR\tERROR\n");
 			printf("%d %d \n", cs.x, cs.y);
-			return (XY){.x = -100, .y = -100}; //something went wrong, that situations shoudn't occur
+			return (XY){.x = -100, .y = -100}; //something went wrong, that situation shoudn't occur
 		}
 	}
 	return popFront(&q);
@@ -95,7 +95,7 @@ int availSector(int x, int y, int type)
 {	
 	printf("AVAIL X %d Y %d type %d\n", x, y, type);
 	if(x > MAZE_WIDTH - 1 || x < 0 || y > (MAZE_HEIGHT - 1) || y < 0) return 0;
-	if(maze[x][y].visited != 0 && type == EXPLORING) return 0; //checking if visited only if i want to explore it - if that's my return path, do not do that
+	if(maze[x][y].visited != 0 && type == EXPLORING) return 0; //checking if visited, but only if i want to explore it - if that's my return path, do not do that
 	return 1;
 }
 

@@ -1,21 +1,17 @@
 #include "defines.h"
 #include "basicMovement.h"
 
-
-
-
-
 int main()
 {
 	connect_to_robot();
 	initialize_robot();
-	while(1)
+   int choice = 1;
+	while(choice)
 	{
 		printf("Choose action: \n");
 		printf("1 go X forward\n");
 		printf("2 turn by X degree\n");
 		printf("3--- done.\n");
-		int choice;
 		scanf("%d",&choice);
 		float distance, angle;
 		switch(choice)
@@ -31,10 +27,9 @@ int main()
 				turnByAngleDegree(angle);
 				break;
 			default:
-				goto escape;
+				choice = 0;
 				break;
 		}
 	}
-	escape:
 	return 0;
 }
