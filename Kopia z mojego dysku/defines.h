@@ -4,10 +4,19 @@
 #include <stdio.h>
 #include <math.h>
 
+#define SIMULATOR 1
 
+#ifdef SIMULATOR
+#define ROBOT_WIDTH 22.5//23.90//23.90//23.4//22.0//23.0//22.50 
+#define CIRCUMFERENCE 9.50*M_PI//10.00*M_PI//10.0*M_PI//9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
+#define US_OFFSET 2 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
+#endif
 
+#ifdef REAL
 #define ROBOT_WIDTH 23.9//23.90//23.90//23.4//22.0//23.0//22.50 
-#define CIRCUMFERENCE 10.0*M_PI//10.00*M_PI//10.0*M_PI//9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
+#define CIRCUMFERENCE 10*M_PI//10.00*M_PI//10.0*M_PI//9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
+#define US_OFFSET 6.5 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
+#endif
 
 
 
@@ -17,8 +26,9 @@
 // fifi: 23.90, 10.00
 // rita: 23.90, 10.00
 // igor: 23.90, 10.00
+// joann: 23.85 10.00
 
-#define SECTOR_WIDTH 59//58.00//59.5//59.0
+#define SECTOR_WIDTH 60//58.00//59.5//59.0
 #define MEDIUM_SPEED 32
 
 #define MAZE_WIDTH 4
@@ -26,7 +36,7 @@
 #define NUMBER_OF_IR_READINGS 8
 #define NUMBER_OF_US_READINGS 4
 
-#define SLEEPTIME 150000
+#define SLEEPTIME 450000
 
 #define DETECT_WALL_DISTANCE 38//35//38
 #define DETECT_WALL_DISTANCE_U 40

@@ -11,7 +11,7 @@
 #include <math.h>
 #include <time.h>
 
-#define DEBUG 0
+#define DEBUG 1
 
 #define WID 4
 #define HEI 4
@@ -29,16 +29,16 @@
 
 #define BIG 1
 #define SMALL 0
-#define THICKNESS 14
+#define THICKNESS 20
 
 #define WALL 1
 
 #define ZEROMOVE (move){0,0}
 #define ZEROPOS (position){0,0}
-#define STARTPOSITION (position){30, 24}
+#define STARTPOSITION (position){30, 1}
 
-#define MAXSPEED RES //max sped of the robot, approximately
-#define SCALE 0.5
+#define MAXSPEED 6 //max sped of the robot, approximately
+#define SCALE 1
 //DANGER TODO think about the situation when I'm not exactly at the center of square, or have some slip or anything like that
 
 typedef struct
@@ -88,8 +88,11 @@ void swapd(double* a, double* b)
 
 bool isFinal(position sq) //TODO change it to check range, not single (x,y)
 {
-   if ((sq.x > goal1.x) && (sq.y > goal1.y) && (sq.x < goal2.x) && (sq.y < goal2.y)) return 1;
-   else return 0;
+//    if ((sq.x > goal1.x) && (sq.y > goal1.y) && (sq.x < goal2.x) && (sq.y < goal2.y)) return 1;
+    double x = 210;
+    double y = 270;
+    if ((sq.x > x - ROBOT_WIDTH/4) && (sq.y > y - ROBOT_WIDTH/4) && (sq.x < x + ROBOT_WIDTH/4) && (sq.y < y + ROBOT_WIDTH/4)) return 1;  
+    else return 0;
 }
 
 void printMapFinal()
@@ -291,21 +294,23 @@ void mapPreprocessing()
             xcenter = i*RES;
             ycenter = j*RES;
             
+            int b = BIG;
+            if(i == 3 && j == 3) b = SMALL;
             if(maze[i][j].northWall)
-                setWall(xcenter - RES/2, ycenter + RES/2, xcenter + RES/2, ycenter + RES/2, HORIZONTAL, BIG);
+                setWall(xcenter - RES/2, ycenter + RES/2, xcenter + RES/2, ycenter + RES/2, HORIZONTAL, b);
             if(maze[i][j].southWall)
-                setWall(xcenter - RES/2, ycenter - RES/2, xcenter + RES/2, ycenter - RES/2, HORIZONTAL, BIG);
+                setWall(xcenter - RES/2, ycenter - RES/2, xcenter + RES/2, ycenter - RES/2, HORIZONTAL, b);
             if(maze[i][j].eastWall)
-                setWall(xcenter + RES/2, ycenter - RES/2, xcenter + RES/2, ycenter + RES/2, VERTICAL, BIG);
+                setWall(xcenter + RES/2, ycenter - RES/2, xcenter + RES/2, ycenter + RES/2, VERTICAL, b);
             if(maze[i][j].westWall)
-                setWall(xcenter - RES/2, ycenter - RES/2, xcenter - RES/2, ycenter + RES/2, VERTICAL, BIG);
+                setWall(xcenter - RES/2, ycenter - RES/2, xcenter - RES/2, ycenter + RES/2, VERTICAL, b);
 //             printMapDebug();
 //             scanf("%d", &d);
         }
     goal1.x = SIZE_W- 48;
-    goal1.y = SIZE_H -55;
+    goal1.y = SIZE_H -60;
     goal2.x = SIZE_W-20;
-    goal2.y = SIZE_H-25;
+    goal2.y = SIZE_H-22;
     if(DEBUG) printf("%d %d %d %d A\n", goal1.x, goal1.y, goal2.x, goal2.y);
     if(DEBUG) scanf("%d", &d);
     
@@ -346,7 +351,7 @@ position BFS(position p)
         BFSQueue = BFSQueue->next;
         move last = cameFrom[p.x][p.y];
         
-        k += DEBUG; //DEBUG LINE
+//         k += DEBUG; //DEBUG LINE
         int i, j;
         for(i=0; i<5; i++)
         {
@@ -425,8 +430,8 @@ void moveToTargetFastest(position p)
 
     while (((fabs(remainingDistance)) > targetThreshold ) && (remainingDistance <= (previousRemainingDistance + targetThreshold)))
     {
-        printf("I'm in %f %f, driving with the speed of %d, left: %d right: %d\n", xPos, yPos, baseSpeed, leftSpeed, rightSpeed);
-        printf("\t Driving to %f %f , remaining distance %f \n", targetX, targetY, remainingDistance);    
+        if(DEBUG) printf("I'm in %f %f, driving with the speed of %d, left: %d right: %d\n", xPos, yPos, baseSpeed, leftSpeed, rightSpeed);
+        if(DEBUG) printf("\t Driving to %f %f , remaining distance %f \n", targetX, targetY, remainingDistance);    
 //         bumpers();
         log_trail();
         updateRobotPosition(); 
@@ -451,8 +456,8 @@ void moveToTargetFastest(position p)
         leftSpeed = baseSpeed + baseSpeed * 2*requiredAngleChange;
         rightSpeed = baseSpeed - baseSpeed * 2*requiredAngleChange;
 
-        if(fabs(requiredAngleChange) > (M_PI/4))
-            break;
+//         if(fabs(requiredAngleChange) > (M_PI/4))
+//             break;
 
         set_motors(leftSpeed,rightSpeed);
     }
@@ -544,32 +549,89 @@ int findFastest()
 //     maze[3][2] = (Sector){1, 0, 1, 0, 1};
 //     maze[3][3] = (Sector){1, 1, 0, 1, 1};
 
-    // maze[0][0] = (Sector){1, 0, 1, 0, 1, -8.213675, -16.959053};
-    // maze[0][1] = (Sector){0, 1, 1, 0, 1, -8.213675, 54.817906};
-    // maze[0][2] = (Sector){0, 0, 1, 1, 1, -8.213675, 108.000000};
-    // maze[0][3] = (Sector){1, 0, 1, 0, 1, -8.213675, -70.500000};
-    // maze[1][0] = (Sector){0, 1, 0, 0, 1, 56.196512, -16.959053};
-    // maze[1][1] = (Sector){0, 0, 0, 1, 1, 56.196512, 54.817906};
-    // maze[1][2] = (Sector){1, 0, 1, 0, 1, 56.196512, 108.000000};
-    // maze[1][3] = (Sector){1, 1, 0, 0, 1, 56.196512, -70.500000};
-    // maze[2][0] = (Sector){1, 1, 0, 0, 1, 119.650227, -16.959053};
-    // maze[2][1] = (Sector){0, 1, 1, 1, 1, 119.650227, 54.817906};
-    // maze[2][2] = (Sector){0, 0, 0, 1, 1, 119.650227, 108.000000};
-    // maze[2][3] = (Sector){1, 0, 0, 0, 1, 119.650227, -70.500000};
-    // maze[3][0] = (Sector){0, 1, 0, 1, 1, 177.245411, -16.959053};
-    // maze[3][1] = (Sector){0, 0, 1, 0, 1, 177.245411, 54.817906};
-    // maze[3][2] = (Sector){1, 0, 1, 0, 1, 177.245411, 108.000000};
-    // maze[3][3] = (Sector){1, 1, 0, 1, 1, 177.245411, 175.043295};
+//     maze[0][0] = (Sector){1, 0, 1, 0, 1, -8.213675, -16.959053};
+//     maze[0][1] = (Sector){0, 1, 1, 0, 1, -8.213675, 54.817906};
+//     maze[0][2] = (Sector){0, 0, 1, 1, 1, -8.213675, 108.000000};
+//     maze[0][3] = (Sector){1, 0, 1, 0, 1, -8.213675, -70.500000};
+//     maze[1][0] = (Sector){0, 1, 0, 0, 1, 56.196512, -16.959053};
+//     maze[1][1] = (Sector){0, 0, 0, 1, 1, 56.196512, 54.817906};
+//     maze[1][2] = (Sector){1, 0, 1, 0, 1, 56.196512, 108.000000};
+//     maze[1][3] = (Sector){1, 1, 0, 0, 1, 56.196512, -70.500000};
+//     maze[2][0] = (Sector){1, 1, 0, 0, 1, 119.650227, -16.959053};
+//     maze[2][1] = (Sector){0, 1, 1, 1, 1, 119.650227, 54.817906};
+//     maze[2][2] = (Sector){0, 0, 0, 1, 1, 119.650227, 108.000000};
+//     maze[2][3] = (Sector){1, 0, 0, 0, 1, 119.650227, -70.500000};
+//     maze[3][0] = (Sector){0, 1, 0, 1, 1, 177.245411, -16.959053};
+//     maze[3][1] = (Sector){0, 0, 1, 0, 1, 177.245411, 54.817906};
+//     maze[3][2] = (Sector){1, 0, 1, 0, 1, 177.245411, 108.000000};
+//     maze[3][3] = (Sector){1, 1, 0, 1, 1, 177.245411, 175.043295};
 
+//     maze[0][0] = (Sector){0, 0, 1, 0, 1, -2.986518, -4.667027};
+//     maze[0][1] = (Sector){1, 0, 1, 0, 1, -2.986518, 58.160171};
+//     maze[0][2] = (Sector){0, 1, 1, 0, 1, -2.986518, 114.773323};
+//     maze[0][3] = (Sector){1, 0, 1, 0, 1, -2.986518, 174.425069};
+//     maze[1][0] = (Sector){1, 1, 0, 0, 1, 60.559090, -4.667027};
+//     maze[1][1] = (Sector){0, 1, 0, 1, 1, 60.559090, 58.160171};
+//     maze[1][2] = (Sector){1, 0, 0, 0, 1, 60.559090, 114.773323};
+//     maze[1][3] = (Sector){1, 1, 0, 0, 1, 60.559090, 174.425069};
+//     maze[2][0] = (Sector){1, 1, 0, 0, 1, 116.168382, -4.667027};
+//     maze[2][1] = (Sector){0, 1, 1, 0, 1, 116.168382, 58.160171};
+//     maze[2][2] = (Sector){1, 0, 0, 0, 1, 116.168382, 114.773323};
+//     maze[2][3] = (Sector){1, 1, 0, 1, 1, 116.168382, 174.425069};
+//     maze[3][0] = (Sector){0, 1, 0, 1, 1, 181.965523, -4.667027};
+//     maze[3][1] = (Sector){1, 0, 0, 0, 1, 181.965523, 58.160171};
+//     maze[3][2] = (Sector){0, 1, 0, 1, 1, 181.965523, 114.773323};
+//     maze[3][3] = (Sector){1, 0, 1, 0, 1, 181.965523, 174.425069};
+    
+//     maze[0][0] = (Sector){0, 0, 1, 0, 1, -0.707707, -9.889673};
+//     maze[0][1] = (Sector){0, 0, 1, 0, 1, -0.707707, 49.524510};
+//     maze[0][2] = (Sector){1, 0, 1, 0, 1, -0.707707, 110.833611};
+//     maze[0][3] = (Sector){1, 1, 1, 0, 1, -0.707707, -68.000000};
+//     maze[1][0] = (Sector){1, 1, 0, 1, 1, 60.172911, -9.889673};
+//     maze[1][1] = (Sector){1, 1, 0, 0, 1, 60.172911, 49.524510};
+//     maze[1][2] = (Sector){0, 1, 0, 1, 1, 60.172911, 110.833611};
+//     maze[1][3] = (Sector){1, 0, 0, 0, 1, 60.172911, -68.000000};
+//     maze[2][0] = (Sector){0, 1, 1, 0, 1, 121.846603, -9.889673};
+//     maze[2][1] = (Sector){0, 0, 0, 1, 1, 121.846603, 49.524510};
+//     maze[2][2] = (Sector){0, 0, 1, 0, 1, 121.846603, 110.833611};
+//     maze[2][3] = (Sector){1, 0, 0, 1, 1, 121.846603, -68.000000};
+//     maze[3][0] = (Sector){1, 1, 0, 1, 1, 181.643262, -9.889673};
+//     maze[3][1] = (Sector){0, 1, 1, 1, 1, 181.643262, 49.524510};
+//     maze[3][2] = (Sector){0, 0, 0, 1, 1, 181.643262, 110.833611};
+//     maze[3][3] = (Sector){1, 0, 1, 0, 1, 181.643262, 171.473756};
         
+//     maze[0][0] = (Sector){0, 0, 1, 0, 1, -2.282795, -7.261330};
+//     maze[0][1] = (Sector){1, 0, 1, 0, 1, -2.282795, 54.102861};
+//     maze[0][2] = (Sector){0, 1, 1, 0, 1, -2.282795, 114.079606};
+//     maze[0][3] = (Sector){1, 0, 1, 0, 1, -2.282795, -64.500000};
+//     maze[1][0] = (Sector){1, 1, 0, 0, 1, 60.097053, -7.261330};
+//     maze[1][1] = (Sector){0, 1, 0, 1, 1, 60.097053, 54.102861};
+//     maze[1][2] = (Sector){1, 0, 0, 0, 1, 60.097053, 114.079606};
+//     maze[1][3] = (Sector){1, 1, 0, 0, 1, 60.097053, -64.500000};
+//     maze[2][0] = (Sector){1, 1, 0, 0, 1, 117.023139, -7.261330};
+//     maze[2][1] = (Sector){0, 1, 1, 0, 1, 117.023139, 54.102861};
+//     maze[2][2] = (Sector){1, 0, 0, 0, 1, 117.023139, 114.079606};
+//     maze[2][3] = (Sector){1, 1, 0, 1, 1, 117.023139, -64.500000};
+//     maze[3][0] = (Sector){0, 1, 0, 1, 1, 182.372745, -7.261330};
+//     maze[3][1] = (Sector){1, 0, 0, 0, 1, 182.372745, 54.102861};
+//     maze[3][2] = (Sector){0, 1, 0, 1, 1, 182.372745, 114.079606};
+//     maze[3][3] = (Sector){1, 0, 1, 0, 1, 182.372745, 174.447147};
+
+    updateRobotPosition();
     xPos = STARTPOSITION.x;
     yPos = STARTPOSITION.y;
     bearing = 0;
     
+    printf("%f %f %f\n", xPos, yPos, bearing);  
+    
+    scanf("%d", &a);
     mapPreprocessing();
     printMapDebug(); 
     solve();
     printMapFinal();
+    int a;
+    
+    scanf("%d", &a);
     drive();
     return 0;
 }

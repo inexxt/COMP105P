@@ -2,8 +2,6 @@
 #include "phase1.map.h"
 #include "basicMovement.h"
 
-
-#define US_OFFSET 6.5 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
 #define ADJUST_IR_ANGLE 25
 #define SENSOR_THRESHOLD 0.45
 
