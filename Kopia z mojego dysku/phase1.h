@@ -41,7 +41,7 @@ void getSideIR(double *left, double *right);
 void getFrontIR(double *left, double *right);
 double getUSValue();
 
-Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
+extern Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
 
 
 #endif

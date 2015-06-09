@@ -5,6 +5,7 @@
 double bearing;
 
 // extern Queue* currentPath;
+Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
 
 void printQueue(Queue* q)
 {
@@ -230,7 +231,7 @@ void updateSector(Queue** currentPath)
 		
 		//////////////////////////////////////////////////
 		
-		maze[x][y] = (Sector){.northWall = northWall, .southWall = southWall, .eastWall = eastWall, .westWall = westWall, .visited = 1};
+		maze[x][y] = (Sector){.northWall = northWall, .southWall = southWall, .eastWall = eastWall, .westWall = westWall, .visited = 1, .xCenter = maze[x][y].xCenter, .yCenter = maze[x][y].yCenter};
 		
 		if(northWall == 0 && availSector(x, y+1, EXPLORING) == 1) pushFront(currentPath, (XY){.x = x, .y = y+1});
 		if(southWall == 0 && availSector(x, y-1, EXPLORING) == 1) pushFront(currentPath, (XY){.x = x, .y = y-1});

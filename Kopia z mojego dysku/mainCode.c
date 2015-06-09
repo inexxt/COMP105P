@@ -8,6 +8,8 @@
 double targetWallReadings;
 double sensorDifference;
 
+Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
+
 void debug()
 {
 	printCurrentSector();
@@ -26,7 +28,7 @@ void printfMaze()
 	for(i = 0; i<4; i++)
 		for(j = 0; j<4; j++)
 		{
-			printf("maze[%d][%d] = (Sector){%d, %d, %d, %d, %d};\n", i, j, maze[i][j].northWall, maze[i][j].southWall, maze[i][j].westWall, maze[i][j].eastWall, maze[i][j].visited);
+			printf("maze[%d][%d] = (Sector){%d, %d, %d, %d, %d, %f, %f};\n", i, j, maze[i][j].northWall, maze[i][j].southWall, maze[i][j].westWall, maze[i][j].eastWall, maze[i][j].visited, maze[i][j].xCenter, maze[i][j].yCenter);
 		}
 	printf("-------------------------------------------------\n");
 	printf("------------------EDING MAZE---------------------\n");

@@ -3,14 +3,14 @@
 #include "basicMovement.h"
 
 
-#define US_OFFSET 6.5 //difference between av. IR and US (simulator - 2, real robot ~ 6) - zeby latwiej bylo zmieniac
+#define US_OFFSET 6.5 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
 #define ADJUST_IR_ANGLE 25
 #define SENSOR_THRESHOLD 0.45
 
 #define US_THRESHOLD 1
 #define IR_THRESHOLD 1
 
-#define IR_ADJUSTMENT 0
+#define IR_ADJUSTMENT 1
 #define US_ADJUSTMENT 1
 
 
@@ -23,6 +23,9 @@ double localSectorWidth = SECTOR_WIDTH;
 double optimal_US_dist;
 double min_US_dist;
 double max_US_dist;
+
+Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
+
 
 void adjustAngle()
 {
@@ -134,7 +137,7 @@ void IR_targetAdjustment(XY destination)
 
 
   double minOffSet = 3;
-  double maxOffSet = 8.0;
+  double maxOffSet = 12.0;
 
   
   printf("LEFT OFFSET: %f, RIGHT OFFSET: %f\n",leftOffset,rightOffset);
@@ -155,6 +158,7 @@ void IR_targetAdjustment(XY destination)
 
   printf("OFFSET: %f\n",offSet);
   printf("\n\nPREUPDATED: Currently at: %f %f, going to: %f %f\n", xPos,yPos,maze[destination.x][destination.y].xCenter, maze[destination.x][destination.y].yCenter);
+  int i;
   if(convertToDegrees(bearing) < 10 || convertToDegrees(bearing) > 350) 
   {
     printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
@@ -167,7 +171,10 @@ void IR_targetAdjustment(XY destination)
     maze[destination.x][destination.y].xCenter = xPos;
     if(fabs(offSet) > minOffSet)
       maze[destination.x][destination.y].xCenter += offSet;
-
+    for(i = 0; i <= 3; i++)
+    {
+      maze[destination.x][i].xCenter = maze[destination.x][destination.y].xCenter;
+    }
 
     printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
     printf("IR CHANGE facing North\n");
@@ -189,7 +196,10 @@ void IR_targetAdjustment(XY destination)
     maze[destination.x][destination.y].yCenter = yPos;
     if(fabs(offSet) > minOffSet)
       maze[destination.x][destination.y].yCenter -= offSet;
-
+    for(i = 0; i <= 3; i++)
+    {
+      maze[i][destination.y].yCenter = maze[destination.x][destination.y].yCenter;
+    }
 
     printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
                 printf("IR CHANGE facing East\n");
@@ -207,6 +217,10 @@ void IR_targetAdjustment(XY destination)
     maze[destination.x][destination.y].xCenter = xPos;
     if(fabs(offSet) > minOffSet)
       maze[destination.x][destination.y].xCenter -= offSet;
+    for(i = 0; i <= 3; i++)
+    {
+      maze[destination.x][i].xCenter = maze[destination.x][destination.y].xCenter;
+    }
 
     printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
                 printf("IR CHANGE facing South\n");
@@ -223,6 +237,10 @@ void IR_targetAdjustment(XY destination)
     maze[destination.x][destination.y].yCenter = yPos;
     if(fabs(offSet) > minOffSet)
       maze[destination.x][destination.y].yCenter += offSet;
+    for(i = 0; i <= 3; i++)
+    {
+      maze[i][destination.y].yCenter = maze[destination.x][destination.y].yCenter;
+    }
 
     printf("%f,%f\n",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
                 printf("IR CHANGE facing West\n");
@@ -236,7 +254,7 @@ void IR_targetAdjustment(XY destination)
 void US_targetAdjustment(XY destination)
 {
   double usReading = getUSValue(); // dla dodatkowej dokladnosci, zeby sie upewnic czy na pewno ma wejsc w petle
-  if((usReading < min_US_dist) || ((usReading > max_US_dist) && (usReading < (1.3*max_US_dist))))
+  if((usReading < min_US_dist) || ((usReading > max_US_dist) && (usReading < (1.6*max_US_dist))))
   {
     double distanceToMove = optimal_US_dist - usReading; // ile sie odsunac od sciany
     int ultraSound = (int)round(usReading);
@@ -268,7 +286,7 @@ void US_targetAdjustment(XY destination)
     if(convertToDegrees(bearing) < 10 || convertToDegrees(bearing) > 350) 
     {
       maze[destination.x][destination.y].yCenter -= distanceToMove;
-      for(i = 0; i < 3; i++)
+      for(i = 0; i <= 3; i++)
       {
         maze[i][destination.y].yCenter = maze[destination.x][destination.y].yCenter;
       }
@@ -277,7 +295,7 @@ void US_targetAdjustment(XY destination)
     if(convertToDegrees(bearing) < 100 && convertToDegrees(bearing) > 80) 
     {
       maze[destination.x][destination.y].xCenter -= distanceToMove;
-      for(i = 0; i < 3; i++)
+      for(i = 0; i <= 3; i++)
       {
         maze[destination.x][i].xCenter = maze[destination.x][destination.y].xCenter;
       }
@@ -286,7 +304,7 @@ void US_targetAdjustment(XY destination)
     if(convertToDegrees(bearing) < 190 && convertToDegrees(bearing) > 170) 
     {
       maze[destination.x][destination.y].yCenter += distanceToMove;
-      for(i = 0; i < 3; i++)
+      for(i = 0; i <= 3; i++)
       {
         maze[i][destination.y].yCenter = maze[destination.x][destination.y].yCenter;
       }
@@ -295,7 +313,7 @@ void US_targetAdjustment(XY destination)
     if(convertToDegrees(bearing) < 280 && convertToDegrees(bearing) > 260) 
     {
       maze[destination.x][destination.y].xCenter += distanceToMove;
-      for(i = 0; i < 3; i++)
+      for(i = 0; i <= 3; i++)
       {
         maze[destination.x][i].xCenter = maze[destination.x][destination.y].xCenter;
       }
@@ -434,10 +452,11 @@ void moveToTarget(double targetX, double targetY, int phase)
 
 void goToXY(XY destination, int phase)
 {
+
   // because C is stupid.
   optimal_US_dist = targetWallReadings + US_OFFSET;
-  min_US_dist = optimal_US_dist - 6;
-  max_US_dist = optimal_US_dist + 6;
+  min_US_dist = optimal_US_dist - 4;
+  max_US_dist = optimal_US_dist + 4;
   double targetX, targetY;
   int canUpdate = 1;
 
@@ -463,6 +482,8 @@ void goToXY(XY destination, int phase)
     targetY = -localSectorWidth;
   }
 
+  printf("Going to: %f,%f\n",targetX, targetY);
+
 	rotateTowardsTarget(targetX, targetY, phase);
   if(IR_ADJUSTMENT)
   {
@@ -474,7 +495,6 @@ void goToXY(XY destination, int phase)
     }
   }
   moveToTarget(targetX, targetY, phase);
-
   if(US_ADJUSTMENT)
   {
     if(phase != 2)
