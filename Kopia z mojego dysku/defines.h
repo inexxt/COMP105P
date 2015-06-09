@@ -4,18 +4,21 @@
 #include <stdio.h>
 #include <math.h>
 
-#define SIMULATOR 1
+// #define SIMULATOR 1
+#define REAL 1
 
 #ifdef SIMULATOR
 #define ROBOT_WIDTH 22.5//23.90//23.90//23.4//22.0//23.0//22.50 
 #define CIRCUMFERENCE 9.50*M_PI//10.00*M_PI//10.0*M_PI//9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
 #define US_OFFSET 2 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
+#define SECTOR_WIDTH 60//58.00//59.5//59.0
 #endif
 
 #ifdef REAL
-#define ROBOT_WIDTH 23.9//23.90//23.90//23.4//22.0//23.0//22.50 
+#define ROBOT_WIDTH 23.85//23.90//23.90//23.4//22.0//23.0//22.50 
 #define CIRCUMFERENCE 10*M_PI//10.00*M_PI//10.0*M_PI//9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
 #define US_OFFSET 6.5 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
+#define SECTOR_WIDTH 59//58.00//59.5//59.0
 #endif
 
 
@@ -30,7 +33,6 @@
 //jeane: 23.85, 10.00
 
 
-#define SECTOR_WIDTH 60//58.00//59.5//59.0
 #define MEDIUM_SPEED 32
 
 #define MAZE_WIDTH 4

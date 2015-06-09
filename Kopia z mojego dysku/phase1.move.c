@@ -2,7 +2,7 @@
 #include "phase1.map.h"
 #include "basicMovement.h"
 
-#define ADJUST_IR_ANGLE 25
+#define ADJUST_IR_ANGLE 18
 #define SENSOR_THRESHOLD 0.45
 
 #define US_THRESHOLD 1
@@ -514,6 +514,8 @@ void goToXY(XY destination, int phase)
     if(phase != 2 && destination.y != -1)
       US_targetAdjustment(destination);
   }
+
+  printf("Reached target, I am at: %f, %f\n",xPos,yPos);
 }
 
 void endPhase1()
