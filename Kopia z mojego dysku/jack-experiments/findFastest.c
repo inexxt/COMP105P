@@ -634,6 +634,7 @@ int findFastest()
 //     maze[3][2] = (Sector){0, 1, 0, 1, 1, 182.215865, 111.764090};
 //     maze[3][3] = (Sector){1, 0, 1, 0, 1, 182.215865, 171.829015};
     
+
     updateRobotPosition();
     
     xPos += 30;
