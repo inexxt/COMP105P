@@ -26,6 +26,9 @@ double max_US_dist;
 
 Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
 
+double startingSectorX = 0.0;
+double startingSectorY = -SECTOR_WIDTH;
+
 
 void adjustAngle()
 {
@@ -157,9 +160,16 @@ void IR_targetAdjustment(XY destination)
     offSet = 0;
 
   printf("OFFSET: %f\n",offSet);
-  printf("\n\nPREUPDATED: Currently at: %f %f, going to: %f %f\n", xPos,yPos,maze[destination.x][destination.y].xCenter, maze[destination.x][destination.y].yCenter);
+  // printf("\n\nPREUPDATED: Currently at: %f %f, going to: %f %f\n", xPos,yPos,maze[destination.x][destination.y].xCenter, maze[destination.x][destination.y].yCenter);
   int i;
-  if(convertToDegrees(bearing) < 10 || convertToDegrees(bearing) > 350) 
+
+  if(destination.y == -1)
+  {
+    startingSectorX -= offSet;
+  }
+
+
+  else if(convertToDegrees(bearing) < 10 || convertToDegrees(bearing) > 350) 
   {
     printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
 
@@ -180,7 +190,7 @@ void IR_targetAdjustment(XY destination)
     printf("IR CHANGE facing North\n");
   }
 
-  if(convertToDegrees(bearing) < 100 && convertToDegrees(bearing) > 80) 
+  else if(convertToDegrees(bearing) < 100 && convertToDegrees(bearing) > 80) 
   {
     printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
 
@@ -205,7 +215,7 @@ void IR_targetAdjustment(XY destination)
                 printf("IR CHANGE facing East\n");
   }
     
-  if(convertToDegrees(bearing) < 190 && convertToDegrees(bearing) > 170) 
+  else if(convertToDegrees(bearing) < 190 && convertToDegrees(bearing) > 170) 
   {
     printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
    
@@ -226,7 +236,7 @@ void IR_targetAdjustment(XY destination)
                 printf("IR CHANGE facing South\n");
   }
     
-  if(convertToDegrees(bearing) < 280 && convertToDegrees(bearing) > 260) 
+  else if(convertToDegrees(bearing) < 280 && convertToDegrees(bearing) > 260) 
   {
     printf("Changing %f,%f to ",maze[destination.x][destination.y].xCenter,maze[destination.x][destination.y].yCenter);
     // if(fabs(offSet) > minOffSet)
@@ -281,9 +291,15 @@ void US_targetAdjustment(XY destination)
 
 
 // west < east < south < north
-
+    if(destination.x == 5 && destination.y == 5)
+      return;
     int i;
-    if(convertToDegrees(bearing) < 10 || convertToDegrees(bearing) > 350) 
+    if(destination.y == -1)
+    {
+      startingSectorY += distanceToMove;
+    }
+
+    else if(convertToDegrees(bearing) < 10 || convertToDegrees(bearing) > 350) 
     {
       maze[destination.x][destination.y].yCenter -= distanceToMove;
       for(i = 0; i <= 3; i++)
@@ -292,7 +308,7 @@ void US_targetAdjustment(XY destination)
       }
     }
   
-    if(convertToDegrees(bearing) < 100 && convertToDegrees(bearing) > 80) 
+    else if(convertToDegrees(bearing) < 100 && convertToDegrees(bearing) > 80) 
     {
       maze[destination.x][destination.y].xCenter -= distanceToMove;
       for(i = 0; i <= 3; i++)
@@ -301,7 +317,7 @@ void US_targetAdjustment(XY destination)
       }
     }
       
-    if(convertToDegrees(bearing) < 190 && convertToDegrees(bearing) > 170) 
+    else if(convertToDegrees(bearing) < 190 && convertToDegrees(bearing) > 170) 
     {
       maze[destination.x][destination.y].yCenter += distanceToMove;
       for(i = 0; i <= 3; i++)
@@ -310,7 +326,7 @@ void US_targetAdjustment(XY destination)
       }
     }
       
-    if(convertToDegrees(bearing) < 280 && convertToDegrees(bearing) > 260) 
+    else if(convertToDegrees(bearing) < 280 && convertToDegrees(bearing) > 260) 
     {
       maze[destination.x][destination.y].xCenter += distanceToMove;
       for(i = 0; i <= 3; i++)
@@ -478,8 +494,8 @@ void goToXY(XY destination, int phase)
 
   if(destination.x == 0 && destination.y == -1)
   {
-    targetX = 0;
-    targetY = -localSectorWidth;
+    targetX = startingSectorX;
+    targetY = startingSectorY;
   }
 
   printf("Going to: %f,%f\n",targetX, targetY);
@@ -487,7 +503,7 @@ void goToXY(XY destination, int phase)
 	rotateTowardsTarget(targetX, targetY, phase);
   if(IR_ADJUSTMENT)
   {
-    if(phase == 1 && canUpdate)
+    if(phase == 1 && destination.y != -1)
     {
       IR_targetAdjustment(destination);
       targetX = maze[destination.x][destination.y].xCenter;
@@ -497,7 +513,7 @@ void goToXY(XY destination, int phase)
   moveToTarget(targetX, targetY, phase);
   if(US_ADJUSTMENT)
   {
-    if(phase != 2)
+    if(phase != 2 && destination.y != -1)
       US_targetAdjustment(destination);
   }
 }
@@ -505,8 +521,16 @@ void goToXY(XY destination, int phase)
 void endPhase1()
 {
   printf("FINAL SECTOR_WIDTH: %f\n", localSectorWidth);
-
-  turnByAngleDegree(180.0);
+  int tempUS = get_us_dist();
+  while(tempUS > DETECT_WALL_DISTANCE_U)
+  {
+    set_motors(2,2);
+    tempUS = get_us_dist();
+  }
+  set_motors(0,0);
+  centerStartingPosition();
+  // turnByAngleDegree(180.0);
+  updateRobotPosition();
 	set_ir_angle(LEFT, 90);
 	set_ir_angle(RIGHT, -90);
 	sleep(1);
@@ -517,6 +541,20 @@ void endPhase1()
 
 
 
+void centerStartingPosition()
+{
+  adjustAngle();
+  US_targetAdjustment((XY){.x = 5,.y = 5});
+  usleep(SLEEPTIME);
+  turnByAngleDegree(90.00);
+  usleep(SLEEPTIME);
+  adjustAngle();
+  usleep(SLEEPTIME);
+  US_targetAdjustment((XY){.x = 5,.y = 5});
+  usleep(SLEEPTIME);
+  turnByAngleDegree(90.00);
+  usleep(SLEEPTIME);
+}
 
 
 
