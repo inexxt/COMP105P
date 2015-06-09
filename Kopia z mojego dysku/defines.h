@@ -12,14 +12,11 @@
 #define US_OFFSET 2 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
 #endif
 
-
 #ifdef REAL
 #define ROBOT_WIDTH 23.9//23.90//23.90//23.4//22.0//23.0//22.50 
 #define CIRCUMFERENCE 10*M_PI//10.00*M_PI//10.0*M_PI//9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
 #define US_OFFSET 6.5 //difference between av. IR and US (simulator - 2, real robot ~ 6.5)
 #endif
-#define ROBOT_WIDTH 23.85//23.90//23.90//23.4//22.0//23.0//22.50 
-#define CIRCUMFERENCE 10.0*M_PI//10.00*M_PI//10.0*M_PI//9.8*M_PI//9.9*M_PI//9.2*M_PI//9.8*M_PI//9.5*M_PI
 
 
 
