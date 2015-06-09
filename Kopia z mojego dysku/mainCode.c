@@ -85,28 +85,30 @@ int main()
 	yPos = -SECTOR_WIDTH;
 	// centerStartingPosition();
 
-	while(!(current.y == -1 && current.x == 0))
-
-	// while(!(current.y == 0 && current.x == 3)) // do testow byle tylko maly kawalek przejechalo
-	{
-		printf("x: %f, y: %f\n", xPos, yPos);
-		current = nextSector(&currentPath);
-		goToXY(current, 1);
-		updateSector(&currentPath);
-		// correctPosition(current);
-		// printfMaze();
-	}
-	printfMaze();
-	endPhase1();
+// 	while(!(current.y == -1 && current.x == 0))
+// 	// while(!(current.y == 0 && current.x == 3)) // do testow byle tylko maly kawalek przejechalo
+// 	{
+// 		printf("x: %f, y: %f\n", xPos, yPos);
+// 		current = nextSector(&currentPath);
+// 		goToXY(current, 1);
+// 		updateSector(&currentPath);
+// 		// correctPosition(current);
+// 		// printfMaze();
+// 	}
+// 	printfMaze();
+// 	endPhase1();
 	
 	//PHASE 2
-	Queue* a = calculateOptimalPath();
-	while(!isEmpty(a))
-	{
-		goToXY(popFront(&a), 2);
-		// correctPosition(a->sxy);
-	}
-	set_motors(0,0);
+// 	Queue* a = calculateOptimalPath();
+// 	while(!isEmpty(a))
+// 	{
+// 		goToXY(popFront(&a), 2);
+// 		// correctPosition(a->sxy);
+// 	}
+   
+   go(); //PHASE 2 - everything is inside
+	
+   set_motors(0,0);
 	sleep(1);
 	printf("FINISH\n");
 	return 0;

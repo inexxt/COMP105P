@@ -2,6 +2,7 @@
 #include "phase1.h"
 #include "phase1.map.h"
 #include "phase2.h"
+#include "findFastest.h"
 
 // void followPath() //TODO add Queue* support void followPath(Queue* path)
 // {
@@ -176,5 +177,10 @@ Queue* calculateOptimalPath()
 	
 	printQueue(oP);
 	return oP;
+}
+
+void go()
+{
+    findFastest();
 }
 

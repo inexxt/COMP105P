@@ -1,4 +1,10 @@
 #include "findFastest.h"
+
+#include "defines.h"
+#include "phase1.h"
+#include "phase1.map.h"
+#include "phase1.h" //for maze array
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,25 +23,22 @@
 #define SIZE 280
 
 #define MAXNPATH 200 //maximal path length DANGER it may be not enough. Should be though, change only if path is VERY complicated
-#define UP 0
-#define RIGHT 1
-#define DOWN 2
-#define LEFT 3
 
 #define HORIZONTAL 1
 #define VERTICAL 2
 
 #define BIG 1
 #define SMALL 0
+#define THICKNESS 14
 
 #define WALL 1
 
 #define ZEROMOVE (move){0,0}
 #define ZEROPOS (position){0,0}
-#define STARTPOSITION (position){30, 0}
+#define STARTPOSITION (position){30, 24}
 
 #define MAXSPEED RES //max sped of the robot, approximately
-#define SCALE (1.0/60)
+#define SCALE 0.5
 //DANGER TODO think about the situation when I'm not exactly at the center of square, or have some slip or anything like that
 
 typedef struct
@@ -55,22 +58,6 @@ typedef struct positionQ_t
    position p;
    struct positionQ_t * next;
 } positionQ;
-
-typedef struct
-{
-        int northWall;
-        int southWall;
-        int westWall;
-        int eastWall;
-        int visited;
-
-        int xCenter;
-        int yCenter;
-
-} Sector;
-
-Sector maze[WID][HEI];
-
 
 // position center[WID][HEI]; //for each sector it contains the position of it's center, supplied by (map phase)
 int map[SIZE][SIZE];
@@ -108,9 +95,9 @@ bool isFinal(position sq) //TODO change it to check range, not single (x,y)
 void printMapFinal()
 {
     int i, j;
-    for(i = 0; i<SIZE; i++)
+    for(j = SIZE - 1; j>=0; j--)
     {
-        for(j = 0; j<SIZE; j++)
+        for(i = 0; i<SIZE; i++)
             if(map[i][j] > 0) printf("%d", map[i][j]);
             else printf(".");
         printf("\n");
@@ -121,10 +108,10 @@ void printMapFinal()
 void printMapDebug()
 {
     int i, j;
-    for(i = 0; i<SIZE; i++)
+    for(j = SIZE - 1; j>=0; j--)
     {
-        for(j = 0; j<SIZE; j++)
-        {   
+        for(i = 0; i<SIZE; i++)
+        {
             if(isFinal((position){i, j})) printf("█");
                 else
                 if(map[i][j] > 0) printf("%d", map[i][j]);
@@ -137,7 +124,7 @@ void printMapDebug()
 }
 
 
-bool isEmpty(positionQ * head)
+bool isQEmpty(positionQ * head)
 {
     if(head == NULL) return true;
     return false;
@@ -166,7 +153,7 @@ int lengthQ(positionQ * head)
 {
     positionQ * current = head;
     int len = 0;
-    if(!isEmpty(head))
+    if(!isQEmpty(head))
         while (current->next != NULL) 
         {
             current = current->next;
@@ -272,14 +259,14 @@ void setWall(int x1, int y1, int x2, int y2, int option, int big) //big means th
     }
     if(DEBUG) printf("XY %d %d %d %d\n", x1, y1, x2, y2);
     if (option == VERTICAL)
-    for(j=x1-12*big; j<=x1+12*big; j+=1)
-        for (i=y1; i<=y2; i++)
+    for(j=x1-THICKNESS*big; j<=x1+THICKNESS*big; j+=1)
+        for (i=y1-THICKNESS; i<=y2+THICKNESS; i++)
             if(x1 >= 0 && i >= 0 && j< SIZE && i<SIZE)
                 map[j][i] = WALL;
    
     if (option == HORIZONTAL)
-        for(j=y1-12*big; j<=y1+12*big; j+=1)    
-            for (i=x1; i<=x2; i++)
+        for(j=y1-THICKNESS*big; j<=y1+THICKNESS*big; j+=1)    
+            for (i=x1-THICKNESS; i<=x2+THICKNESS; i++)
                 if(j >= 0 && i >= 0 && j< SIZE && i<SIZE)
                     map[i][j] = WALL;
 }
@@ -301,8 +288,8 @@ void mapPreprocessing()
             
 //             int xcenter = maze[i][j].xCenter;
 //             int ycenter = maze[i][j].yCenter;
-            int xcenter = i*RES;
-            int ycenter = j*RES;
+            xcenter = i*RES;
+            ycenter = j*RES;
             
             if(maze[i][j].northWall)
                 setWall(xcenter - RES/2, ycenter + RES/2, xcenter + RES/2, ycenter + RES/2, HORIZONTAL, BIG);
@@ -353,7 +340,7 @@ position BFS(position p)
     BFSQueue->next = NULL;
     
     visited[p.x][p.y] = 1;
-    while(!isEmpty(BFSQueue))
+    while(!isQEmpty(BFSQueue))
     {
         position p = BFSQueue->p;
         BFSQueue = BFSQueue->next;
@@ -399,7 +386,6 @@ position BFS(position p)
 
 void solve() //returns length of path
 {
-    int k = 1;
     clock_t t = clock();
            
     cameFrom[STARTPOSITION.x][STARTPOSITION.y] = (move){1,1};
@@ -413,22 +399,19 @@ void solve() //returns length of path
 //     return makePointsQueue(finish); //I have full table of moves [where I came from], so i'm just going through from ending
 }
 
-void moveToTarget(position p)
+void moveToTargetFastest(position p)
 {
-    double targetX = p.x;
-    double targetY = p.y - RES/2; //important to decrease by RES/2
+    double targetX = (double) p.x;
+    double targetY = (double) p.y; //important to decrease by RES
     
-    printf("I'm in %f %f\n", targetX, targetY);
-/*    
-    
-    double remainingDistance;
-    double previousRemainingDistance; 
+    double remainingDistance = 1000.0;
+    double previousRemainingDistance = 1000.0; 
     double xDifference, yDifference;
 
     double targetThreshold; 
     double requiredAngleChange;
     int baseSpeed;
-    int leftSpeed, rightSpeed;
+    int leftSpeed = 0, rightSpeed = 0;
 
     
     xDifference = targetX - xPos; //TODO xPos
@@ -437,15 +420,22 @@ void moveToTarget(position p)
     remainingDistance = sqrt(xDifference*xDifference + yDifference*yDifference);
     
     
-    targetThreshold = 8;
+    targetThreshold = 4;
     baseSpeed = SCALE*remainingDistance;
 
     while (((fabs(remainingDistance)) > targetThreshold ) && (remainingDistance <= (previousRemainingDistance + targetThreshold)))
     {
+        printf("I'm in %f %f, driving with the speed of %d, left: %d right: %d\n", xPos, yPos, baseSpeed, leftSpeed, rightSpeed);
+        printf("\t Driving to %f %f , remaining distance %f \n", targetX, targetY, remainingDistance);    
 //         bumpers();
-//         log_trail();
-//         updateRobotPosition(); 
+        log_trail();
+        updateRobotPosition(); 
         previousRemainingDistance = remainingDistance;
+        
+        xDifference = targetX - xPos; //TODO xPos
+        yDifference = targetY - yPos; //TODO yPos 
+
+        remainingDistance = sqrt(xDifference*xDifference + yDifference*yDifference);
 
         requiredAngleChange = atan2(xDifference,yDifference)- bearing; //TODO bearing
 
@@ -458,15 +448,15 @@ void moveToTarget(position p)
             requiredAngleChange += (2 * M_PI);
         }
 
-        leftSpeed = baseSpeed + baseSpeed * requiredAngleChange;
-        rightSpeed = baseSpeed - baseSpeed * requiredAngleChange;
+        leftSpeed = baseSpeed + baseSpeed * 2*requiredAngleChange;
+        rightSpeed = baseSpeed - baseSpeed * 2*requiredAngleChange;
 
         if(fabs(requiredAngleChange) > (M_PI/4))
             break;
 
-//         set_motors(leftSpeed,rightSpeed);
+        set_motors(leftSpeed,rightSpeed);
     }
-//     set_motors(0,0);*/
+    set_motors(0,0);
     
 }
 
@@ -475,14 +465,16 @@ void drive()
 {
     int counter;
     printf("%d %d\n", MAXNPATH, pathLength);
-    for(counter = MAXNPATH - pathLength; counter < MAXNPATH; counter++)
+    for(counter = MAXNPATH - pathLength + 1; counter < MAXNPATH; counter++)
     {
-        moveToTarget(pathArray[counter]);
+        
+        printf("Counter %d value %d %d\n", counter, pathArray[counter].x, pathArray[counter].y);
+        moveToTargetFastest(pathArray[counter]);
     }
     return;
 }
 
-int mainFunction()
+int findFastest()
 {
 //     maze[0][0] = (Sector){0, 0, 1, 1, 1, 0, 0};
 //     maze[0][1] = (Sector){1, 0, 1, 0, 1, 0, 60};
@@ -552,6 +544,28 @@ int mainFunction()
 //     maze[3][2] = (Sector){1, 0, 1, 0, 1};
 //     maze[3][3] = (Sector){1, 1, 0, 1, 1};
 
+    maze[0][0] = (Sector){1, 0, 1, 0, 1, -8.213675, -16.959053};
+    maze[0][1] = (Sector){0, 1, 1, 0, 1, -8.213675, 54.817906};
+    maze[0][2] = (Sector){0, 0, 1, 1, 1, -8.213675, 108.000000};
+    maze[0][3] = (Sector){1, 0, 1, 0, 1, -8.213675, -70.500000};
+    maze[1][0] = (Sector){0, 1, 0, 0, 1, 56.196512, -16.959053};
+    maze[1][1] = (Sector){0, 0, 0, 1, 1, 56.196512, 54.817906};
+    maze[1][2] = (Sector){1, 0, 1, 0, 1, 56.196512, 108.000000};
+    maze[1][3] = (Sector){1, 1, 0, 0, 1, 56.196512, -70.500000};
+    maze[2][0] = (Sector){1, 1, 0, 0, 1, 119.650227, -16.959053};
+    maze[2][1] = (Sector){0, 1, 1, 1, 1, 119.650227, 54.817906};
+    maze[2][2] = (Sector){0, 0, 0, 1, 1, 119.650227, 108.000000};
+    maze[2][3] = (Sector){1, 0, 0, 0, 1, 119.650227, -70.500000};
+    maze[3][0] = (Sector){0, 1, 0, 1, 1, 177.245411, -16.959053};
+    maze[3][1] = (Sector){0, 0, 1, 0, 1, 177.245411, 54.817906};
+    maze[3][2] = (Sector){1, 0, 1, 0, 1, 177.245411, 108.000000};
+    maze[3][3] = (Sector){1, 1, 0, 1, 1, 177.245411, 175.043295};
+
+        
+    xPos = STARTPOSITION.x;
+    yPos = STARTPOSITION.y;
+    bearing = 0;
+    
     mapPreprocessing();
     printMapDebug(); 
     solve();

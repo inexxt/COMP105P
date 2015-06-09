@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-c -Wall
-SOURCES=mainCode.c phase1.c phase1.map.c phase1.move.c recordPosition.c picomms.c basicMovement.c phase2.c
+SOURCES=mainCode.c phase1.c phase1.map.c phase1.move.c recordPosition.c picomms.c basicMovement.c phase2.c findFastest.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=mazeTask
 
