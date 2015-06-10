@@ -27,12 +27,12 @@ double startingSectorY = -SECTOR_WIDTH;
 
 void adjustAngle()
 {
-  double frontLeftIR, frontRightIR;
+  double frontLeftIR =0, frontRightIR =0;
   set_ir_angle(LEFT, ADJUST_IR_ANGLE);
   set_ir_angle(RIGHT, -ADJUST_IR_ANGLE);    
   usleep(SLEEPTIME);
   getFrontIR(&frontLeftIR, &frontRightIR);
-  double IR_difference;
+  double IR_difference=0;
 
   while(fabs(frontRightIR - frontLeftIR) > SENSOR_THRESHOLD)
   {

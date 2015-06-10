@@ -6,4 +6,4 @@ void pushFront(Queue** q, XY sxy);
 XY popFront(Queue** q);
 int isEmpty(Queue* q);
 double convertToDegrees(double radians);
-void printQueue(Queue* q);
+int printQueue(Queue* q);

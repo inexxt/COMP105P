@@ -179,6 +179,84 @@ Queue* calculateOptimalPath()
 	return oP;
 }
 
+// void deleteNth(Queue** oP, int target)
+// {
+//     Queue** q = oP;
+//     printf("DELETING\n");
+//     int i = 0;
+//     while(i<target-1)
+//     {
+//         q = &((*q)->next);
+//         i++;
+//     }
+//     
+//     Queue** twoAfter = q;
+//     twoAfter = &((*twoAfter)->next);
+//     twoAfter = &((*twoAfter)->next);
+//     
+//     (*q)->next = *twoAfter;
+//     printf("DELETED\n");
+// }
+// 
+// void optimizeQueue(Queue** oP)
+// {
+//     popFront(oP);
+//     printf("\n\n[] [] [] BEFORE OPTIMIZATION\n");
+//     Queue* current = *oP;
+// 
+//     int len = printQueue(current);
+//     int i; //test if it prints correct length
+//     int check = 1; //checking if any of vars is null
+//     printf("--------------\n");
+//     printf("%d\n", len);
+//     printf("--------------\n");
+//     printf("[] [] [] BEFORE OPTIMIZATION\n\n\n");
+//     
+//     for(i=0; i<len-2; i++)
+//     {
+//         if(current != NULL)
+//         {
+//             int x = current->sxy.x;
+//             int y = current->sxy.y;
+//             
+//             Queue* twoAfter = current;
+//             twoAfter = twoAfter->next;
+//             if(twoAfter != NULL) 
+//                 twoAfter = twoAfter->next;
+//             else
+//                 check = 0;
+//             
+//             if(twoAfter != NULL)
+//             {
+//                 int tx = twoAfter->sxy.x;
+//                 int ty = twoAfter->sxy.y;
+//                 
+//                 printf("first %d %d twoAfter %d %d difference %d %d\n", x, y, tx, ty, abs(x - tx), abs(y - ty));
+//                 
+//                 if(abs(x - tx) == 1 && abs(y - ty) == 1) //we can cut corner
+//                 {
+//                     deleteNth(oP, i+1);
+//                 }
+//                 
+//                 if(current != NULL) current = current->next;
+//             }
+//             else
+//                 check = 0;
+//         }
+//     }
+//     
+//     pushFront(oP, (XY){.x = 0, .y  = 0});
+//     printf("\n");
+//     printf("\n\n[] [] [] AFTER OPTIMIZATION\n");
+//     len = printQueue(current);
+//     printf("--------------\n");
+//     printf("%d\n", len);
+//     printf("--------------\n");
+//     printf("[] [] [] AFTER OPTIMIZATION\n\n\n");
+// }
+
+        
+
 void go()
 {
     findFastest();

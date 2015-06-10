@@ -2,3 +2,4 @@
 
 void go();
 Queue* calculateOptimalPath();
+void optimizeQueue(Queue** oP);

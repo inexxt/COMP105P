@@ -59,6 +59,47 @@ void calibrateWallDistance()
 				- (sideRightReading + sideRightReading2 + sideLeftReading + sideLeftReading2))/4.0;
 }
 
+XY qP[100];
+int length = 100;
+
+void printfMyQueue()
+{
+    int j=0;
+    printf("length %d\n", length);
+    for(j = 0; j<length; j++)
+    {
+
+            printf("qP[%d] : x %d y %d\n", j, qP[j].x, qP[j].y);
+    }
+}
+
+void putInN(int n, XY p)
+{
+    printf("Putting %d : x %d y %d\n", n, p.x, p.y);
+    int j = 0;
+    for(j = length-1; j>n; j--)
+    {
+        qP[j] = qP[j-1];
+
+    }
+    qP[n] = p;
+
+    length++;
+}
+
+void deleteFromN(int n)
+{
+    int j = 0;
+    printf("Deleting %d : x %d y %d\n", j, qP[n].x, qP[n].y);
+    for(j = n; j<length; j++)
+    {
+        qP[j] = qP[j+1];
+
+    }
+    length--;
+}
+
+
 int main() 
 {
 	connect_to_robot();
@@ -88,22 +129,113 @@ int main()
 	}
 	printfMaze();
 	endPhase1();
-    
+   
+//     maze[0][0] = (Sector){1, 0, 1, 0, 1, 0.479304, -8.030782};
+//     maze[0][1] = (Sector){0, 1, 1, 0, 1, 0.479304, 51.573389};
+//     maze[0][2] = (Sector){0, 0, 1, 1, 1, 0.479304, 112.500000};
+//     maze[0][3] = (Sector){1, 0, 1, 0, 1, 0.479304, 171.700673};
+//     maze[1][0] = (Sector){0, 1, 0, 0, 1, 59.581096, -8.030782};
+//     maze[1][1] = (Sector){0, 0, 0, 1, 1, 59.581096, 51.573389};
+//     maze[1][2] = (Sector){1, 0, 1, 0, 1, 59.581096, 112.500000};
+//     maze[1][3] = (Sector){1, 1, 0, 0, 1, 59.581096, 171.700673};
+//     maze[2][0] = (Sector){1, 1, 0, 0, 1, 119.542941, -8.030782};
+//     maze[2][1] = (Sector){0, 1, 1, 1, 1, 119.542941, 51.573389};
+//     maze[2][2] = (Sector){0, 0, 0, 1, 1, 119.542941, 112.500000};
+//     maze[2][3] = (Sector){1, 0, 0, 0, 1, 119.542941, 171.700673};
+//     maze[3][0] = (Sector){0, 1, 0, 1, 1, 178.625845, -8.030782};
+//     maze[3][1] = (Sector){0, 0, 1, 1, 1, 178.625845, 51.573389};
+//     maze[3][2] = (Sector){1, 0, 1, 1, 1, 178.625845, 112.500000};
+//     maze[3][3] = (Sector){1, 1, 0, 1, 1, 178.625845, 171.700673};
+
 	//PHASE 2
 	//Solution 1
 	Queue* a = calculateOptimalPath();
-	while(!isEmpty(a))
-	{
-		goToXY(popFront(&a), 2);
-	}
    
+//     optimizeQueue(); //DANGER test it!!
+
+    int i = 0;
+    for(i=0; i<length; i++)
+    {
+        qP[i] = (XY){0, 0};
+    }
+    
+    length = 0;
+    XY help;
+    while(!isEmpty(a))
+    {
+        help = popFront(&a);
+        qP[length] = (XY){.x = help.x*60, help.y*60}; 
+        length++;
+    }
+    
+    int px, py, cx, cy, ax, ay, bx, by;
+
+    printfMyQueue();
+    
+    int k = 1;
+    
+    XY b1, b2;
+    
+    length++;
+    
+    for(k=0; k<length - 2; k++)
+    {
+        ax = qP[k].x;
+        ay = qP[k].y;
+        
+        cx = qP[k+2].x;
+        cy = qP[k+2].y;
+        
+        printf("first %d %d twoAfter %d %d difference %d %d\n", ax, ay, cx, cy, abs(ax - cx), abs(ay - cy));
+        if(abs(ax - cx) == 60 && abs(ay - cy) == 60 && ax % 60 == 0 && ay % 60 == 0 && cy % 60 == 0 && cx % 60 == 0) //we can cut corner
+        {
+            px = qP[k+1].x;
+            py = qP[k+1].y;
+            
+            deleteFromN(k+1);
+            
+            bx = (ax+cx)/2;
+            by = (ay+cy)/2;
+            
+            if(py != ax)
+            {
+                b1.x = ax;
+                b1.y = by;
+                
+                b2.x = bx;
+                b2.y = cy;
+            }
+            else
+            {
+                b1.x = bx;
+                b1.y = ay;
+                
+                b2.x = cx;
+                b2.y = by;
+            }
+                
+            putInN(k+1, b2);
+            putInN(k+1, b1);
+        }
+    }
+    
+    length--;
+    
+    printfMyQueue();
+    
+    for(i=0; i<length; i++)
+    {
+        rotateTowardsTarget(qP[i].x, qP[i].y, 2);
+        moveToTarget(qP[i].x, qP[i].y, 2);
+    }
+
     //Solution 2
     // go(); 
-	
+
     set_motors(0,0);
-	sleep(1);
-	printf("FINISH\n");
-	return 0;
+    sleep(1);
+    printf("FINISH\n");
+    return 0;
 }
 
 

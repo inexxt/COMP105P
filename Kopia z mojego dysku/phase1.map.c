@@ -7,7 +7,7 @@ double bearing;
 // extern Queue* currentPath;
 Sector maze[MAZE_WIDTH][MAZE_HEIGHT];
 
-void printQueue(Queue* q)
+int printQueue(Queue* q)
 {
 	printf("PRINTING QUEUE\n");
 	int i = 0;
@@ -20,6 +20,7 @@ void printQueue(Queue* q)
         current = current->next;
         i++;
     }
+    return i;
 }
 
 XY popFront(Queue** q) //pointer to pointer, because we want to modify the real queue
