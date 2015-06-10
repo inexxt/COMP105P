@@ -36,8 +36,14 @@ void printfMaze()
 
 void calibrateWallDistance()
 {
-	double frontLeftReading, frontRightReading, sideLeftReading, sideRightReading; 
-	double frontLeftReading2, frontRightReading2, sideLeftReading2, sideRightReading2; 
+	double frontLeftReading = 0;
+	double frontRightReading = 0;
+	double sideLeftReading = 0;
+	double sideRightReading = 0; 
+	double frontLeftReading2 = 0;
+	double frontRightReading2 = 0;
+	double sideLeftReading2 = 0; 
+	double sideRightReading2 = 0; 
 	set_ir_angle(LEFT, -45);
   	set_ir_angle(RIGHT, 45);    
   	usleep(SLEEPTIME);
@@ -77,6 +83,7 @@ int main()
 		printf("Current position: x: %f, y: %f\n", xPos, yPos);
 		current = nextSector(&currentPath);
 		goToXY(current, 1);
+
 		updateSector(&currentPath);
 	}
 	printfMaze();

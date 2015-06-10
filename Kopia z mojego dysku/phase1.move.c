@@ -81,7 +81,10 @@ void bumpers()
 void IR_targetAdjustment(XY destination)
 {
   set_motors(0,0);
-  double frontLeftReading, frontRightReading, sideLeftReading, sideRightReading; 
+  double frontLeftReading = 0;
+  double frontRightReading = 0;
+  double sideLeftReading = 0;
+  double sideRightReading = 0;
   double leftOffset = 0;
   double rightOffset = 0;
   double offSet = 0;
@@ -121,6 +124,11 @@ void IR_targetAdjustment(XY destination)
     }
     set_motors(0,0);
   }
+
+      frontLeftReading = 0;
+    frontRightReading = 0;
+    sideLeftReading = 0;
+    sideRightReading = 0;
 
   getFrontIR(&frontLeftReading, &frontRightReading);
   getSideIR(&sideLeftReading, &sideRightReading);

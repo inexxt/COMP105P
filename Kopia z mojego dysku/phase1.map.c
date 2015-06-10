@@ -123,7 +123,10 @@ void updateSector(Queue** currentPath)
 		set_ir_angle(LEFT, -45);
 		set_ir_angle(RIGHT, 45);  
 		usleep(500000);
-		double frontLeftReading, frontRightReading, sideLeftReading, sideRightReading; 
+		double frontLeftReading = 0;
+		double frontRightReading = 0;
+		double sideLeftReading = 0;
+		double sideRightReading = 0;
 		int ultraSound;
 		getFrontIR(&frontLeftReading, &frontRightReading);
 		getSideIR(&sideLeftReading, &sideRightReading);
