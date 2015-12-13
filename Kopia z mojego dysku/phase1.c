@@ -1,5 +1,8 @@
 #include "phase1.h"
 
+#define MAPP 1
+#define CORR 2
+
 XY getCurrentSector()
 {
 	int xSquare = round(xPos/SECTOR_WIDTH);
@@ -14,19 +17,39 @@ void printCurrentSector()
 	printf("DEBUG CUR\tX %d Y %d\n", cs.x, cs.y);
 }
 
-void getSideIR(double *left, double *right)
+void getSideIR(double *left, double *right, int option)
 {
-  int i;
-  for(i = 0; i < NUMBER_OF_IR_READINGS; i++)
-  {
-  	int leftReading, rightReading;
-  	get_side_ir_dists(&leftReading, &rightReading);
-    usleep(5000);
-  	*left += leftReading;
-  	*right += rightReading;
-  }
-  *left /= NUMBER_OF_IR_READINGS*1.0;
-  *right /= NUMBER_OF_IR_READINGS*1.0;
+    if(option == CORR)
+    {
+        int i;
+        for(i = 0; i < NUMBER_OF_IR_READINGS; i++)
+        {
+            int leftReading, rightReading;
+            get_side_ir_dists(&leftReading, &rightReading);
+            usleep(5000);
+            *left += leftReading;
+            *right += rightReading;
+        }
+        *left /= NUMBER_OF_IR_READINGS*1.0;
+        *right /= NUMBER_OF_IR_READINGS*1.0;
+    }
+    if(option == MAPP)
+    {
+        int i, minl=1000, minr=1000, maxl=00, maxr = 00;
+        for(i = 0; i < NUMBER_OF_IR_READINGS; i++)
+        {
+            int leftReading, rightReading;
+            get_side_ir_dists(&leftReading, &rightReading);
+            usleep(5000);
+            if(leftReading < minl) minl = leftReading;
+            if(leftReading > maxl) maxl = leftReading;
+            if(rightReading < minr) minr = rightReading;
+            if(rightReading > maxr) maxr = rightReading;
+        }
+        *left /= NUMBER_OF_IR_READINGS*1.0;
+        *right /= NUMBER_OF_IR_READINGS*1.0;
+    }
+        
 }
 
 void getFrontIR(double *left, double *right)

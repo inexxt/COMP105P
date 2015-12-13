@@ -2,8 +2,6 @@
 #define PHASE1_H
 
 #include "defines.h"
-#include "recordPosition.h"
-
 typedef struct
 {
 	int x;
@@ -17,19 +15,19 @@ typedef struct
 
 typedef struct
 {
-	int northWall;
-	int southWall;
-	int westWall;
-	int eastWall;
-	int visited;
-	double xCenter;
-	double yCenter;
+    int northWall;
+    int southWall;
+    int westWall;
+    int eastWall;
+    int visited;
+    double xCenter;
+    double yCenter;
 } Sector;
 
 typedef struct Queue_t
 {
-	XY sxy;
-	struct Queue_t * next;
+    XY sxy;
+    struct Queue_t * next;
 } Queue;
 
 XY getCurrentSector();

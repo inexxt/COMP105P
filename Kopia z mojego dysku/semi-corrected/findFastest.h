@@ -1,3 +1,4 @@
-#include "phase1.h"
+#include "phase1.map.h"
 
 int findFastest();
+void goSubOptimal(Queue** a);

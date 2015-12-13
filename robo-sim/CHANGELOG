@@ -1,0 +1,29 @@
+CHANGELOG for RoboSim, 2014
+
+2.0.2: 
+   - Handle reception of a non-unicode character on the control
+     connection by closing the connection rather than throwing an
+     uncaught exception and crashing.
+
+2.0.3:
+   - implement random underreads
+   - Set SO_REUSE_ADDR on control socket to avoid timewait
+   - poll control connection more often (was only 30 ops/sec, now around 120).
+
+2.0.4:
+   - increase max command rate to 150 ops/sec.
+   - now also calculate the encoder values 150 times/sec
+   - fix bug that resulted in motor speeds taking longer than they
+     should to settle to target speed.
+2.2.0 Xiao Edition:
+   - Allowed for maximising Window
+   - Cleaned up UI
+   - Allowed the robot to be controlled with WASD or arrow keys if the joystick is not enables
+   - Robot can be put into reset by pressing Space
+   - created a config.cfg file, so that the settings for the colour of set_point and log_trail will persist between openings
+   - changed zoom parameters so that min zoom is 2
+   - allowed set_point and log_trail to have their colour changed
+   - increased the file picker dialog so less scrolling
+   - cleaned up simultation preferences dialog
+   - added switches so that log_trail and set_point can be displayed or not
+

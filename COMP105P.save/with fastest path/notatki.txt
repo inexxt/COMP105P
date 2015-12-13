@@ -1,0 +1,36 @@
+struct na kazdy z kwadratow: 5 info
+- wall North
+- wall South
+- wall East
+- wall West
+- visited 
+
+
+globalne zmienne:
+ - X
+ - Y
+ - azymut
+
+pozycja srodkowa na podstawie bocznych sensorow - ta sama roznica
+bedac przy scianie - update dwoch punktow - w koncu sciana nalezy do dwoch 
+faza 1:
+Jacek - graf, structy etc
+Jedrzej - ma isc do X,Y, niech dziad jedzie do X,Y, funkcja goto(x,y)
+
+funkcje:
+void goTo(double x, double y); // do jezdzenia
+
+
+jezdzenia za pomoca goTo
+dojedzie do corner -> upewnia swoja pozycje za pomoca readingow z sensorow
+
+void updateSector(double x, double y, double angle, int frontLeft, int frontRight, int sideLeft, int sideRight); // do mapowania
+
+
+phase2:
+void followPath(node *head); // podaza za sciezka <- stare goBack();
+
+
+
+NOTES TO TALK THROUGH
+D gotoXY has to be able to deal with negative values

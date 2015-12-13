@@ -1,9 +1,5 @@
 #include "findFastest.h"
-
-#include "defines.h"
-#include "phase1.h"
-#include "phase1.map.h"
-#include "phase1.h" //for maze array
+#include "recordPosition.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -11,7 +7,7 @@
 #include <math.h>
 #include <time.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define WID 4
 #define HEI 4
@@ -42,8 +38,8 @@
 
 typedef struct
 {
-   int dx;
-   int dy;
+    int dx;
+    int dy;
 } move;
 
 typedef struct
@@ -54,8 +50,8 @@ typedef struct
 
 typedef struct positionQ_t
 {
-   position p;
-   struct positionQ_t * next;
+    position p;
+    struct positionQ_t * next;
 } positionQ;
 
 int map[SIZE][SIZE];
@@ -115,9 +111,9 @@ void printMapDebug()
         for(i = 0; i<SIZE; i++)
         {
             if(isFinal((position){i, j})) printf("█");
-                else
+            else
                 if(map[i][j] > 0) printf("%d", map[i][j]);
-                    else 
+                else 
                     if(visited[i][j]) printf("."); 
                     else printf(" ");
         }
@@ -134,11 +130,11 @@ bool isQEmpty(positionQ * head)
 
 positionQ* initializeQ(position p)
 {
-   positionQ * head = NULL;
-   head = malloc(sizeof(positionQ));
-   head->p = p;
-   head->next = NULL;
-   return head;
+    positionQ * head = NULL;
+    head = malloc(sizeof(positionQ));
+    head->p = p;
+    head->next = NULL;
+    return head;
 }
 
 position lastPosition(positionQ * head)
@@ -174,7 +170,7 @@ void append(positionQ * head, position p)
             current = current->next;
         }
         current->next = malloc(sizeof(positionQ));
-        
+
         current->next->p = p;
         current->next->next = NULL;
     }
@@ -196,7 +192,7 @@ bool checksquare(double x, double y) //just checks the square where (x,y) belong
 {
     int xi = (int)floor(x);
     int yi = (int)floor(y);
-    
+
     if(map[xi][yi] == WALL) return false;
     return true;
 }
@@ -205,20 +201,20 @@ int isLegal(move previous, position p, move next)
 {
     position target = nextPosition(p, next);
     //to build the graph
-    
+
     //checking if I can go that way:
     if(previous.dx == 0 && previous.dy == 0 && next.dx == 0 && next.dy == 0) return 1;
     if(target.x >= SIZE || target.y>= SIZE || target.x < 0 || target.y < 0) return 2; //shouldn't occure
-    
+
     // - the place itself (if it is available or not) or have been previously visited
     if(map[target.x][target.y]==WALL || visited[target.x][target.y]) return 3;
-    
+
     // - the acceleration
     if(abs(previous.dx - next.dx) + abs(previous.dy - next.dy) > 2) return 4;
-    
+
     //the maximal speed
     if(sqrt(next.dx*next.dx + next.dy*next.dy) > MAXSPEED) return 5;
-   
+
     // - the route - if it intersects with any wall
     double length = next.dx*next.dx + next.dy*next.dy;
     double xpos = p.x;
@@ -240,7 +236,7 @@ int isLegal(move previous, position p, move next)
 void setWall(int x1, int y1, int x2, int y2, int option, int big) //big tells if the wall is thick
 {
     int i, j;
-    
+
     x1 += RES/2;
     x2 += RES/2;
     y1 += RES;
@@ -259,11 +255,11 @@ void setWall(int x1, int y1, int x2, int y2, int option, int big) //big tells if
     }
     if(DEBUG) printf("XY %d %d %d %d\n", x1, y1, x2, y2);
     if (option == VERTICAL)
-    for(j=x1-THICKNESS*big; j<=x1+THICKNESS*big; j+=1)
-        for (i=y1-THICKNESS; i<=y2+THICKNESS; i++)
-            if(x1 >= 0 && i >= 0 && j< SIZE && i<SIZE)
-                map[j][i] = WALL;
-   
+        for(j=x1-THICKNESS*big; j<=x1+THICKNESS*big; j+=1)
+            for (i=y1-THICKNESS; i<=y2+THICKNESS; i++)
+                if(x1 >= 0 && i >= 0 && j< SIZE && i<SIZE)
+                    map[j][i] = WALL;
+
     if (option == HORIZONTAL)
         for(j=y1-THICKNESS*big; j<=y1+THICKNESS*big; j+=1)    
             for (i=x1-THICKNESS; i<=x2+THICKNESS; i++)
@@ -281,14 +277,14 @@ void mapPreprocessing()
     setWall(1, -RES, RES/2, -RES, HORIZONTAL, SMALL);
     setWall(RES/2, -RES, RES/2, -RES/2, VERTICAL, SMALL);
     int d;
-    
+
     for(i=0; i<WID; i++)
     {
         for(j=0; j<HEI; j++)
         {
             xcenter = i*RES;
             ycenter = j*RES;
-            
+
             int b = BIG;
             if(i == 3 && j == 3) b = SMALL; // for the final square forces its walls not to be thick
             if(maze[i][j].northWall)
@@ -307,7 +303,7 @@ void mapPreprocessing()
     goal2.y = SIZE_H-22;
     if(DEBUG) printf("%d %d %d %d A\n", goal1.x, goal1.y, goal2.x, goal2.y);
     if(DEBUG) scanf("%d", &d);
-    
+
 }
 
 int abc = 1;
@@ -315,7 +311,7 @@ int a;
 void calculatePath(position current) //returns length of path, saves positions in pathArray
 {
     if(DEBUG) printf("%d %d %d %d\n", current.x, current.y, STARTPOSITION.x, STARTPOSITION.y);
-    
+
     pathArray[MAXNPATH - (++pathLength)] = current;
     move prev = cameFrom[current.x][current.y];
     if(current.x == STARTPOSITION.x && current.y == STARTPOSITION.y) return;
@@ -337,7 +333,7 @@ position BFS(position p)
     BFSQueue = malloc(sizeof(positionQ));
     BFSQueue->p = p;
     BFSQueue->next = NULL;
-    
+
     visited[p.x][p.y] = 1;
     while(!isQEmpty(BFSQueue))
     {
@@ -357,7 +353,7 @@ position BFS(position p)
                     printf("isLegal %d %d %d %d %d\n", p.x, p.y, next.dx, next.dy, isLegal(last, p, next));
                     printMapDebug();
                     scanf("%d", &xs);
-                    
+
                 }
                 if(isLegal(last, p, next) == 0)
                 {
@@ -384,7 +380,7 @@ position BFS(position p)
 void solve() //returns length of path
 {
     clock_t t = clock();
-           
+
     cameFrom[STARTPOSITION.x][STARTPOSITION.y] = (move){1,1};
     position finish = BFS(STARTPOSITION);
     printf("FINISH %d %d\n", finish.x, finish.y); 
@@ -399,7 +395,7 @@ void moveToTargetFastest(position p)
 {
     double targetX = (double) p.x;
     double targetY = (double) p.y; //important to decrease by RES
-    
+
     double remainingDistance = 1000.0;
     double previousRemainingDistance = 1000.0; 
     double xDifference, yDifference;
@@ -409,13 +405,13 @@ void moveToTargetFastest(position p)
     int baseSpeed;
     int leftSpeed = 0, rightSpeed = 0;
 
-    
+
     xDifference = targetX - xPos;
     yDifference = targetY - yPos; 
 
     remainingDistance = sqrt(xDifference*xDifference + yDifference*yDifference);
-    
-    
+
+
     targetThreshold = 4;
     baseSpeed = SCALE*remainingDistance;
 
@@ -426,7 +422,7 @@ void moveToTargetFastest(position p)
         log_trail();
         updateRobotPosition(); 
         previousRemainingDistance = remainingDistance;
-        
+
         xDifference = targetX - xPos;
         yDifference = targetY - yPos;  
 
@@ -447,11 +443,11 @@ void moveToTargetFastest(position p)
         rightSpeed = baseSpeed - baseSpeed * 2*requiredAngleChange;
 
         if(fabs(requiredAngleChange) > (M_PI/2))
-          break;
+            break;
         set_motors(leftSpeed,rightSpeed);
     }
     set_motors(0,0);
-    
+
 }
 
 
@@ -461,7 +457,7 @@ void drive()
     if(DEBUG) printf("%d %d\n", MAXNPATH, pathLength);
     for(counter = MAXNPATH - pathLength + 1; counter < MAXNPATH; counter++)
     {
-        
+
         if(DEBUG) printf("Counter %d value %d %d\n", counter, pathArray[counter].x, pathArray[counter].y);
         moveToTargetFastest(pathArray[counter]);
     }
@@ -471,10 +467,10 @@ void drive()
 int findFastest()
 {
     updateRobotPosition();
-    
+
     xPos += 30;
     yPos += 60;
-    
+
     if(DEBUG) printf("Curreny position: %f %f, bearing: %f\n", xPos, yPos, bearing);  
     if(DEBUG) scanf("%d", &a);
     mapPreprocessing();

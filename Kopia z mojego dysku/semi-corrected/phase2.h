@@ -1,5 +1,7 @@
-#include "phase1.h"
+#include "findFastest.h"
+#include "cuttingCorners.h"
 
-void go();
-Queue* calculateOptimalPath();
+void goOptimal();
+Queue* calculateShortestPath();
 void optimizeQueue(Queue** oP);
+void goWithCutting(Queue** a);
